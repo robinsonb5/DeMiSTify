@@ -197,7 +197,7 @@ architecture rtl of chameleon64v2_top is
 
 	-- Sigma Delta audio
 	COMPONENT hybrid_pwm_sd
-	generic ( depop : integer = 1 );
+	generic ( depop : integer := 1 );
 	PORT
 	(
 		clk	:	IN STD_LOGIC;
@@ -396,108 +396,8 @@ joy2<="1" & c64_joy2;
 joy3<="1" & joystick3;
 joy4<="1" & joystick4;
 	
-
-  U00 : entity work.pll
-    port map(
-      inclk0 => clk50m,       -- 50 MHz external
-      c0     => ram_clk,      -- Fast clock - external
-      c1     => fastclk,      -- Fast clock - internal
-      c2     => slowclk,      -- Slow clock - internal
-      locked => pll_locked
-    );
-
 vga_window<='1';
 
-virtualtoplevel : entity work.VirtualToplevel
-	generic map(
-		sdram_rows => 13,
-		sdram_cols => 9,
-		sysclk_frequency => 1000 -- Sysclk frequency * 10
-	)
-	port map(
-		clk => fastclk,
-		slowclk => slowclk,
-		reset_in => n_reset,
-
-		-- VGA
-		unsigned(vga_red) => vga_r,
-		unsigned(vga_green) => vga_g,
-		unsigned(vga_blue) => vga_b,
-		vga_hsync => vga_hsync,
-		vga_vsync => vga_vsync,
-		vga_window => open,
-
-		-- SDRAM
-		unsigned(sdr_data) => ram_d,
-		unsigned(sdr_addr)	=> ram_a,
-		sdr_dqm(1) => ram_udqm,
-		sdr_dqm(0) => ram_ldqm,
-		sdr_we => ram_we,
-		sdr_cas => ram_cas,
-		sdr_ras => ram_ras,
-		unsigned(sdr_ba) => ram_ba,
-
-		
-    -- PS/2 keyboard ports
-	 ps2k_clk_out => ps2_keyboard_clk_out,
-	 ps2k_dat_out => ps2_keyboard_dat_out,
-	 ps2k_clk_in => ps2_keyboard_clk_in,
-	 ps2k_dat_in => ps2_keyboard_dat_in,
-
-	 ps2m_clk_out => ps2_mouse_clk_out,
-	 ps2m_dat_out => ps2_mouse_dat_out,
-	 ps2m_clk_in => ps2_mouse_clk_in,
-	 ps2m_dat_in => ps2_mouse_dat_in,
- 
-    -- SD/MMC slot ports
-	spi_clk => spi_clk,
-	spi_mosi => spi_mosi,
-	spi_cs => mmc_cs,
-	spi_miso => spi_miso,
-
-	signed(audio_l) => audio_l,
-	signed(audio_r) => audio_r,
-	 
-	rxd => rs232_rxd,
-	txd => rs232_txd
-);
-
-	
--- Dither the video down to 5 bits per gun.
-	vga_window<='1';
-	hsync_n<= not vga_hsync;
-	vsync_n<= not vga_vsync;	
-
-	mydither : component video_vga_dither
-		generic map(
-			outbits => 5
-		)
-		port map(
-			clk=>fastclk,
-			hsync=>vga_hsync,
-			vsync=>vga_vsync,
-			vid_ena=>vga_window,
-			iRed => unsigned(vga_r),
-			iGreen => unsigned(vga_g),
-			iBlue => unsigned(vga_b),
-			oRed => red,
-			oGreen => grn,
-			oBlue => blu
-		);
-	
-audiosd: component hybrid_pwm_sd
-	port map
-	(
-		clk => fastclk,
-		reset_n => n_reset,
-		terminate => '1',
-		d_l(15) => not audio_l(15),
-		d_l(14 downto 0) => std_logic_vector(audio_l(14 downto 0)),
-		q_l => sigma_l,
-		d_r(15) => not audio_r(15),
-		d_r(14 downto 0) => std_logic_vector(audio_r(14 downto 0)),
-		q_r => sigma_r
-	);
 
 end architecture;
 

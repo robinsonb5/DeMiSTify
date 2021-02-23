@@ -1,9 +1,8 @@
 BOARD=none
 PROJECT=none
 PROJECTDIR=../../
-BOARDDIR=../../../Board/$(BOARD)
 MANIFEST=../../manifest.rtl
-SCRIPTSDIR=../../../Scripts
+SCRIPTSDIR=../../DeMiSTify/Scripts
 
 SOF=$(PROJECT)_$(BOARD).sof
 QSF=$(PROJECT)_$(BOARD).qsf

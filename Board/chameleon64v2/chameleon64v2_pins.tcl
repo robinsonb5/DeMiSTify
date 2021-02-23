@@ -1,1 +1,1 @@
-source ../../../Board/chameleon-modules/chameleonv2_pins.tcl
+source ${boardpath}/chameleon-modules/chameleonv2_pins.tcl

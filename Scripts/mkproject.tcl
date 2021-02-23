@@ -16,7 +16,8 @@ if {[string length $project]==0} {return -code error "Must specify a project"}
 
 set corename "${project}_${board}"
 
-source ../../project_defs.tcl
+set projectpath "../.."
+source ${projectpath}/project_defs.tcl
 source ${boardpath}${board}/${board}_defs.tcl
 
 if { ${requires_sdram}==0 || ${have_sdram}==1 } {
@@ -27,7 +28,7 @@ if { ${requires_sdram}==0 || ${have_sdram}==1 } {
 	source ${boardpath}${board}/${board}_pins.tcl
 	source ${boardpath}${board}/${board}_support.tcl
 	source ${corename}_files.tcl
-	set_global_assignment -name QIP_FILE ${boardpath}/../PLL/${fpga}_${base_clock}_${target_frequency}/pll.qip
+	set_global_assignment -name QIP_FILE ${projectpath}/plls/${board}/plls.qip
 } else {
 	puts "Board ${board} has no SDRAM, not building ${project}"
 }

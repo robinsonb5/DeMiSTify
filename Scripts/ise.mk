@@ -1,9 +1,9 @@
 BOARD=none
 PROJECT=none
 PROJECTDIR=../../
-BOARDDIR=../../../Board/$(BOARD)
+BOARDDIR=../../DeMiSTify/Board/$(BOARD)
 MANIFEST=../../manifest.rtl
-SCRIPTSDIR=../../../Scripts
+SCRIPTSDIR=../../DeMiSTify/Scripts
 
 TARGET=$(PROJECT)_$(BOARD)
 
@@ -19,7 +19,7 @@ clean:
 	-rm Working/$(TARGET).bit
 
 $(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST)
-	$(SCRIPTSDIR)/expandtemplate_ise.sh $+ ../.. >$@
+	$(SCRIPTSDIR)/expandtemplate_ise.sh $+ $(SCRIPTSDIR) ../.. >$@
 
 $(TARGET).xise: $(MANIFEST) $(PROJECT)_$(BOARD)_files.tcl $(BOARDDIR)/template.xise
 	mkdir -p Working

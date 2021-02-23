@@ -1,4 +1,4 @@
-PROJECTS="nes SMS_MiSTer"
+PROJECTS=
 
 include site.mk
 

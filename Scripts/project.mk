@@ -10,7 +10,7 @@ include Board/$(BOARD)/board.mk
 
 all:
 	@for PROJECT in ${PROJECTS}; do \
-		mkdir -p $$PROJECT/fpga/$$BOARD; \
-		make --quiet -C $$PROJECT/fpga/$$BOARD -f ../../../Scripts/$(TOOL_MAKEFILE) BOARD=$(BOARD) PROJECT=$$PROJECT TOOLPATH=$(TOOLPATH) $(CMD); \
+		mkdir -p ../fpga/$$BOARD; \
+		make --quiet -C ../fpga/$$BOARD -f ../../DeMiSTify/Scripts/$(TOOL_MAKEFILE) BOARD=$(BOARD) PROJECT=$$PROJECT TOOLPATH=$(TOOLPATH) $(CMD); \
 	done
 

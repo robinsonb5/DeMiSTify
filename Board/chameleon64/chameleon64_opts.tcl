@@ -1,1 +1,1 @@
-source ../../../Board/chameleon-modules/chameleonv1_opts.tcl
+source ${boardpath}/chameleon-modules/chameleonv1_opts.tcl
