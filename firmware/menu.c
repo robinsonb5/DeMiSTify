@@ -106,8 +106,9 @@ void Menu_Hide()
 
 void do_joy()
 {
-	int joya=0;
-	int joyb=0;
+	int joy=HW_JOY(REG_JOY);
+	int joya=joy&0xff;
+	int joyb=(joy>>8)&0xff;
 
 	if(TestKey(KEY_ENTER))
 		joya|=JOY_BTN4;
@@ -147,21 +148,22 @@ void do_joy()
 	user_io_digital_joystick_ext(1, joyb);
 }
 
-
+int prevbuttons=0;
 int Menu_Run()
 {
 	int i;
 	int action=0;
 	int upd=0;
+	int buttons=HW_JOY(REG_JOY_EXTRA);
 	struct menu_entry *m=menu;
 	struct hotkey *hk=hotkeys;
 
-	if(TestKey(KEY_F12)&2)
+	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 	{
 		OsdShowHide(menu_visible^=1);
 		upd=1;
 	}
-
+	prevbuttons=buttons;
 
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{

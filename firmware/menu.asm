@@ -802,32 +802,73 @@ _do_joy:
 	exg	r6
 						// allocreg r4
 						// allocreg r3
-
-						//menu.c, line 109
-						// (a/p assign)
-						// (prepobj r0)
- 						// reg r3 - no need to prep
-						// (obj to tmp) flags 1 type 3
-						// const
-	.liconst	0
-						// (save temp)isreg
-	mr	r3
-						//save_temp done
-
-						//menu.c, line 110
-						// (a/p assign)
-						// (prepobj r0)
- 						// reg r4 - no need to prep
-						// (obj to tmp) flags 1 type 3
-						// matchobj comparing flags 1 with 1
-
-			// required value found in tmp
-						// (save temp)isreg
-	mr	r4
-						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 112
+						//menu.c, line 109
+						//FIXME convert
+						// (convert - reducing type 503 to 3
+						// (prepobj r0)
+ 						// reg r1 - no need to prep
+						// (obj to tmp) flags 21 type 503
+						// const/deref
+						// (prepobj tmp)
+ 						// deref
+						// const to tmp
+	.liconst	-24
+						//sizemod based on type 0x503
+	ldt
+						//Saving to reg r1
+						// (save temp)isreg
+	mr	r1
+						//save_temp done
+						//No need to mask - same size
+
+						//menu.c, line 110
+						// (bitwise/arithmetic) 	//ops: 2, 0, 4
+						// (obj to r3) flags 4a type 3
+						// matchobj comparing flags 74 with 33
+						// reg r1 - only match against tmp
+	mt	r1
+	mr	r3
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 74
+						// const
+						// matchobj comparing flags 1 with 74
+	.liconst	255
+	and	r3
+						// (save result) // isreg
+
+						//menu.c, line 111
+						// Q1 disposable
+						// (bitwise/arithmetic) 	//ops: 2, 0, 5
+						// (obj to r4) flags 4a type 3
+						// matchobj comparing flags 74 with 1
+						// reg r1 - only match against tmp
+	mt	r1
+	mr	r4
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 74
+						// const
+						// matchobj comparing flags 1 with 74
+	.liconst	8
+	sgn
+	shr	r4
+						// (save result) // isreg
+
+						//menu.c, line 111
+						// (bitwise/arithmetic) 	//ops: 5, 0, 5
+						// WARNING - q1 and target collision - check code for correctness.
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 1
+						// const
+						// matchobj comparing flags 1 with 1
+	.liconst	255
+	and	r4
+						// (save result) // isreg
+						// freereg r1
+						// allocreg r1
+
+						//menu.c, line 113
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -840,7 +881,7 @@ _do_joy:
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 112
+						//menu.c, line 113
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -849,7 +890,7 @@ _do_joy:
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 112
+						//menu.c, line 113
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -858,7 +899,7 @@ _do_joy:
 	and	r0
 						// freereg r1
 
-						//menu.c, line 112
+						//menu.c, line 113
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -866,23 +907,21 @@ _do_joy:
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 113
-						// (a/p assign)
-						// (prepobj r0)
- 						// reg r3 - no need to prep
+						//menu.c, line 114
+						// (bitwise/arithmetic) 	//ops: 4, 0, 4
+						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 74
 						// const
 						// matchobj comparing flags 1 with 74
 	.liconst	128
-						// (save temp)isreg
-	mr	r3
-						//save_temp done
+	or	r3
+						// (save result) // isreg
 						// freereg r1
 l29: # 
 						// allocreg r1
 
-						//menu.c, line 114
+						//menu.c, line 115
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -893,7 +932,7 @@ l29: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 114
+						//menu.c, line 115
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -902,7 +941,7 @@ l29: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 114
+						//menu.c, line 115
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -911,7 +950,7 @@ l29: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 114
+						//menu.c, line 115
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -919,7 +958,7 @@ l29: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 115
+						//menu.c, line 116
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -933,7 +972,7 @@ l29: #
 l31: # 
 						// allocreg r1
 
-						//menu.c, line 116
+						//menu.c, line 117
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -944,7 +983,7 @@ l31: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 116
+						//menu.c, line 117
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -953,7 +992,7 @@ l31: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 116
+						//menu.c, line 117
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -962,7 +1001,7 @@ l31: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 116
+						//menu.c, line 117
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -970,7 +1009,7 @@ l31: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 117
+						//menu.c, line 118
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -984,7 +1023,7 @@ l31: #
 l33: # 
 						// allocreg r1
 
-						//menu.c, line 118
+						//menu.c, line 119
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -995,7 +1034,7 @@ l33: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 118
+						//menu.c, line 119
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1004,7 +1043,7 @@ l33: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 118
+						//menu.c, line 119
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1013,7 +1052,7 @@ l33: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 118
+						//menu.c, line 119
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1021,7 +1060,7 @@ l33: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 119
+						//menu.c, line 120
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1035,7 +1074,7 @@ l33: #
 l35: # 
 						// allocreg r1
 
-						//menu.c, line 120
+						//menu.c, line 121
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1046,7 +1085,7 @@ l35: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 120
+						//menu.c, line 121
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1055,7 +1094,7 @@ l35: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 120
+						//menu.c, line 121
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1064,7 +1103,7 @@ l35: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 120
+						//menu.c, line 121
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1072,7 +1111,7 @@ l35: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 121
+						//menu.c, line 122
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -1088,7 +1127,7 @@ l35: #
 l37: # 
 						// allocreg r1
 
-						//menu.c, line 122
+						//menu.c, line 123
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1099,7 +1138,7 @@ l37: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 122
+						//menu.c, line 123
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1108,7 +1147,7 @@ l37: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 122
+						//menu.c, line 123
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1117,7 +1156,7 @@ l37: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 122
+						//menu.c, line 123
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1125,7 +1164,7 @@ l37: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 123
+						//menu.c, line 124
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1139,7 +1178,7 @@ l37: #
 l39: # 
 						// allocreg r1
 
-						//menu.c, line 124
+						//menu.c, line 125
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1150,7 +1189,7 @@ l39: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 124
+						//menu.c, line 125
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1159,7 +1198,7 @@ l39: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 124
+						//menu.c, line 125
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1168,7 +1207,7 @@ l39: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 124
+						//menu.c, line 125
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1176,7 +1215,7 @@ l39: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 125
+						//menu.c, line 126
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1190,7 +1229,7 @@ l39: #
 l41: # 
 						// allocreg r1
 
-						//menu.c, line 126
+						//menu.c, line 127
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1201,7 +1240,7 @@ l41: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 126
+						//menu.c, line 127
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1210,7 +1249,7 @@ l41: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 126
+						//menu.c, line 127
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1219,7 +1258,7 @@ l41: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 126
+						//menu.c, line 127
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1227,7 +1266,7 @@ l41: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 127
+						//menu.c, line 128
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1241,7 +1280,7 @@ l41: #
 l43: # 
 						// allocreg r1
 
-						//menu.c, line 129
+						//menu.c, line 130
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1252,7 +1291,7 @@ l43: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 129
+						//menu.c, line 130
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1261,7 +1300,7 @@ l43: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 129
+						//menu.c, line 130
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1270,7 +1309,7 @@ l43: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 129
+						//menu.c, line 130
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1278,23 +1317,21 @@ l43: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 130
-						// (a/p assign)
-						// (prepobj r0)
- 						// reg r4 - no need to prep
+						//menu.c, line 131
+						// (bitwise/arithmetic) 	//ops: 5, 0, 5
+						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 74
 						// const
 						// matchobj comparing flags 1 with 74
 	.liconst	128
-						// (save temp)isreg
-	mr	r4
-						//save_temp done
+	or	r4
+						// (save result) // isreg
 						// freereg r1
 l45: # 
 						// allocreg r1
 
-						//menu.c, line 131
+						//menu.c, line 132
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1305,7 +1342,7 @@ l45: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 131
+						//menu.c, line 132
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1314,7 +1351,7 @@ l45: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 131
+						//menu.c, line 132
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1323,7 +1360,7 @@ l45: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 131
+						//menu.c, line 132
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1331,7 +1368,7 @@ l45: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 132
+						//menu.c, line 133
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1345,7 +1382,7 @@ l45: #
 l47: # 
 						// allocreg r1
 
-						//menu.c, line 133
+						//menu.c, line 134
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1356,7 +1393,7 @@ l47: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 133
+						//menu.c, line 134
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1365,7 +1402,7 @@ l47: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 133
+						//menu.c, line 134
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1374,7 +1411,7 @@ l47: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 133
+						//menu.c, line 134
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1382,7 +1419,7 @@ l47: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 134
+						//menu.c, line 135
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1396,7 +1433,7 @@ l47: #
 l49: # 
 						// allocreg r1
 
-						//menu.c, line 135
+						//menu.c, line 136
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1407,7 +1444,7 @@ l49: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 135
+						//menu.c, line 136
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1416,7 +1453,7 @@ l49: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 135
+						//menu.c, line 136
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1425,7 +1462,7 @@ l49: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 135
+						//menu.c, line 136
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1433,7 +1470,7 @@ l49: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 136
+						//menu.c, line 137
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1447,7 +1484,7 @@ l49: #
 l51: # 
 						// allocreg r1
 
-						//menu.c, line 137
+						//menu.c, line 138
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1458,7 +1495,7 @@ l51: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 137
+						//menu.c, line 138
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1467,7 +1504,7 @@ l51: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 137
+						//menu.c, line 138
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1476,7 +1513,7 @@ l51: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 137
+						//menu.c, line 138
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1484,7 +1521,7 @@ l51: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 138
+						//menu.c, line 139
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r4 - no need to prep
@@ -1500,7 +1537,7 @@ l51: #
 l53: # 
 						// allocreg r1
 
-						//menu.c, line 139
+						//menu.c, line 140
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1511,7 +1548,7 @@ l53: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 139
+						//menu.c, line 140
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1520,7 +1557,7 @@ l53: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 139
+						//menu.c, line 140
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1529,7 +1566,7 @@ l53: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 139
+						//menu.c, line 140
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1537,7 +1574,7 @@ l53: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 140
+						//menu.c, line 141
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1551,7 +1588,7 @@ l53: #
 l55: # 
 						// allocreg r1
 
-						//menu.c, line 141
+						//menu.c, line 142
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1562,7 +1599,7 @@ l55: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 141
+						//menu.c, line 142
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1571,7 +1608,7 @@ l55: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 141
+						//menu.c, line 142
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1580,7 +1617,7 @@ l55: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 141
+						//menu.c, line 142
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1588,7 +1625,7 @@ l55: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 142
+						//menu.c, line 143
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1602,7 +1639,7 @@ l55: #
 l57: # 
 						// allocreg r1
 
-						//menu.c, line 143
+						//menu.c, line 144
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1613,7 +1650,7 @@ l57: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 143
+						//menu.c, line 144
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1622,7 +1659,7 @@ l57: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 143
+						//menu.c, line 144
 						// (test)
 						// (obj to tmp) flags 4a type 3
 						// reg r0 - only match against tmp
@@ -1631,7 +1668,7 @@ l57: #
 	and	r0
 						// freereg r1
 
-						//menu.c, line 143
+						//menu.c, line 144
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
@@ -1639,7 +1676,7 @@ l57: #
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 144
+						//menu.c, line 145
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1652,7 +1689,7 @@ l57: #
 						// freereg r1
 l59: # 
 
-						//menu.c, line 146
+						//menu.c, line 147
 						// (a/p push)
 						// a: pushed 0, regnames[sp] r6
 						// (obj to tmp) flags 42 type 3
@@ -1661,7 +1698,7 @@ l59: #
 	stdec	r6
 						// allocreg r1
 
-						//menu.c, line 146
+						//menu.c, line 147
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1674,7 +1711,7 @@ l59: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 146
+						//menu.c, line 147
 						//call
 						//pcreltotemp
 	.lipcrel	_user_io_digital_joystick_ext
@@ -1682,7 +1719,7 @@ l59: #
 						// Deferred popping of 4 bytes (4 in total)
 						// freereg r1
 
-						//menu.c, line 147
+						//menu.c, line 148
 						// (a/p push)
 						// a: pushed 0, regnames[sp] r6
 						// (obj to tmp) flags 42 type 3
@@ -1691,7 +1728,7 @@ l59: #
 	stdec	r6
 						// allocreg r1
 
-						//menu.c, line 147
+						//menu.c, line 148
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1704,7 +1741,7 @@ l59: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 147
+						//menu.c, line 148
 						//call
 						//pcreltotemp
 	.lipcrel	_user_io_digital_joystick_ext
@@ -1743,7 +1780,7 @@ _Menu_Run:
 						// allocreg r3
 						// allocreg r2
 
-						//menu.c, line 154
+						//menu.c, line 155
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 1
@@ -1764,7 +1801,7 @@ _Menu_Run:
 	st	r0
 						//save_temp done
 
-						//menu.c, line 155
+						//menu.c, line 156
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 1
@@ -1786,10 +1823,34 @@ _Menu_Run:
 	st	r0
 						//save_temp done
 
-						//menu.c, line 156
+						//menu.c, line 157
+						//FIXME convert
+						// (convert - reducing type 503 to 3
+						// (obj to tmp) flags 21 type 503
+						// matchobj comparing flags 33 with 1
+						// matchobj comparing flags 33 with 130
+						// const/deref
+						// matchobj comparing flags 1 with 1
+						// matchobj comparing flags 1 with 130
+						// (prepobj tmp)
+ 						// matchobj comparing flags 161 with 1
+						// matchobj comparing flags 161 with 130
+						// deref
+						// const to tmp
+						// matchobj comparing flags 1 with 1
+						// matchobj comparing flags 1 with 130
+	.liconst	-20
+						//sizemod based on type 0x503
+	ldt
+						//Saving to reg r6
+						// (save temp)store type 3
+	st	r6
+						//save_temp done
+
+						//menu.c, line 158
 						// (a/p assign)
 						// (prepobj r0)
- 						// matchobj comparing flags 130 with 1
+ 						// matchobj comparing flags 130 with 33
 						// matchobj comparing flags 130 with 130
 						//auto: flags: 82, comparing 4, 0 with 12, 0
 						//Fuzzy match found, offset: -8 (varadr: 1)
@@ -1810,7 +1871,7 @@ _Menu_Run:
 	st	r0
 						//save_temp done
 
-						//menu.c, line 157
+						//menu.c, line 159
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r4 - no need to prep
@@ -1828,7 +1889,7 @@ _Menu_Run:
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 159
+						//menu.c, line 161
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1843,7 +1904,7 @@ _Menu_Run:
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 159
+						//menu.c, line 161
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1852,12 +1913,12 @@ _Menu_Run:
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 159
+						//menu.c, line 161
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 159
+						//menu.c, line 161
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -1869,19 +1930,65 @@ _Menu_Run:
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 159
+						//menu.c, line 161
+	cond	NEQ
+						//conditional branch regular
+						//pcreltotemp
+	.lipcrel	l61
+		add	r7
+						// allocreg r1
+
+						//menu.c, line 161
+						//comp
+						// (obj to r1) flags 2 type 3
+						// matchobj comparing flags 2 with 1
+						// extern
+	.liabs	_prevbuttons
+						//extern deref
+						//sizemod based on type 0x3
+	ldt
+	mr	r1
+						// matchobj comparing flags 1 with 2
+	.liconst	-1
+	xor	r1
+						// (save result) // isreg
+
+						//menu.c, line 161
+						// (bitwise/arithmetic) 	//ops: 2, 0, 2
+						// WARNING - q1 and target collision - check code for correctness.
+						// (obj to tmp) flags 2 type 3
+						// matchobj comparing flags 2 with 1
+						// var, auto|reg
+						//sizemod based on type 0x3
+	ld	r6
+	and	r1
+						// (save result) // isreg
+
+						//menu.c, line 161
+						// (bitwise/arithmetic) 	//ops: 2, 0, 2
+						// WARNING - q1 and target collision - check code for correctness.
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 2
+						// const
+						// matchobj comparing flags 1 with 2
+	.liconst	1
+	and	r1
+						// (save result) // isreg
+						// freereg r1
+
+						//menu.c, line 161
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
 	.lipcrel	l62
 		add	r7
 						// freereg r2
+l61: # 
 						// allocreg r2
 
-						//menu.c, line 161
+						//menu.c, line 163
 						// (bitwise/arithmetic) 	//ops: 0, 0, 3
 						// (obj to r2) flags 2 type 3
-						// matchobj comparing flags 2 with 1
 						//static not varadr
 						//statictotemp (FIXME - make PC-relative?)
 	.liabs	l2,0
@@ -1905,7 +2012,7 @@ _Menu_Run:
 	stmpdec	r2
 						// allocreg r1
 
-						//menu.c, line 161
+						//menu.c, line 163
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 3, 0, 2
 						//Special case - addt
@@ -1920,7 +2027,7 @@ _Menu_Run:
 						//save_temp done
 						// freereg r2
 
-						//menu.c, line 161
+						//menu.c, line 163
 						//call
 						//pcreltotemp
 	.lipcrel	_spi_osd_cmd
@@ -1928,7 +2035,7 @@ _Menu_Run:
 						// Flow control - popping 0 + 0 bytes
 						// freereg r1
 
-						//menu.c, line 162
+						//menu.c, line 164
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -1951,8 +2058,27 @@ l62: #
 						// allocreg r1
 
 						//menu.c, line 166
+						// (a/p assign)
+						// (prepobj r0)
+ 						// extern (offset 0)
+	.liabs	_prevbuttons
+						// extern pe not varadr
+	mr	r0
+						// (obj to tmp) flags 2 type 3
+						// matchobj comparing flags 2 with 130
+						// matchobj comparing flags 2 with 130
+						// var, auto|reg
+						//sizemod based on type 0x3
+	ld	r6
+						// (save temp)store type 3
+	st	r0
+						//save_temp done
+
+						//menu.c, line 168
 						// (test)
 						// (obj to tmp) flags 2 type 3
+						// matchobj comparing flags 2 with 2
+						// matchobj comparing flags 2 with 130
 						//static not varadr
 						//statictotemp (FIXME - make PC-relative?)
 	.liabs	l2,0
@@ -1960,15 +2086,15 @@ l62: #
 						//sizemod based on type 0x3
 	ldt
 
-						//menu.c, line 166
+						//menu.c, line 168
 	cond	NEQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l64
+	.lipcrel	l65
 		add	r7
 						// freereg r1
 
-						//menu.c, line 168
+						//menu.c, line 170
 						//call
 						//pcreltotemp
 	.lipcrel	_do_joy
@@ -1976,7 +2102,7 @@ l62: #
 						// Flow control - popping 0 + 0 bytes
 						// allocreg r1
 
-						//menu.c, line 170
+						//menu.c, line 172
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -1987,7 +2113,7 @@ l62: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 170
+						//menu.c, line 172
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -1996,7 +2122,7 @@ l62: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 171
+						//menu.c, line 173
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2007,7 +2133,7 @@ l62: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 171
+						//menu.c, line 173
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -2015,7 +2141,7 @@ l62: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r1
 
-						//menu.c, line 173
+						//menu.c, line 175
 						//setreturn
 						// (obj to r0) flags 2 type 3
 						//static not varadr
@@ -2026,14 +2152,14 @@ l62: #
 	ldt
 	mr	r0
 
-						//menu.c, line 174
+						//menu.c, line 176
 						//pcreltotemp
 	.lipcrel	l60
 	add	r7
-l64: # 
+l65: # 
 						// allocreg r1
 
-						//menu.c, line 176
+						//menu.c, line 178
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2044,7 +2170,7 @@ l64: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 176
+						//menu.c, line 178
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -2053,12 +2179,12 @@ l64: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 176
+						//menu.c, line 178
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 176
+						//menu.c, line 178
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -2070,15 +2196,15 @@ l64: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 176
+						//menu.c, line 178
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l66
+	.lipcrel	l67
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 178
+						//menu.c, line 180
 						// (test)
 						// (obj to tmp) flags 2 type 3
 						// matchobj comparing flags 2 with 1
@@ -2089,14 +2215,14 @@ l64: #
 						//sizemod based on type 0x3
 	ldt
 
-						//menu.c, line 178
+						//menu.c, line 180
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l68
+	.lipcrel	l69
 		add	r7
 
-						//menu.c, line 179
+						//menu.c, line 181
 						// (bitwise/arithmetic) 	//ops: 0, 0, 1
 						// (obj to r0) flags 2 type 3
 						// matchobj comparing flags 2 with 2
@@ -2121,15 +2247,15 @@ l64: #
 	stmpdec	r0
  						// WARNING - check that 4 has been added.
 
-						//menu.c, line 180
+						//menu.c, line 182
 						//pcreltotemp
-	.lipcrel	l71
+	.lipcrel	l72
 	add	r7
 						// freereg r1
-l68: # 
+l69: # 
 						// allocreg r1
 
-						//menu.c, line 180
+						//menu.c, line 182
 						// (bitwise/arithmetic) 	//ops: 0, 0, 2
 						// (obj to r1) flags 2 type 3
 						//static not varadr
@@ -2147,7 +2273,7 @@ l68: #
 	mul	r1
 						// (save result) // isreg
 
-						//menu.c, line 180
+						//menu.c, line 182
 						// (bitwise/arithmetic) 	//ops: 0, 2, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 2 type a
@@ -2158,7 +2284,7 @@ l68: #
 	add	r1
 						// (save result) // isreg
 
-						//menu.c, line 180
+						//menu.c, line 182
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 2, 0, 1
 						//Special case - addt
@@ -2173,7 +2299,7 @@ l68: #
 						//save_temp done
 						// freereg r1
 
-						//menu.c, line 180
+						//menu.c, line 182
 						// (test)
 						// (obj to tmp) flags 22 type 4
 						// matchobj comparing flags 34 with 2
@@ -2187,16 +2313,16 @@ l68: #
 						//sizemod based on type 0x4
 	ldt
 
-						//menu.c, line 180
+						//menu.c, line 182
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l71
+	.lipcrel	l72
 		add	r7
 						// freereg r3
 						// allocreg r3
 
-						//menu.c, line 181
+						//menu.c, line 183
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -2209,7 +2335,7 @@ l68: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 181
+						//menu.c, line 183
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2222,7 +2348,7 @@ l68: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 181
+						//menu.c, line 183
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -2233,11 +2359,11 @@ l68: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r3
 						// freereg r1
-l71: # 
+l72: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 182
+						//menu.c, line 184
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -2256,10 +2382,10 @@ l71: #
 	st	r0
 						//save_temp done
 						// freereg r1
-l66: # 
+l67: # 
 						// allocreg r1
 
-						//menu.c, line 185
+						//menu.c, line 187
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2270,7 +2396,7 @@ l66: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 185
+						//menu.c, line 187
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -2279,12 +2405,12 @@ l66: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 185
+						//menu.c, line 187
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 185
+						//menu.c, line 187
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -2296,11 +2422,11 @@ l66: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 185
+						//menu.c, line 187
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l73
+	.lipcrel	l74
 		add	r7
 						// (a/p assign)
 						// (prepobj r0)
@@ -2325,7 +2451,7 @@ l66: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 187
+						//menu.c, line 189
 						// (bitwise/arithmetic) 	//ops: 0, 0, 2
 						// (obj to r1) flags 2 type 3
 						// matchobj comparing flags 2 with 2
@@ -2360,7 +2486,7 @@ l66: #
 	st	r6
 						//save_temp done
 
-						//menu.c, line 187
+						//menu.c, line 189
 						// Q2 disposable
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 2 type 3
@@ -2373,15 +2499,15 @@ l66: #
 	cmp	r1
 						// freereg r1
 
-						//menu.c, line 187
+						//menu.c, line 189
 	cond	LE
 						//conditional branch reversed
 						//pcreltotemp
-	.lipcrel	l75
+	.lipcrel	l76
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 188
+						//menu.c, line 190
 						// (bitwise/arithmetic) 	//ops: 0, 0, 1
 						// (obj to r0) flags 2 type 3
 						// matchobj comparing flags 2 with 2
@@ -2406,15 +2532,15 @@ l66: #
 	stmpdec	r0
  						// WARNING - check that 4 has been added.
 
-						//menu.c, line 189
+						//menu.c, line 191
 						//pcreltotemp
-	.lipcrel	l78
+	.lipcrel	l79
 	add	r7
 						// freereg r1
-l75: # 
+l76: # 
 						// allocreg r1
 
-						//menu.c, line 189
+						//menu.c, line 191
 						// (bitwise/arithmetic) 	//ops: 0, 0, 2
 						// (obj to r1) flags 2 type 3
 						// var, auto|reg
@@ -2430,7 +2556,7 @@ l75: #
 	mul	r1
 						// (save result) // isreg
 
-						//menu.c, line 189
+						//menu.c, line 191
 						// (bitwise/arithmetic) 	//ops: 0, 2, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 2 type a
@@ -2441,7 +2567,7 @@ l75: #
 	add	r1
 						// (save result) // isreg
 
-						//menu.c, line 189
+						//menu.c, line 191
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 2, 0, 1
 						//Special case - addt
@@ -2456,7 +2582,7 @@ l75: #
 						//save_temp done
 						// freereg r1
 
-						//menu.c, line 189
+						//menu.c, line 191
 						// (test)
 						// (obj to tmp) flags 22 type 4
 						// matchobj comparing flags 34 with 2
@@ -2470,16 +2596,16 @@ l75: #
 						//sizemod based on type 0x4
 	ldt
 
-						//menu.c, line 189
+						//menu.c, line 191
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l78
+	.lipcrel	l79
 		add	r7
 						// freereg r3
 						// allocreg r3
 
-						//menu.c, line 190
+						//menu.c, line 192
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -2492,7 +2618,7 @@ l75: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 190
+						//menu.c, line 192
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2505,7 +2631,7 @@ l75: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 190
+						//menu.c, line 192
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -2516,11 +2642,11 @@ l75: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r3
 						// freereg r1
-l78: # 
+l79: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 191
+						//menu.c, line 193
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -2539,10 +2665,10 @@ l78: #
 	st	r0
 						//save_temp done
 						// freereg r1
-l73: # 
+l74: # 
 						// allocreg r1
 
-						//menu.c, line 194
+						//menu.c, line 196
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2553,7 +2679,7 @@ l73: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 194
+						//menu.c, line 196
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -2562,12 +2688,12 @@ l73: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 194
+						//menu.c, line 196
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 194
+						//menu.c, line 196
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -2579,15 +2705,15 @@ l73: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 194
+						//menu.c, line 196
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l80
+	.lipcrel	l81
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 196
+						//menu.c, line 198
 						// (test)
 						// (obj to tmp) flags 2 type 3
 						// matchobj comparing flags 2 with 1
@@ -2598,14 +2724,14 @@ l73: #
 						//sizemod based on type 0x3
 	ldt
 
-						//menu.c, line 196
+						//menu.c, line 198
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l82
+	.lipcrel	l83
 		add	r7
 
-						//menu.c, line 197
+						//menu.c, line 199
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 2
@@ -2624,15 +2750,15 @@ l73: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 198
+						//menu.c, line 200
 						//pcreltotemp
-	.lipcrel	l85
+	.lipcrel	l86
 	add	r7
 						// freereg r1
-l82: # 
+l83: # 
 						// allocreg r1
 
-						//menu.c, line 198
+						//menu.c, line 200
 						// (bitwise/arithmetic) 	//ops: 0, 0, 2
 						// (obj to r1) flags 2 type 3
 						//static not varadr
@@ -2650,7 +2776,7 @@ l82: #
 	mul	r1
 						// (save result) // isreg
 
-						//menu.c, line 198
+						//menu.c, line 200
 						// (bitwise/arithmetic) 	//ops: 0, 2, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 2 type a
@@ -2661,7 +2787,7 @@ l82: #
 	add	r1
 						// (save result) // isreg
 
-						//menu.c, line 198
+						//menu.c, line 200
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 2, 0, 1
 						//Special case - addt
@@ -2676,7 +2802,7 @@ l82: #
 						//save_temp done
 						// freereg r1
 
-						//menu.c, line 198
+						//menu.c, line 200
 						// (test)
 						// (obj to tmp) flags 22 type 4
 						// matchobj comparing flags 34 with 2
@@ -2690,16 +2816,16 @@ l82: #
 						//sizemod based on type 0x4
 	ldt
 
-						//menu.c, line 198
+						//menu.c, line 200
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l85
+	.lipcrel	l86
 		add	r7
 						// freereg r3
 						// allocreg r3
 
-						//menu.c, line 199
+						//menu.c, line 201
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -2712,7 +2838,7 @@ l82: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 199
+						//menu.c, line 201
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2725,7 +2851,7 @@ l82: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 199
+						//menu.c, line 201
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -2736,11 +2862,11 @@ l82: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r3
 						// freereg r1
-l85: # 
+l86: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 200
+						//menu.c, line 202
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -2759,10 +2885,10 @@ l85: #
 	st	r0
 						//save_temp done
 						// freereg r1
-l80: # 
+l81: # 
 						// allocreg r1
 
-						//menu.c, line 203
+						//menu.c, line 205
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2773,7 +2899,7 @@ l80: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 203
+						//menu.c, line 205
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -2782,12 +2908,12 @@ l80: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 203
+						//menu.c, line 205
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 203
+						//menu.c, line 205
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -2799,11 +2925,11 @@ l80: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 203
+						//menu.c, line 205
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l87
+	.lipcrel	l88
 		add	r7
 						// allocreg r1
 						// (a/p assign)
@@ -2828,7 +2954,7 @@ l80: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 205
+						//menu.c, line 207
 						// (bitwise/arithmetic) 	//ops: 0, 0, 1
 						// (obj to r0) flags 2 type 3
 						// matchobj comparing flags 2 with 2
@@ -2858,7 +2984,7 @@ l80: #
 	stmpdec	r0
  						// WARNING - check that 4 has been added.
 
-						//menu.c, line 205
+						//menu.c, line 207
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to r0) flags 2 type 3
 						// matchobj comparing flags 2 with 2
@@ -2877,11 +3003,11 @@ l80: #
 	sgn
 	cmp	r0
 
-						//menu.c, line 205
+						//menu.c, line 207
 	cond	GE
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l89
+	.lipcrel	l90
 		add	r7
 						// (a/p assign)
 						// (prepobj r0)
@@ -2900,15 +3026,15 @@ l80: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 207
+						//menu.c, line 209
 						//pcreltotemp
-	.lipcrel	l92
+	.lipcrel	l93
 	add	r7
 						// freereg r1
-l89: # 
+l90: # 
 						// allocreg r1
 
-						//menu.c, line 207
+						//menu.c, line 209
 						// (bitwise/arithmetic) 	//ops: 0, 0, 2
 						// (obj to r1) flags 2 type 3
 						// var, auto|reg
@@ -2924,7 +3050,7 @@ l89: #
 	mul	r1
 						// (save result) // isreg
 
-						//menu.c, line 207
+						//menu.c, line 209
 						// (bitwise/arithmetic) 	//ops: 0, 2, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 2 type a
@@ -2935,7 +3061,7 @@ l89: #
 	add	r1
 						// (save result) // isreg
 
-						//menu.c, line 207
+						//menu.c, line 209
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 2, 0, 1
 						//Special case - addt
@@ -2950,7 +3076,7 @@ l89: #
 						//save_temp done
 						// freereg r1
 
-						//menu.c, line 207
+						//menu.c, line 209
 						// (test)
 						// (obj to tmp) flags 22 type 4
 						// matchobj comparing flags 34 with 2
@@ -2964,16 +3090,16 @@ l89: #
 						//sizemod based on type 0x4
 	ldt
 
-						//menu.c, line 207
+						//menu.c, line 209
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l92
+	.lipcrel	l93
 		add	r7
 						// freereg r3
 						// allocreg r3
 
-						//menu.c, line 208
+						//menu.c, line 210
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -2986,7 +3112,7 @@ l89: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 208
+						//menu.c, line 210
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -2999,7 +3125,7 @@ l89: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 208
+						//menu.c, line 210
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -3010,11 +3136,11 @@ l89: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r3
 						// freereg r1
-l92: # 
+l93: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 209
+						//menu.c, line 211
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -3032,9 +3158,9 @@ l92: #
 						// (save temp)store type 3
 	st	r0
 						//save_temp done
-l87: # 
+l88: # 
 
-						//menu.c, line 213
+						//menu.c, line 215
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -3049,7 +3175,7 @@ l87: #
 	mr	r3
 						//save_temp done
 
-						//menu.c, line 214
+						//menu.c, line 216
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 2
@@ -3059,15 +3185,15 @@ l87: #
 	sgn
 	cmp	r3
 
-						//menu.c, line 214
+						//menu.c, line 216
 	cond	LE
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l123
+	.lipcrel	l124
 		add	r7
-l120: # 
+l121: # 
 
-						//menu.c, line 217
+						//menu.c, line 219
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -3076,7 +3202,7 @@ l120: #
 	sub	r3
 						// (save result) // isreg
 
-						//menu.c, line 214
+						//menu.c, line 216
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 1
@@ -3086,17 +3212,17 @@ l120: #
 	sgn
 	cmp	r3
 
-						//menu.c, line 214
+						//menu.c, line 216
 	cond	SGT
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l120
+	.lipcrel	l121
 		add	r7
-l123: # 
+l124: # 
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 252
+						//menu.c, line 254
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -3107,7 +3233,7 @@ l123: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 252
+						//menu.c, line 254
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -3116,12 +3242,12 @@ l123: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 252
+						//menu.c, line 254
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 252
+						//menu.c, line 254
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 2, 0, 4
 						// (obj to r3) flags 4a type 3
@@ -3137,7 +3263,7 @@ l123: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 252
+						//menu.c, line 254
 						// (test)
 						// (obj to tmp) flags 42 type 3
 						// matchobj comparing flags 66 with 1
@@ -3146,15 +3272,15 @@ l123: #
 				// flags 42
 	and	r3
 
-						//menu.c, line 252
+						//menu.c, line 254
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l110
+	.lipcrel	l111
 		add	r7
 						// allocreg r1
 
-						//menu.c, line 254
+						//menu.c, line 256
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r5 - no need to prep
@@ -3170,7 +3296,7 @@ l123: #
 	mr	r5
 						//save_temp done
 
-						//menu.c, line 255
+						//menu.c, line 257
 						// (a/p push)
 						// a: pushed 0, regnames[sp] r6
 						// (obj to tmp) flags 2 type 3
@@ -3183,7 +3309,7 @@ l123: #
 	ldt
 	stdec	r6
 
-						//menu.c, line 255
+						//menu.c, line 257
 						// (a/p push)
 						// a: pushed 4, regnames[sp] r6
 						// (obj to tmp) flags 42 type 3
@@ -3192,7 +3318,7 @@ l123: #
 	mt	r3
 	stdec	r6
 
-						//menu.c, line 255
+						//menu.c, line 257
 						// (a/p push)
 						// a: pushed 8, regnames[sp] r6
 						// (obj to tmp) flags 82 type a
@@ -3200,11 +3326,11 @@ l123: #
 						// (prepobj tmp)
  						// matchobj comparing flags 130 with 66
 						// static
-	.liabs	l98,0
+	.liabs	l99,0
 						// static pe is varadr
 	stdec	r6
 
-						//menu.c, line 255
+						//menu.c, line 257
 						//call
 						//pcreltotemp
 	.lipcrel	_printf
@@ -3213,7 +3339,7 @@ l123: #
 	.liconst	12
 	add	r6
 
-						//menu.c, line 256
+						//menu.c, line 258
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -3229,7 +3355,7 @@ l123: #
 	mr	r3
 						//save_temp done
 
-						//menu.c, line 257
+						//menu.c, line 259
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 2
@@ -3239,15 +3365,15 @@ l123: #
 	sgn
 	cmp	r3
 
-						//menu.c, line 257
+						//menu.c, line 259
 	cond	LE
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l124
+	.lipcrel	l125
 		add	r7
-l121: # 
+l122: # 
 
-						//menu.c, line 259
+						//menu.c, line 261
 						// (bitwise/arithmetic) 	//ops: 6, 0, 6
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type a
@@ -3256,7 +3382,7 @@ l121: #
 	add	r5
 						// (save result) // isreg
 
-						//menu.c, line 260
+						//menu.c, line 262
 						// (bitwise/arithmetic) 	//ops: 4, 0, 4
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -3267,7 +3393,7 @@ l121: #
 	sub	r3
 						// (save result) // isreg
 
-						//menu.c, line 257
+						//menu.c, line 259
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 1 type 3
 						// matchobj comparing flags 1 with 1
@@ -3277,15 +3403,15 @@ l121: #
 	sgn
 	cmp	r3
 
-						//menu.c, line 257
+						//menu.c, line 259
 	cond	SGT
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l121
+	.lipcrel	l122
 		add	r7
-l124: # 
+l125: # 
 
-						//menu.c, line 263
+						//menu.c, line 265
 						//FIXME convert
 						//Converting to wider type...
 						// (obj to r2) flags 62 type 101
@@ -3307,33 +3433,33 @@ l124: #
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l106
-		add	r7
-						// (bitwise/arithmetic) 	//ops: 3, 0, 3
-						// WARNING - q1 and target collision - check code for correctness.
-						// (obj to tmp) flags 1 type 3
-						// matchobj comparing flags 1 with 1
-
-			// required value found in tmp
-	sub	r2
-						// (save result) // isreg
-	cond	EQ
-						//conditional branch regular
-						//pcreltotemp
-	.lipcrel	l104
-		add	r7
-						// (bitwise/arithmetic) 	//ops: 3, 0, 3
-						// WARNING - q1 and target collision - check code for correctness.
-						// (obj to tmp) flags 1 type 3
-						// matchobj comparing flags 1 with 1
-
-			// required value found in tmp
-	sub	r2
-						// (save result) // isreg
-	cond	EQ
-						//conditional branch regular
-						//pcreltotemp
 	.lipcrel	l107
+		add	r7
+						// (bitwise/arithmetic) 	//ops: 3, 0, 3
+						// WARNING - q1 and target collision - check code for correctness.
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 1
+
+			// required value found in tmp
+	sub	r2
+						// (save result) // isreg
+	cond	EQ
+						//conditional branch regular
+						//pcreltotemp
+	.lipcrel	l105
+		add	r7
+						// (bitwise/arithmetic) 	//ops: 3, 0, 3
+						// WARNING - q1 and target collision - check code for correctness.
+						// (obj to tmp) flags 1 type 3
+						// matchobj comparing flags 1 with 1
+
+			// required value found in tmp
+	sub	r2
+						// (save result) // isreg
+	cond	EQ
+						//conditional branch regular
+						//pcreltotemp
+	.lipcrel	l108
 		add	r7
 						// (bitwise/arithmetic) 	//ops: 3, 0, 3
 						// WARNING - q1 and target collision - check code for correctness.
@@ -3346,13 +3472,13 @@ l124: #
 	cond	NEQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l110
+	.lipcrel	l111
 		add	r7
 						// freereg r1
 						// freereg r2
 						// allocreg r2
 
-						//menu.c, line 265
+						//menu.c, line 267
 						// (bitwise/arithmetic) 	//ops: 6, 0, 3
 						//Special case - addt
 						// (prepobj r0)
@@ -3368,7 +3494,7 @@ l124: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 265
+						//menu.c, line 267
 						// Q1 disposable
 						// (a/p assign)
 						// (prepobj r0)
@@ -3382,7 +3508,7 @@ l124: #
 						//save_temp done
 						// freereg r2
 
-						//menu.c, line 265
+						//menu.c, line 267
 						//call
 						//pcreltotemp
 	.lipcrel	_Menu_Set
@@ -3390,16 +3516,16 @@ l124: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r1
 
-						//menu.c, line 266
+						//menu.c, line 268
 						//pcreltotemp
-	.lipcrel	l110
+	.lipcrel	l111
 	add	r7
 						// freereg r3
-l104: # 
+l105: # 
 						// allocreg r2
 						// allocreg r3
 
-						//menu.c, line 268
+						//menu.c, line 270
 						// (bitwise/arithmetic) 	//ops: 6, 0, 4
 						//Special case - addt
 						// (prepobj r0)
@@ -3412,7 +3538,7 @@ l104: #
 	mr	r3
 						//save_temp done
 
-						//menu.c, line 268
+						//menu.c, line 270
 						// (a/p push)
 						// a: pushed 0, regnames[sp] r6
 						// (obj to tmp) flags 6a type 4
@@ -3421,7 +3547,7 @@ l104: #
 	ld	r3
 	stdec	r6
 
-						//menu.c, line 268
+						//menu.c, line 270
 						// (a/p push)
 						// a: pushed 4, regnames[sp] r6
 						// (obj to tmp) flags 82 type a
@@ -3429,11 +3555,11 @@ l104: #
 						// (prepobj tmp)
  						// matchobj comparing flags 130 with 106
 						// static
-	.liabs	l105,0
+	.liabs	l106,0
 						// static pe is varadr
 	stdec	r6
 
-						//menu.c, line 268
+						//menu.c, line 270
 						//call
 						//pcreltotemp
 	.lipcrel	_printf
@@ -3442,7 +3568,7 @@ l104: #
 	.liconst	8
 	add	r6
 
-						//menu.c, line 269
+						//menu.c, line 271
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -3455,7 +3581,7 @@ l104: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 269
+						//menu.c, line 271
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -3471,7 +3597,7 @@ l104: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 269
+						//menu.c, line 271
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -3483,15 +3609,15 @@ l104: #
 						// freereg r3
 						// freereg r1
 
-						//menu.c, line 270
+						//menu.c, line 272
 						//pcreltotemp
-	.lipcrel	l110
+	.lipcrel	l111
 	add	r7
-l106: # 
+l107: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 272
+						//menu.c, line 274
 						// (bitwise/arithmetic) 	//ops: 6, 0, 2
 						//Special case - addt
 						// (prepobj r0)
@@ -3504,7 +3630,7 @@ l106: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 272
+						//menu.c, line 274
 						// (bitwise/arithmetic) 	//ops: 0, 2, 2
 						// WARNING - evading q2 and target collision - check code for correctness.
 						// (obj to r0) flags 1 type 3
@@ -3523,7 +3649,7 @@ l106: #
 	mt	r0
 	mr	r1
 
-						//menu.c, line 273
+						//menu.c, line 275
 						// Q2 disposable
 						// (bitwise/arithmetic) 	//ops: 0, 2, 1
 						// (obj to r0) flags 2 type 3
@@ -3550,7 +3676,7 @@ l106: #
  						// WARNING - check that 4 has been added.
 						// freereg r1
 
-						//menu.c, line 274
+						//menu.c, line 276
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 2
@@ -3571,7 +3697,7 @@ l106: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 275
+						//menu.c, line 277
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 1
@@ -3593,15 +3719,15 @@ l106: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 276
+						//menu.c, line 278
 						//pcreltotemp
-	.lipcrel	l110
+	.lipcrel	l111
 	add	r7
 						// freereg r2
-l107: # 
+l108: # 
 						// allocreg r1
 
-						//menu.c, line 278
+						//menu.c, line 280
 						// (bitwise/arithmetic) 	//ops: 6, 0, 2
 						//Special case - addt
 						// (prepobj r0)
@@ -3614,7 +3740,7 @@ l107: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 278
+						//menu.c, line 280
 						// (bitwise/arithmetic) 	//ops: 6, 0, 1
 						//Special case - addt
 						// (obj to tmp) flags 1 type a
@@ -3628,7 +3754,7 @@ l107: #
 						//save_temp done
 						// allocreg r2
 
-						//menu.c, line 278
+						//menu.c, line 280
 						//FIXME convert
 						//Converting to wider type...
 						// (obj to r2) flags 22 type 101
@@ -3647,7 +3773,7 @@ l107: #
 						//But unsigned, so no need to extend
 						// (save result) // isreg
 
-						//menu.c, line 278
+						//menu.c, line 280
 						// Q1 disposable
 						// (bitwise/arithmetic) 	//ops: 3, 0, 4
 						//Special case - addt
@@ -3664,7 +3790,7 @@ l107: #
 						//save_temp done
 						// freereg r2
 
-						//menu.c, line 279
+						//menu.c, line 281
 						//FIXME convert
 						//Converting to wider type...
 						// (obj to r1) flags 6a type 101
@@ -3676,7 +3802,7 @@ l107: #
 						//But unsigned, so no need to extend
 						// (save result) // isreg
 
-						//menu.c, line 279
+						//menu.c, line 281
 						// Q2 disposable
 						// (compare) (q1 signed) (q2 signed)
 						// (obj to tmp) flags 4a type 3
@@ -3687,16 +3813,16 @@ l107: #
 	cmp	r3
 						// freereg r1
 
-						//menu.c, line 279
+						//menu.c, line 281
 	cond	SLT
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l109
+	.lipcrel	l110
 		add	r7
 						// allocreg r2
 						// allocreg r1
 
-						//menu.c, line 280
+						//menu.c, line 282
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -3708,9 +3834,9 @@ l107: #
 						// (save temp)isreg
 	mr	r3
 						//save_temp done
-l109: # 
+l110: # 
 
-						//menu.c, line 281
+						//menu.c, line 283
 						//FIXME convert
 						// (convert - reducing type 3 to 101
 						// (prepobj tmp)
@@ -3724,7 +3850,7 @@ l109: #
 	st	r3
 	exg	r3
 
-						//menu.c, line 282
+						//menu.c, line 284
 						// (a/p assign)
 						// (prepobj r0)
  						// var, auto|reg
@@ -3743,7 +3869,7 @@ l109: #
 	st	r0
 						//save_temp done
 
-						//menu.c, line 283
+						//menu.c, line 285
 						// (a/p assign)
 						// (prepobj r0)
  						// matchobj comparing flags 130 with 1
@@ -3764,9 +3890,9 @@ l109: #
 						// (save temp)store type 3
 	st	r0
 						//save_temp done
-l110: # 
+l111: # 
 
-						//menu.c, line 291
+						//menu.c, line 293
 						// (test)
 						// (obj to tmp) flags 42 type a
 						// reg r4 - only match against tmp
@@ -3774,31 +3900,31 @@ l110: #
 				// flags 42
 	and	r4
 
-						//menu.c, line 291
+						//menu.c, line 293
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l125
+	.lipcrel	l126
 		add	r7
 
-						//menu.c, line 291
+						//menu.c, line 293
 						// (test)
 						// (obj to tmp) flags 62 type 3
 						// matchobj comparing flags 98 with 66
 						// deref 
 	ld	r4
 
-						//menu.c, line 291
+						//menu.c, line 293
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l125
+	.lipcrel	l126
 		add	r7
 						// freereg r1
-l122: # 
+l123: # 
 						// allocreg r1
 
-						//menu.c, line 293
+						//menu.c, line 295
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -3809,7 +3935,7 @@ l122: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 293
+						//menu.c, line 295
 						//call
 						//pcreltotemp
 	.lipcrel	_TestKey
@@ -3818,12 +3944,12 @@ l122: #
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 293
+						//menu.c, line 295
 						// (getreturn)						// (save result) // isreg
 	mt	r0
 	mr	r1
 
-						//menu.c, line 293
+						//menu.c, line 295
 						// (bitwise/arithmetic) 	//ops: 2, 0, 2
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type 3
@@ -3835,16 +3961,16 @@ l122: #
 						// (save result) // isreg
 						// freereg r1
 
-						//menu.c, line 293
+						//menu.c, line 295
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l116
+	.lipcrel	l117
 		add	r7
 						// freereg r3
 						// allocreg r3
 
-						//menu.c, line 294
+						//menu.c, line 296
 						// (bitwise/arithmetic) 	//ops: 5, 0, 4
 						//Special case - addt
 						// (prepobj r0)
@@ -3860,7 +3986,7 @@ l122: #
 						//save_temp done
 						// allocreg r1
 
-						//menu.c, line 294
+						//menu.c, line 296
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -3876,7 +4002,7 @@ l122: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 294
+						//menu.c, line 296
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r3 - no need to prep
@@ -3888,7 +4014,7 @@ l122: #
 	mr	r3
 						//save_temp done
 
-						//menu.c, line 294
+						//menu.c, line 296
 						// Q1 disposable
 						//call
 						// (obj to tmp) flags 6a type f
@@ -3899,11 +4025,11 @@ l122: #
 						// Flow control - popping 0 + 0 bytes
 						// freereg r3
 						// freereg r1
-l116: # 
+l117: # 
 						// allocreg r3
 						// allocreg r1
 
-						//menu.c, line 295
+						//menu.c, line 297
 						// (bitwise/arithmetic) 	//ops: 5, 0, 5
 						// WARNING - q1 and target collision - check code for correctness.
 						// (obj to tmp) flags 1 type a
@@ -3912,31 +4038,31 @@ l116: #
 	add	r4
 						// (save result) // isreg
 
-						//menu.c, line 291
+						//menu.c, line 293
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l125
+	.lipcrel	l126
 		add	r7
 
-						//menu.c, line 291
+						//menu.c, line 293
 						// (test)
 						// (obj to tmp) flags 62 type 3
 						// matchobj comparing flags 98 with 1
 						// deref 
 	ld	r4
 
-						//menu.c, line 291
+						//menu.c, line 293
 	cond	NEQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l122
+	.lipcrel	l123
 		add	r7
 						// freereg r1
-l125: # 
+l126: # 
 						// allocreg r1
 
-						//menu.c, line 305
+						//menu.c, line 307
 						// (test)
 						// (obj to tmp) flags 2 type 3
 						// var, auto|reg
@@ -3944,16 +4070,16 @@ l125: #
 						//sizemod based on type 0x3
 	ldidx	r6
 
-						//menu.c, line 305
+						//menu.c, line 307
 	cond	EQ
 						//conditional branch regular
 						//pcreltotemp
-	.lipcrel	l119
+	.lipcrel	l120
 		add	r7
 						// freereg r1
 						// allocreg r1
 
-						//menu.c, line 306
+						//menu.c, line 308
 						// (a/p assign)
 						// (prepobj r0)
  						// reg r1 - no need to prep
@@ -3969,17 +4095,17 @@ l125: #
 	mr	r1
 						//save_temp done
 
-						//menu.c, line 306
+						//menu.c, line 308
 						//call
 						//pcreltotemp
 	.lipcrel	_Menu_Draw
 	add	r7
 						// Flow control - popping 0 + 0 bytes
 						// freereg r1
-l119: # 
+l120: # 
 						// allocreg r1
 
-						//menu.c, line 307
+						//menu.c, line 309
 						//setreturn
 						// (obj to r0) flags 2 type 3
 						// var, auto|reg
@@ -3999,7 +4125,7 @@ l60: #
 	add	r7
 
 	.section	.rodata
-l105:
+l106:
 	.byte	67
 	.byte	97
 	.byte	108
@@ -4013,7 +4139,7 @@ l105:
 	.byte	120
 	.byte	10
 	.byte	0
-l98:
+l99:
 	.byte	69
 	.byte	110
 	.byte	116
@@ -4049,6 +4175,10 @@ l98:
 	.byte	100
 	.byte	10
 	.byte	0
+	.section	.data
+	.global	_prevbuttons
+_prevbuttons:
+	.int	0
 	.section	.bss
 	.global	_menu_toggle_bits
 	.comm	_menu_toggle_bits,4

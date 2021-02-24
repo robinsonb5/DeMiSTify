@@ -1,6 +1,14 @@
 #ifndef MENU_H
 #define MENU_H
 
+#define JOYBASE 0xffffffe8
+#define HW_JOY(x) *(volatile unsigned int *)(JOYBASE+x)
+#define REG_JOY 0
+#define REG_JOY_EXTRA 4
+
+#define JOY_BUTTON_MENU 1
+
+
 enum menu_entry_type {
 	MENU_ENTRY_NULL,
 	MENU_ENTRY_TOGGLE,

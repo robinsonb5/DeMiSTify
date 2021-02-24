@@ -35,6 +35,15 @@ entity substitute_mcu is
 		ps2m_clk_out : out std_logic;
 		ps2m_dat_out : out std_logic;
 
+		-- Joysticks and other inputs
+		
+		joy1 : in std_logic_vector(7 downto 0) := "11111111";
+		joy2 : in std_logic_vector(7 downto 0) := "11111111";
+		joy3 : in std_logic_vector(7 downto 0) := "11111111";
+		joy4 : in std_logic_vector(7 downto 0) := "11111111";
+		
+		menu_button : in std_logic :='1';
+		
 		-- UART
 		rxd	: in std_logic;
 		txd	: out std_logic
@@ -157,7 +166,23 @@ signal debug_fromcpu : std_logic_vector(31 downto 0);
 signal debug_tocpu : std_logic_vector(31 downto 0);
 signal debug_wr : std_logic;
 
+-- Remapped joystick data
+signal joy1_r : std_logic_vector(7 downto 0);
+signal joy2_r : std_logic_vector(7 downto 0);
+signal joy3_r : std_logic_vector(7 downto 0);
+signal joy4_r : std_logic_vector(7 downto 0);
+
 begin
+
+-- Remap joystick data;
+joy1_r(7 downto 4) <= not joy1(7 downto 4);
+joy2_r(7 downto 4) <= not joy2(7 downto 4);
+joy3_r(7 downto 4) <= not joy3(7 downto 4);
+joy4_r(7 downto 4) <= not joy4(7 downto 4);
+joy1_r(3 downto 0) <= not (joy1(0)&joy1(1)&joy1(2)&joy1(3));
+joy2_r(3 downto 0) <= not (joy2(0)&joy2(1)&joy1(2)&joy1(3));
+joy3_r(3 downto 0) <= not (joy3(0)&joy3(1)&joy1(2)&joy1(3));
+joy4_r(3 downto 0) <= not (joy4(0)&joy4(1)&joy1(2)&joy1(3));
 
 -- Reset counter.
 
@@ -549,7 +574,7 @@ begin
 
 				when X"F" =>	-- Peripherals
 					case cpu_addr(7 downto 0) is
-
+					
 						when X"B0" => -- Interrupt
 							from_mem<=(others=>'X');
 							from_mem(int_max downto 0)<=int_status;
@@ -590,6 +615,15 @@ begin
 							from_mem<=(others =>'0');
 							from_mem(11 downto 0)<=mouserecvreg & not mousesendbusy & mouserecvbyte(10 downto 1);
 							mouserecvreg<='0';
+							mem_busy<='0';
+
+						when X"E8" => -- joysticks;
+							from_mem <= joy4_r & joy3_r & joy2_r & joy1_r;
+							mem_busy<='0';
+
+						when X"EC" => -- Misc inputs;
+							from_mem<=(others => '0');
+							from_mem(0)<=not menu_button;
 							mem_busy<='0';
 
 						when others =>
