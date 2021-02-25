@@ -2,7 +2,7 @@ BOARD=none
 PROJECT=none
 PROJECTDIR=../../
 BOARDDIR=../../DeMiSTify/Board/$(BOARD)
-MANIFEST=../../manifest.rtl
+MANIFEST=../../project_files.rtl
 SCRIPTSDIR=../../DeMiSTify/Scripts
 
 TARGET=$(PROJECT)_$(BOARD)

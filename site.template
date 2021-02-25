@@ -4,7 +4,7 @@
 # If you just want to build for a single board then supply BOARD=boardname
 # as part of the make command.
 
-BOARDS=de10lite chameleon64 chameleon64v2 mist deca de1 de2 bemicro_cv ems11_bb37
+BOARDS=chameleon64 chameleon64v2 de10lite
 
 # If you're building for multiple boards you might need to have multiple versions
 # of Quartus installed.  Since you can't have more than one version in your

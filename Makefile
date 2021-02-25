@@ -4,7 +4,9 @@ include site.mk
 
 all: site.mk firmware init compile
 
-firmware:
+firmware: firmware/controller_rom_byte.vhd
+
+firmware/controller_rom_byte.vhd:
 	make -f firmware.mk PROJECTS=$(PROJECTS)
 
 site.mk:

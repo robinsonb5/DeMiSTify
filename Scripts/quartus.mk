@@ -1,7 +1,7 @@
 BOARD=none
 PROJECT=none
 PROJECTDIR=../../
-MANIFEST=../../manifest.rtl
+MANIFEST=../../project_files.rtl
 SCRIPTSDIR=../../DeMiSTify/Scripts
 
 SOF=$(PROJECT)_$(BOARD).sof
@@ -13,7 +13,7 @@ init: $(QSF)
 
 compile: $(SOF)
 
-$(PROJECT)_$(BOARD)_files.tcl: $(PROJECTDIR)/manifest.rtl
+$(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST)
 	@bash $(SCRIPTSDIR)/expandtemplate_quartus.sh $+ >$@
 
 %.qsf: $(PROJECT)_$(BOARD)_files.tcl
