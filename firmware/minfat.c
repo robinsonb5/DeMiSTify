@@ -1,15 +1,14 @@
 /*
 Copyright 2005, 2006, 2007 Dennis van Weeren
 Copyright 2008, 2009 Jakub Bednarski
+Copyright 2021 Alastair M. Robinson
 
-This file is part of Minimig
-
-Minimig is free software; you can redistribute it and/or modify
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
-Minimig is distributed in the hope that it will be useful,
+This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -17,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-This is a simple FAT16 handler. It works on a sector basis to allow fastest acces on disk
+This is a simple FAT16/FAT32 handler. It works on a sector basis to allow fastest acces on disk
 images.
 
 11-12-2005 - first version, ported from FAT1618.C
@@ -36,6 +35,7 @@ JB:
             - directory short names are displayed with extensions
 
 2012-07-24  - Major changes to fit the MiniSOC project - AMR
+2021-02-20  - Adapted for the MiST firmware replacement project.  Directory-handling fixes  -  AMR
 */
 
 #define NULL 0

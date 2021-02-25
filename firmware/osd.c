@@ -1,3 +1,21 @@
+/*
+-- OSD drawing code, borrowed from MiST's firmware.
+-- Copyright (c) 2005 - 2020 by Dennis van Weeren, Jakub Bednarski,
+-- Till Harbaum and others.
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty
+-- of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 
 #include "osd.h"
 #include "spi.h"
@@ -73,57 +91,4 @@ void OsdWriteEnd()
 	DisableOsd();
 	osd_writing=0;
 }
-
-#if 0
-// write a null-terminated string <s> to the OSD buffer starting at line <n>
-void OsdWrite(int n, char *s, int invert, int stipple)
-{
-    int i;
-    int b;
-	const unsigned char *f;
-    const unsigned char *p;
-	int stipplemask=0xff;
-	int linelimit=OSDLINELEN/8;
-
-	if(stipple)
-	{
-		stipplemask=0x55;
-		stipple=0xff;
-	}
-	else
-		stipple=0;
-
-    // select OSD SPI device
-    EnableOsd();
-
-    SPI(MM1_OSDCMDWRITE|n);
-
-	if(invert)
-		invert=255;
-
-	// Offset font:
-	f=&font[-FONT_OFFSET][0];
-//	f-=8*FONT_OFFSET;
-
-    i = 0;
-    // send all characters in string to OSD
-	b=*s++;
-	while(linelimit--)
-	{
-        if(b)
-			p = f+(b<<3);
-		else
-			p = &font[0][0];
-		for(i=0;i<8;++i)
-		{
-	        SPI((*p++&stipplemask)^invert);	stipplemask^=stipple;
-		}
-		if(b)
-			b = *s++;
-    }
-
-    // deselect OSD SPI device
-    DisableOsd();
-}
-#endif
 
