@@ -1,3 +1,5 @@
+OVERRIDES=
+
 all: firmware
 
 EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd:
@@ -10,6 +12,8 @@ EightThirtyTwo/vbcc/bin/vbcc832: EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd
 EightThirtyTwo/lib832/lib832.a: EightThirtyTwo/vbcc/bin/vbcc832
 	make -C EightThirtyTwo/lib832
 
-firmware: EightThirtyTwo/vbcc/bin/vbcc832 EightThirtyTwo/lib832/lib832.a
-	make -C firmware
+firmware: EightThirtyTwo/vbcc/bin/vbcc832 EightThirtyTwo/lib832/lib832.a firmware/controller_ROM_byte.vhd
+
+firmware/controller_ROM_byte.vhd:
+	make -C firmware OVERRIDES=$(OVERRIDES)
 

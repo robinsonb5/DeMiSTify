@@ -23,7 +23,7 @@ set_false_path -to [get_ports {RAM_CLK}]
 
 # Constraints for board-specific signals
 
-set_input_delay 0.5 -clock [get_clocks ${hostclk}] [get_ports { mux_q* spi_miso}]
+set_input_delay 0.5 -clock [get_clocks ${hostclk}] [get_ports { mux_q* spi_miso usart_cts}]
 
 set_input_delay 0.5 -clock [get_clocks ${supportclk}] [get_ports {romlh_n ioef_n dotclock_n}]
 

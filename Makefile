@@ -1,5 +1,5 @@
 PROJECTS=
-
+OVERRIDES=
 include site.mk
 
 all: site.mk firmware init compile
@@ -7,7 +7,7 @@ all: site.mk firmware init compile
 firmware: firmware/controller_rom_byte.vhd
 
 firmware/controller_rom_byte.vhd:
-	make -f firmware.mk PROJECTS=$(PROJECTS)
+	make -f firmware.mk PROJECTS=$(PROJECTS) OVERRIDES=$(OVERRIDES)
 
 site.mk:
 	$(info Copy the example site.template file to site.mk)

@@ -24,6 +24,8 @@
 #include "menu.h"
 #include "keyboard.h"
 
+#include "gamepadkeys.h"
+
 #define OSD_ROWS OSDNLINE
 #define OSD_COLS (OSDLINELEN/8)
 
@@ -122,48 +124,44 @@ void Menu_Hide()
 }
 
 
+/* Key -> gamepad mapping.  Weak linkage to allow overrides.
+   FIXME - needs to be wider to allow for extra buttons. */
+
+__weak unsigned char joy_keymap[]=
+{
+	KEY_CAPSLOCK,
+	KEY_LSHIFT,
+	KEY_ALTGR,
+	KEY_LCTRL,
+	KEY_W,
+	KEY_S,
+	KEY_A,
+	KEY_D,
+	KEY_ENTER,
+	KEY_RSHIFT,
+	KEY_RCTRL,
+	KEY_ALTGR,
+	KEY_UPARROW,
+	KEY_DOWNARROW,
+	KEY_LEFTARROW,
+	KEY_RIGHTARROW,
+};
+
+
 void do_joy()
 {
 	int joy=HW_JOY(REG_JOY);
-	int joya=joy&0xff;
-	int joyb=(joy>>8)&0xff;
+	int joybit=0x8000;
+	unsigned char *key=joy_keymap;
+	while(joybit)
+	{
+		if(TestKey(*key++)
+			joy|=joybit;
+		joybit>>=1;
+	}
 
-	if(TestKey(KEY_ENTER))
-		joya|=JOY_BTN4;
-	if(TestKey(KEY_RSHIFT))
-		joya|=JOY_BTN3;
-	if(TestKey(KEY_RCTRL))
-		joya|=JOY_BTN1;
-	if(TestKey(KEY_ALTGR))
-		joya|=JOY_BTN2;
-	if(TestKey(KEY_UPARROW))
-		joya=JOY_UP;
-	if(TestKey(KEY_DOWNARROW))
-		joya|=JOY_DOWN;
-	if(TestKey(KEY_LEFTARROW))
-		joya|=JOY_LEFT;
-	if(TestKey(KEY_RIGHTARROW))
-		joya|=JOY_RIGHT;
-
-	if(TestKey(KEY_CAPSLOCK))
-		joyb|=JOY_BTN4;
-	if(TestKey(KEY_LSHIFT))
-		joyb|=JOY_BTN3;
-	if(TestKey(KEY_LCTRL))
-		joyb|=JOY_BTN1;
-	if(TestKey(KEY_ALT))
-		joyb|=JOY_BTN2;
-	if(TestKey(KEY_W))
-		joyb=JOY_UP;
-	if(TestKey(KEY_S))
-		joyb|=JOY_DOWN;
-	if(TestKey(KEY_A))
-		joyb|=JOY_LEFT;
-	if(TestKey(KEY_D))
-		joyb|=JOY_RIGHT;
-
-	user_io_digital_joystick_ext(0, joya);
-	user_io_digital_joystick_ext(1, joyb);
+	user_io_digital_joystick_ext(0, (joy>>8));
+	user_io_digital_joystick_ext(1, (joy&0xff));
 }
 
 int prevbuttons=0;

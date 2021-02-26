@@ -40,7 +40,13 @@ clean :
 	grep __bss_ $*.map
 
 controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
+ifdef OVERRIDES
+	make -C ../../$(OVERRIDES)
+	$(LD) $(LDFLAGS) -o $@ -M controller.map $+ ../../$(OVERRIDES)/overrides.a
+else
 	$(LD) $(LDFLAGS) -o $@ -M controller.map $+
+endif
+
 
 %.o : %.c Makefile
 	$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) $*.c

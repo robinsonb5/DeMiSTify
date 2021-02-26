@@ -545,123 +545,110 @@
 0x00002886 Section: menu.o,.rodata
 0x00002886    l7
 0x00002898    l19
-0x000028aa    l106
-0x000028b7    l99
+0x000028aa    l81
+0x000028b7    l74
 0x000028da Section: menu.o,.text.1
 0x000028da    _Menu_Set
 0x000028fa Section: menu.o,.text.3
 0x000028fa    _Menu_Hide
 0x00002909 Section: menu.o,.text.4
 0x00002909    _do_joy
-0x0000292b    l29
-0x00002939    l31
-0x00002946    l33
-0x00002954    l35
-0x00002961    l37
-0x0000296e    l39
-0x0000297b    l41
-0x00002988    l43
-0x00002996    l45
-0x000029a3    l47
-0x000029af    l49
-0x000029bc    l51
-0x000029c8    l53
-0x000029d4    l55
-0x000029e0    l57
-0x000029ed    l59
-0x00002a00 Section: menu.o,.text.5
-0x00002a00    _Menu_Run
-0x00002a3a    l61
-0x00002a51    l62
-0x00002a77    l65
-0x00002a96    l69
-0x00002aad    l72
-0x00002ab2    l67
-0x00002ae2    l76
-0x00002af7    l79
-0x00002afc    l74
-0x00002b1b    l83
-0x00002b33    l86
-0x00002b38    l81
-0x00002b6c    l90
-0x00002b82    l93
-0x00002b87    l88
-0x00002b93    l121
-0x00002b9c    l124
-0x00002bd0    l122
-0x00002bdb    l125
-0x00002bfe    l105
-0x00002c19    l107
-0x00002c39    l108
-0x00002c51    l110
-0x00002c5f    l111
-0x00002c6a    l123
-0x00002c83    l117
-0x00002c8e    l126
-0x00002c9c    l120
-0x00002c9f    l60
-0x00002ca4 Section: menu.o,.data
-0x00002ca4    _prevbuttons
-0x00002ca8    l2
-0x00002cac Section: <internal>,__ctors_start__
-0x00002cac    __ctors_start__
-0x00002cac Section: interrupts.o,.ctor.100.interrupts
-0x00002cb0 Section: <internal>,__ctors_end__
-0x00002cb0    __ctors_end__
-0x00002cb0 Section: <internal>,__dtors_start__
-0x00002cb0    __dtors_start__
-0x00002cb0 Section: <internal>,__dtors_end__
-0x00002cb0    __dtors_end__
-0x00002cb0 Section: <internal>,__bss_start__
-0x00002cb0    __bss_start__
-0x00002cb0 Section: spi_sd.o,.bss
-0x00002cb0    _sd_is_sdhc
-0x00002cb4    _sd_size
-0x00002cb8    _SPI_R1
-0x00002cbe    _sizebuf
-0x00002cd0 Section: minfat.o,.bss
-0x00002cd0    l134
-0x00002cd4    l135
-0x00002cd8    l136
-0x00002cdc    _sector_buffer
-0x00002edc    _cluster_size
-0x00002ee0    _cluster_mask
-0x00002ee4    _fat32
-0x00002ee8    _dir_entries
-0x00002eec    _longfilename
-0x00002ff0    _directory_cluster
-0x00002ff4    _entries_per_cluster
-0x00002ff8    _fat_start
-0x00002ffc    _data_start
-0x00003000    _root_directory_cluster
-0x00003004    _root_directory_start
-0x00003008    _root_directory_size
-0x0000300c    _fat_number
-0x00003010    _fat_size
-0x00003014    _current_directory_cluster
-0x00003018    _current_directory_start
-0x0000301c    _partitioncount
-0x00003020    _file
-0x0000302c Section: main.o,.bss
-0x0000302c    _statusword
-0x00003030    _menupage
-0x00003034    _romtype
-0x00003038    _file
-0x00003044    _romindex
-0x00003048    _filename
-0x00003058    l188
-0x0000312a Section: ps2.o,.bss
-0x0000312a    _kbbuffer
-0x000031ba Section: osd.o,.bss
-0x000031ba    l25
-0x000031be    l26
-0x000031c2    l27
-0x000031c6    l28
-0x000031ca Section: menu.o,.bss
-0x000031ca    _menu_toggle_bits
-0x000031ce    l1
-0x000031d2    l3
-0x000031d6    l4
-0x000031da    l5
-0x000031de Section: <internal>,__bss_end__
-0x000031e0    __bss_end__
+0x0000291a    l33
+0x00002926    l32
+0x00002949 Section: menu.o,.text.5
+0x00002949    _Menu_Run
+0x00002983    l36
+0x0000299a    l37
+0x000029be    l40
+0x000029dc    l44
+0x000029f3    l47
+0x000029f8    l42
+0x00002a27    l51
+0x00002a3c    l54
+0x00002a41    l49
+0x00002a60    l58
+0x00002a78    l61
+0x00002a7d    l56
+0x00002ab0    l65
+0x00002ac6    l68
+0x00002acb    l63
+0x00002ad7    l96
+0x00002ae0    l99
+0x00002b14    l97
+0x00002b1f    l100
+0x00002b42    l80
+0x00002b5d    l82
+0x00002b7d    l83
+0x00002b95    l85
+0x00002ba3    l86
+0x00002bae    l98
+0x00002bc7    l92
+0x00002bd2    l101
+0x00002be0    l95
+0x00002be3    l35
+0x00002be8 Section: menu.o,.data
+0x00002be8    _joy_keymap
+0x00002bf8    _prevbuttons
+0x00002bfc    l2
+0x00002c00 Section: <internal>,__ctors_start__
+0x00002c00    __ctors_start__
+0x00002c00 Section: interrupts.o,.ctor.100.interrupts
+0x00002c04 Section: <internal>,__ctors_end__
+0x00002c04    __ctors_end__
+0x00002c04 Section: <internal>,__dtors_start__
+0x00002c04    __dtors_start__
+0x00002c04 Section: <internal>,__dtors_end__
+0x00002c04    __dtors_end__
+0x00002c04 Section: <internal>,__bss_start__
+0x00002c04    __bss_start__
+0x00002c04 Section: spi_sd.o,.bss
+0x00002c04    _sd_is_sdhc
+0x00002c08    _sd_size
+0x00002c0c    _SPI_R1
+0x00002c12    _sizebuf
+0x00002c24 Section: minfat.o,.bss
+0x00002c24    l134
+0x00002c28    l135
+0x00002c2c    l136
+0x00002c30    _sector_buffer
+0x00002e30    _cluster_size
+0x00002e34    _cluster_mask
+0x00002e38    _fat32
+0x00002e3c    _dir_entries
+0x00002e40    _longfilename
+0x00002f44    _directory_cluster
+0x00002f48    _entries_per_cluster
+0x00002f4c    _fat_start
+0x00002f50    _data_start
+0x00002f54    _root_directory_cluster
+0x00002f58    _root_directory_start
+0x00002f5c    _root_directory_size
+0x00002f60    _fat_number
+0x00002f64    _fat_size
+0x00002f68    _current_directory_cluster
+0x00002f6c    _current_directory_start
+0x00002f70    _partitioncount
+0x00002f74    _file
+0x00002f80 Section: main.o,.bss
+0x00002f80    _statusword
+0x00002f84    _menupage
+0x00002f88    _romtype
+0x00002f8c    _file
+0x00002f98    _romindex
+0x00002f9c    _filename
+0x00002fac    l188
+0x0000307e Section: ps2.o,.bss
+0x0000307e    _kbbuffer
+0x0000310e Section: osd.o,.bss
+0x0000310e    l25
+0x00003112    l26
+0x00003116    l27
+0x0000311a    l28
+0x0000311e Section: menu.o,.bss
+0x0000311e    _menu_toggle_bits
+0x00003122    l1
+0x00003126    l3
+0x0000312a    l4
+0x0000312e    l5
+0x00003132 Section: <internal>,__bss_end__
+0x00003134    __bss_end__
