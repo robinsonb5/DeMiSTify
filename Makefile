@@ -4,9 +4,8 @@ include site.mk
 
 all: site.mk firmware init compile
 
-firmware: firmware/controller_rom_byte.vhd
-
-firmware/controller_rom_byte.vhd:
+.PHONY: firmware
+firmware:
 	make -f firmware.mk PROJECTS=$(PROJECTS) OVERRIDES=$(OVERRIDES)
 
 site.mk:
@@ -15,6 +14,7 @@ site.mk:
 	$(info you have installed.)
 	$(error site.mk not found.)
 
+.PHONY: init
 init:
 ifdef BOARD
 	@make -f Scripts/project.mk PROJECTS=$(PROJECTS) BOARD=$(BOARD) CMD=init
@@ -24,6 +24,7 @@ else
 	done
 endif
 
+.PHONY: compile
 compile:
 ifdef BOARD
 	@make -f Scripts/project.mk PROJECTS=$(PROJECTS) BOARD=$(BOARD) CMD=compile
@@ -33,6 +34,7 @@ else
 	done
 endif
 
+.PHONY: clean
 clean:
 ifdef BOARD
 	@make -f Scripts/project.mk PROJECTS=$(PROJECTS) BOARD=$(BOARD) CMD=clean

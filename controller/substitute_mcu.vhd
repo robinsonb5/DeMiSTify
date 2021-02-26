@@ -21,7 +21,7 @@ use IEEE.numeric_std.ALL;
 entity substitute_mcu is
 	generic (
 		debug : boolean := false;
-		sysclk_frequency : integer := 1000 -- Sysclk frequency * 10
+		sysclk_frequency : integer := 500 -- Sysclk frequency * 10
 	);
 	port (
 		clk 			: in std_logic;
@@ -196,9 +196,9 @@ joy2_r(7 downto 4) <= not joy2(7 downto 4);
 joy3_r(7 downto 4) <= not joy3(7 downto 4);
 joy4_r(7 downto 4) <= not joy4(7 downto 4);
 joy1_r(3 downto 0) <= not (joy1(0)&joy1(1)&joy1(2)&joy1(3));
-joy2_r(3 downto 0) <= not (joy2(0)&joy2(1)&joy1(2)&joy1(3));
-joy3_r(3 downto 0) <= not (joy3(0)&joy3(1)&joy1(2)&joy1(3));
-joy4_r(3 downto 0) <= not (joy4(0)&joy4(1)&joy1(2)&joy1(3));
+joy2_r(3 downto 0) <= not (joy2(0)&joy2(1)&joy2(2)&joy2(3));
+joy3_r(3 downto 0) <= not (joy3(0)&joy3(1)&joy3(2)&joy3(3));
+joy4_r(3 downto 0) <= not (joy4(0)&joy4(1)&joy4(2)&joy4(3));
 
 -- Reset counter.
 
@@ -246,7 +246,7 @@ myuart : entity work.simple_uart
 		rxdata => ser_rxdata,
 		rxint => ser_rxint,
 		txint => open,
-		clock_divisor => X"016c", -- 42MHz / 115,200 bps
+		clock_divisor => to_unsigned(uart_divisor,16), -- 42MHz / 115,200 bps
 		rxd => rxd,
 		txd => txd
 	);

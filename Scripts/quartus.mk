@@ -9,8 +9,10 @@ QSF=$(PROJECT)_$(BOARD).qsf
 
 all: init compile
 
+.PHONY init:
 init: $(QSF)
 
+.PHONY compile:
 compile: $(SOF)
 
 $(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST)

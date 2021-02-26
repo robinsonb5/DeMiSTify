@@ -1,6 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#define TIMERBASE 0xffffffc8
+#define HW_TIMER(x) *(volatile unsigned int *)(TIMERBASE+x)
+#define REG_MILLISECONDS 0
+
 #define JOYBASE 0xffffffe8
 #define HW_JOY(x) *(volatile unsigned int *)(JOYBASE+x)
 #define REG_JOY 0
@@ -69,7 +73,7 @@ void Menu_Hide();
 void Menu_Draw();
 void Menu_Set(struct menu_entry *head);
 void Menu_SetHotKeys(struct hotkey *head);
-int Menu_Run(); // Returns the menu's visibility
+void Menu_Run();
 
 extern int menu_toggle_bits;
 #define MENU_TOGGLE_VALUES menu_toggle_bits

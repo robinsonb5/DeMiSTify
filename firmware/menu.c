@@ -36,22 +36,9 @@ static int menurows;
 static int currentrow;
 static struct hotkey *hotkeys;
 
-#if 0
-
-static void DrawSlider(struct menu_entry *m)
-{
-	int i;
-	for(i=0;i<=MENU_SLIDER_MAX(m);++i) // One extra character to leave a space before the label
-	{
-		OSD_Putchar(i<MENU_SLIDER_VALUE(m) ? 0x07 : 0x20);
-	}
-}
-#endif
-
 void Menu_Draw(int currentrow)
 {
 	int i;
-	char tmp[64];
 	struct menu_entry *m=menu;
 	menurows=0;
 	printf("Highlight row %d\n",currentrow);
@@ -61,33 +48,7 @@ void Menu_Draw(int currentrow)
 		char **labels;
 		OsdWriteStart(menurows,menurows==currentrow,0);
 		OsdPutChar(' ');
-		switch(m->type)
-		{
-#if 0
-			case MENU_ENTRY_CYCLE:
-				i=MENU_CYCLE_VALUE(m);	// Access the first byte
-				labels=(char**)m->label;
-				OsdPutChar(FONT_CYCLE);
-				OsdPutChar(' ');
-				OsdPuts(labels[i]);
-				break;
-
-			case MENU_ENTRY_SLIDER:
-				DrawSlider(m);
-				OsdPuts(m->label);
-				break;
-			case MENU_ENTRY_TOGGLE:
-				if((menu_toggle_bits>>MENU_ACTION_TOGGLE(m->action))&1)
-					OsdPutChar(FONT_CHECKMARK);
-				else
-					OsdPutChar(FONT_CROSS);
-				OsdPutChar(' ');
-				// Fall through
-#endif
-			default:
-				OsdPuts(m->label);
-				break;
-		}
+		OsdPuts(m->label);
 		OsdWriteEnd();
 		++menurows;
 		m++;
@@ -99,7 +60,6 @@ void Menu_Draw(int currentrow)
 		OsdWriteEnd();
 		++i;
 	}
-	printf("Menu has %d rows\n",menurows);
 }
 
 
@@ -131,7 +91,7 @@ __weak unsigned char joy_keymap[]=
 {
 	KEY_CAPSLOCK,
 	KEY_LSHIFT,
-	KEY_ALTGR,
+	KEY_ALT,
 	KEY_LCTRL,
 	KEY_W,
 	KEY_S,
@@ -139,8 +99,8 @@ __weak unsigned char joy_keymap[]=
 	KEY_D,
 	KEY_ENTER,
 	KEY_RSHIFT,
-	KEY_RCTRL,
 	KEY_ALTGR,
+	KEY_RCTRL,
 	KEY_UPARROW,
 	KEY_DOWNARROW,
 	KEY_LEFTARROW,
@@ -148,34 +108,23 @@ __weak unsigned char joy_keymap[]=
 };
 
 
-void do_joy()
-{
-	int joy=HW_JOY(REG_JOY);
-	int joybit=0x8000;
-	unsigned char *key=joy_keymap;
-	while(joybit)
-	{
-		if(TestKey(*key++)
-			joy|=joybit;
-		joybit>>=1;
-	}
-
-	user_io_digital_joystick_ext(0, (joy>>8));
-	user_io_digital_joystick_ext(1, (joy&0xff));
-}
-
 int prevbuttons=0;
-int Menu_Run()
+unsigned int joy_timestamp=0;
+#define JOY_REPEATDELAY 128
+void Menu_Run()
 {
 	int i;
-	int action=0;
 	int upd=0;
 	int buttons=HW_JOY(REG_JOY_EXTRA);
 	struct menu_entry *m=menu;
 	struct hotkey *hk=hotkeys;
+	int joy=HW_JOY(REG_JOY);
 
 	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 	{
+		while(TestKey(KEY_F12))
+			HandlePS2RawCodes();
+		printf("Menu visible %d\n",menu_visible);
 		OsdShowHide(menu_visible^=1);
 		upd=1;
 	}
@@ -183,15 +132,37 @@ int Menu_Run()
 
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
-		do_joy();
+		int joybit=0x8000;
+		unsigned char *key=joy_keymap;
+		while(joybit)
+		{
+			if(TestKey(*key++))
+				joy|=joybit;
+			joybit>>=1;
+		}
+		user_io_digital_joystick_ext(0, (joy&0xff));
+		user_io_digital_joystick_ext(1, (joy>>8));
 
 		TestKey(KEY_PAGEUP);
 		TestKey(KEY_PAGEDOWN);
 
-		return(menu_visible);
+		return;
 	}
 
-	if(TestKey(KEY_UPARROW)&2)
+	joy=(joy&0xff)|(joy>>8); // Merge ports;
+
+	if(joy)
+	{
+		unsigned int ms=HW_TIMER(REG_MILLISECONDS);
+		if((ms-joy_timestamp)<JOY_REPEATDELAY)
+			joy=0;
+		else
+			joy_timestamp=ms;
+	}
+	else
+		joy_timestamp=0;
+
+	if((joy&0x08)||(TestKey(KEY_UPARROW)&2))
 	{
 		if(currentrow)
 			--currentrow;
@@ -200,7 +171,7 @@ int Menu_Run()
 		upd=1;
 	}
 
-	if(TestKey(KEY_DOWNARROW)&2)
+	if((joy&0x04)||(TestKey(KEY_DOWNARROW)&2))
 	{
 		if(currentrow<(menurows-1))
 			++currentrow;
@@ -235,42 +206,9 @@ int Menu_Run()
 		--i;
 	}
 
-//	OSD_SetX(2);
-//	OSD_SetY(currentrow);
-#if 0
-	if(TestKey(KEY_LEFTARROW)&2) // Decrease slider value
-	{
-		switch(m->type)
-		{
-			case MENU_ENTRY_SLIDER:
-				if((--MENU_SLIDER_VALUE(m))&0x80) // <0?
-					MENU_SLIDER_VALUE(m)=0;
-				DrawSlider(m);
-				break;
-			default:
-				break;
-		}
-	}
-
-	if(TestKey(KEY_RIGHTARROW)&2) // Increase slider value
-	{
-		switch(m->type)
-		{
-			case MENU_ENTRY_SLIDER:
-				if((++MENU_SLIDER_VALUE(m))>MENU_SLIDER_MAX(m))
-					MENU_SLIDER_VALUE(m)=MENU_SLIDER_MAX(m);
-				DrawSlider(m);
-				break;
-			default:
-				break;
-		}
-	}
-#endif
-
-	if(i=TestKey(KEY_ENTER)&2)
+	if((joy&0xf0) || (TestKey(KEY_ENTER)&2))
 	{
 		struct menu_entry *m=menu;
-		printf("Enter detected %d - currentrow %d\n",i,currentrow);
 		i=currentrow;
 		while(i>0)
 		{
@@ -290,7 +228,6 @@ int Menu_Run()
 				i=1<<MENU_ACTION_TOGGLE(m->action);
 				menu_toggle_bits^=i;
 				upd=1;
-				action=1;
 				break;
 			case MENU_ENTRY_CYCLE:
 				i=MENU_CYCLE_VALUE(m)+1;
@@ -298,7 +235,6 @@ int Menu_Run()
 					i=0;
 				MENU_CYCLE_VALUE(m)=i;
 				upd=1;
-				action=1;
 				break;
 			default:
 				break;
@@ -312,16 +248,8 @@ int Menu_Run()
 			hk->callback(currentrow);
 		++hk;
 	}
-#if 0
-	for(i=0;i<OSD_ROWS-1;++i)
-	{
-		OSD_SetX(0);
-		OSD_SetY(i);
-		OSD_Putchar(i==currentrow ? (i==menurows-1 ? FONT_ARROW_LEFT : FONT_ARROW_RIGHT) : 32);
-	}
-#endif
+
 	if(upd)
 		Menu_Draw(currentrow);
-	return(action);
 }
 

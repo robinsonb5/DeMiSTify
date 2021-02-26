@@ -44,3 +44,10 @@ derive_clock_uncertainty;
 
 set_false_path -from {freeze_n} -to {*}
 set_false_path -from {phi2_n*} -to {*}
+
+
+# JTAG constraints for debug interface (if enabled)
+
+set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
+set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
+set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo

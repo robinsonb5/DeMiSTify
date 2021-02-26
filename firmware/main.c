@@ -238,18 +238,14 @@ int LoadROM(const char *fn)
 			FileNextSector(&file);
 		}
 
-//		VerifyROM();
 		SPI_ENABLE(HW_SPI_FPGA);
 		SPI(SPI_FPGA_FILE_TX);
 		SPI(0x00);
 		SPI_DISABLE(HW_SPI_FPGA);
+		return(1);
 	}
 	else
-	{
-		printf("Can't open %s\n",fn);
 		return(0);
-	}
-	return(1);
 }
 
 
@@ -260,6 +256,7 @@ void spin()
 		t=HW_SPI(HW_SPI_CS);
 }
 
+int menuindex;
 int romindex;
 static void listroms();
 void selectrom(int row);
@@ -287,7 +284,6 @@ static DIRENTRY *nthfile(int n)
 {
 	int i,j=0;
 	DIRENTRY *p;
-	printf("Looking for file %d\n",n);
 	for(i=0;j<=n;++i)
 	{
 		p=NextDirEntry(i==0,matchextension);
@@ -301,19 +297,18 @@ static DIRENTRY *nthfile(int n)
 
 void selectrom(int row)
 {
-	printf("Selected from %d + %d\n",romindex,row);
+	DIRENTRY *p=nthfile(romindex+row);
+	printf("File %s\n",p->Name);
+	if(p)
 	{
-		DIRENTRY *p=nthfile(romindex+row);
-		printf("File %s\n",p->Name);
-		if(p)
-		{
-			strncpy(longfilename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
-			LoadROM(longfilename);	// since loading it by name will overwrite the sector buffer which currently contains it!
-		}
-	
-		Menu_Set(menu);
-		Menu_Hide();
+		strncpy(longfilename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
+		strcpy(romfilenames[row],"Loading...");
+		Menu_Draw(row);
+		LoadROM(longfilename);	// since loading it by name will overwrite the sector buffer which currently contains it!
 	}
+
+	Menu_Set(menu);
+	Menu_Hide();
 }
 
 
@@ -356,7 +351,6 @@ static void listroms(int row)
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
 	int i,j;
 	j=0;
-	printf("listrom skipping %d, direntries %d \n",romindex,dir_entries);
 	for(i=0;(j<romindex) && p;++i)
 	{
 		p=NextDirEntry(i==0,matchextension);
@@ -402,7 +396,7 @@ static void listroms(int row)
 	menu[7].type=MENU_ENTRY_CALLBACK;
 	menu[7].action=MENU_ACTION(&submenu);
 	menu[7].label="\x80 Back";
-	menu[8].action=MENU_ACTION(scrollroms);
+	menu[8].action=MENU_ACTION(&scrollroms);
 	Menu_Draw(row);
 }
 
@@ -442,7 +436,6 @@ static void showrommenu(int row)
 static void submenu(int row)
 {
 	menupage=menu[row].val;
-	puts("submenu callback");
 	putchar(row+'0');
 	buildmenu(0);
 }
@@ -474,6 +467,30 @@ static void cycle(int row)
 }
 
 
+static void toggle(int row)
+{
+	cycle(row);
+	cycle(row);
+}
+
+
+static void scrollmenu(int row)
+{
+	switch(row)
+	{
+		case ROW_LINEUP:
+			if(menuindex)
+				--menuindex;
+			break;
+		case ROW_LINEDOWN:
+			++menuindex;
+			break;
+	}
+	parseconf(menupage,menu,0,7);
+	Menu_Draw(row);
+}
+
+
 int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 {
 	int c;
@@ -481,6 +498,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 	int maxpage=0;
 	int line=0;
 	char *title;
+	int skip=menuindex;
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
@@ -488,14 +506,16 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 
 	conf_nextfield(); /* Skip over core name */
 	c=conf_next();
-	printf("Next char %c\n",c);
 	if(c!=';')
 	{
 		strcpy(menu[line].label,"Load *. ");
 		menu[line].action=MENU_ACTION(&fileselect);
-		menu[line].label[8]=c;
+		menu[line].label[7]=c;
 		copytocomma(&menu[line].label[8],LINELENGTH-8,1);
-		++line;
+		if(line>=skip)
+			++line;
+		else
+			--skip;
 	}
 	while(c && line<limit)
 	{
@@ -505,15 +525,20 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 			case 'F':
 				if(!selpage)
 				{
-					strcpy(menu[line].label,"Load");
+					conf_next();
+					copytocomma(menu[line].label,10,0);
+					copytocomma(menu[line].label,LINELENGTH-2,1);
 					menu[line].action=MENU_ACTION(&fileselect);
-					++line;
+					if(line>=skip)
+						++line;
+					else
+						--skip;
 				}
-				c=conf_nextfield();
+				else
+					c=conf_nextfield();
 				break;
 			case 'P':
 				page=getdigit();
-				printf("Page %d\n",page);
 
 				if(page>maxpage)
 					maxpage=page;
@@ -536,7 +561,10 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 						*title++=' ';
 						*title++=FONT_ARROW_RIGHT;
 						*title++=0;
-						line++;
+						if(line>=skip)
+							++line;
+						else
+							--skip;
 					}
 					else
 						c=conf_nextfield();
@@ -544,6 +572,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 				}
 				// Fall through to O
 			case 'O':
+			case 'T':
 				if (page==selpage)
 				{
 					/* Must be a submenu entry */
@@ -560,11 +589,9 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 					else
 						conf_next();
 
-
 					menu[line].shift=low;
 					menu[line].val=(1<<(1+high-low))-1;
 					menu[line].type=MENU_ENTRY_CALLBACK;
-					menu[line].action=MENU_ACTION(&cycle);
 					val=(statusword>>low)&menu[line].val;
 //					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].val);
 
@@ -580,9 +607,22 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 							++opt;
 						} while(copytocomma(title,menu[line].label+LINELENGTH-title,opt==(val+1))>0);
 					}
-					printf("Decoded %d options\n",opt);
-					menu[line].limit=opt;
-					++line;
+
+					if(opt)
+					{
+						menu[line].limit=opt;
+						menu[line].action=MENU_ACTION(&cycle);
+					}
+					else
+					{
+						menu[line].limit=2;
+						menu[line].action=MENU_ACTION(&toggle);
+					}
+
+					if(line>=skip)
+						++line;
+					else
+						--skip;
 				}
 				else
 					c=conf_nextfield();
@@ -609,8 +649,8 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 		menu[7].label="\x80 Exit";
 		menu[7].action=MENU_ACTION(&Menu_Hide);
 	}
-//	menu[8].action=0;
-	printf("Maxpage %d\n",maxpage);
+	menu[8].action=MENU_ACTION(&scrollmenu);
+
 	SPI_DISABLE(HW_SPI_CONF);
 	return(maxpage);
 }
@@ -622,6 +662,8 @@ void buildmenu(int offset)
 	Menu_Set(menu);
 }
 
+
+__weak const char *bootrom_name="BOOT    ROM";
 
 char filename[16];
 int main(int argc,char **argv)
@@ -639,33 +681,19 @@ int main(int argc,char **argv)
 	if(havesd=spi_init() && FindDrive())
 		puts("Have SD\n");
 
+	LoadROM(bootrom_name);
+
+	menuindex=0;
 	menupage=0;
 	buildmenu(0);
-
+//	Menu_Hide();
 	EnableInterrupts();
+
 	while(1)
 	{
 		HandlePS2RawCodes();
 
-		if(Menu_Run())
-		{
-			
-
-		}
-		if(TestKey(KEY_F1))
-		{
-			VerifyROM();
-		}
-
-		if(TestKey(KEY_F11))
-		{
-			if(havesd && LoadROM(filename))
-			{
-				puts("ROM loaded\n");
-			}
-			else
-				puts("ROM load failed\n");
-		}
+		Menu_Run();
 	}
 
 	return(0);
