@@ -4,7 +4,7 @@ package require cmdline
 variable ::argv0 $::quartus(args)
 set options {
    { "project.arg" "" "Project name" }
-   { "board.arg" "" "Frequency" }
+   { "board.arg" "" "Target board" }
 }
 set usage "You need to specify options and values"
 array set optshash [::cmdline::getoptions ::argv $options $usage]

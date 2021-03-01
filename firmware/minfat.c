@@ -426,42 +426,50 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 				pEntry++;
 			++iEntry;
 
-			#ifndef DISABLE_LONG_FILENAMES
-			if (pEntry->Attributes == ATTR_LFN)	// Do we have a long filename entry?
+            if (pEntry->Name[0] != SLOT_EMPTY && pEntry->Name[0] != SLOT_DELETED) // valid entry??
 			{
-				unsigned char *p=&pEntry->Name[0];
-				int seq=p[0];
-				int offset=((seq&0x1f)-1)*13;
-				char *o=&longfilename[offset];
-				*o++=p[1];
-				*o++=p[3];
-				*o++=p[5];
-				*o++=p[7];
-				*o++=p[9];
+				#ifndef DISABLE_LONG_FILENAMES
+				if (pEntry->Attributes == ATTR_LFN)	// Do we have a long filename entry?
+				{
+					unsigned char *p=&pEntry->Name[0];
+					int seq=p[0];
+					int offset=((seq&0x1f)-1)*13;
+					char *o=&longfilename[offset];
+					*o++=p[1];
+					*o++=p[3];
+					*o++=p[5];
+					*o++=p[7];
+					*o++=p[9];
 
-				*o++=p[0xe];
-				*o++=p[0x10];
-				*o++=p[0x12];
-				*o++=p[0x14];
-				*o++=p[0x16];
-				*o++=p[0x18];
+					*o++=p[0xe];
+					*o++=p[0x10];
+					*o++=p[0x12];
+					*o++=p[0x14];
+					*o++=p[0x16];
+					*o++=p[0x18];
 
-				*o++=p[0x1c];
-				*o++=p[0x1e];
-				prevlfn=1;
+					*o++=p[0x1c];
+					*o++=p[0x1e];
+					prevlfn=1;
+				}
+				#else
+				if(0)
+				{
+
+				}
+				#endif
+				else if ((!(pEntry->Attributes & ATTR_VOLUME)) &&
+					 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name)))
+				{
+					if(!prevlfn)
+						longfilename[0]=0;
+					prevlfn=0;
+					// FIXME - should check the lfn checksum here.
+					return(pEntry);
+				}
+				else
+					prevlfn=0;
 			}
-			#endif
-			else if ((!(pEntry->Attributes & ATTR_VOLUME)) &&
-				 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name)))
-			{
-				if(!prevlfn)
-					longfilename[0]=0;
-				prevlfn=0;
-				// FIXME - should check the lfn checksum here.
-				return(pEntry);
-			}
-			else
-				prevlfn=0;
 		}
 //		printf("iEntry %d is >= dir_entries %d\n",iEntry,dir_entries);
 
