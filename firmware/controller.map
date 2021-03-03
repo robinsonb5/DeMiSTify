@@ -11,583 +11,584 @@
 0x0000002a    .endloop2
 0x0000002d Section: ../EightThirtyTwo//lib832/crt0.a,.text.premain
 0x0000002d    _premain
-0x0000003d    .clrwordloop
-0x0000004a    .clrbyteloop
-0x00000059    .ctorloop
-0x00000062    .ctordone
-0x0000006e    .dtorloop
-0x00000079    .endloop
-0x0000007c Section: ../EightThirtyTwo//lib832/libtiny832.a,.text.1
-0x0000007c    _puts
-0x0000008b    l11
-0x00000098    l12
-0x000000a0 Section: ../EightThirtyTwo//lib832/libtiny832.a,.text.strncpy
-0x000000a0    ___strncpy
-0x000000a4    .strnloop
-0x000000ae    .done
-0x000000b0 Section: uart.o,.text.0
-0x000000b0    _putchar
-0x000000b5    l5
-0x000000c8 Section: spi_sd.o,.text.0
-0x000000c8    _SPI_PUMP
-0x000000f2    .functiontail
-0x000000fa Section: spi_sd.o,.text.2
-0x000000fa    _cmd_write
-0x0000011b    l5
-0x0000015e    l11
-0x0000016e    l12
-0x00000173 Section: spi_sd.o,.text.3
-0x00000173    _spi_spin
-0x00000176    l18
-0x00000187 Section: spi_sd.o,.text.4
-0x00000187    _wait_initV2
-0x00000190    l29
-0x000001ca    l27
-0x000001cd    l25
-0x000001d5    l20
-0x000001d8 Section: spi_sd.o,.text.5
-0x000001d8    _wait_init
-0x000001e9    l39
-0x00000205    l37
-0x00000210    l31
-0x00000213 Section: spi_sd.o,.rodata
-0x00000213    l32
-0x00000217    l59
-0x00000223    l77
-0x00000228    l63
-0x0000022c    l98
-0x0000023a Section: spi_sd.o,.text.6
-0x0000023a    _is_sdhc
-0x00000260    l43
-0x00000277    l45
-0x0000027d    l60
-0x000002ad    l54
-0x000002b1    l55
-0x000002c0    l58
-0x000002c8    l41
-0x000002cb Section: spi_sd.o,.text.7
-0x000002cb    _spi_init
-0x000002e7    l84
-0x000002f3    l85
-0x000002ff    l89
-0x00000310    l86
-0x0000031c    l90
-0x00000331    l74
-0x00000341    l76
-0x00000360    l80
-0x00000379    l87
-0x00000385    l91
-0x0000038f    l62
-0x00000393 Section: spi_sd.o,.text.9
-0x00000393    l118
-0x000003ab    l120
-0x000003cb    l142
-0x000003d9    l146
-0x000003df    l126
-0x000003e9    l143
-0x000003fa    l135
-0x00000409    l147
-0x00000421    l144
-0x0000042f    l148
-0x00000434    l137
-0x00000437    l124
-0x00000443 Section: spi_sd.o,.text.a
-0x00000443    _sd_read_sector
-0x00000465    l158
-0x00000473    l160
-0x000004ad    l159
-0x000004bb    l161
-0x000004c0    l149
-0x000004c6 Section: spi_sd.o,.text.b
-0x000004c6    _sd_get_size
-0x000004e4    l173
-0x00000523    l168
-0x0000057e    l174
-0x0000058a    l176
-0x0000058f Section: minfat.o,.text.0
-0x0000058f    _compare
-0x000005a2    l8
-0x000005bb    l7
-0x000005c5    l9
-0x000005c7    l1
-0x000005c9    .functiontail
-0x000005d1 Section: minfat.o,.text.1
-0x000005d1    _FindDrive
-0x000005f2    l12
-0x00000614    l14
-0x0000062e    l17
-0x0000064f    l22
-0x0000065b    l25
-0x00000670    l27
-0x0000068c    l29
-0x000006a6    l33
-0x000006c0    l35
-0x000006c5    l36
-0x000006de    l39
-0x000006f5    l41
-0x000006fa    l42
-0x0000074d    l47
-0x000007cf    l45
-0x0000081a    l49
-0x00000821    l10
-0x00000824 Section: minfat.o,.rodata
-0x00000824    l48
-0x0000082d    l15
-0x00000836    l18
-0x0000083f    l30
-0x00000848    l34
-0x00000851 Section: minfat.o,.text.2
-0x00000851    _GetCluster
-0x0000086c    l52
-0x00000876    l53
-0x00000891    l55
-0x000008aa    l57
-0x000008b5    l58
-0x000008b7    l50
-0x000008ba Section: minfat.o,.text.3
-0x000008ba    _FileOpen
-0x000008d3    l85
-0x000008e3    l86
-0x00000903    l68
-0x00000906    l69
-0x00000960    l78
-0x00000962    l79
-0x0000096f    l76
-0x00000980    l88
-0x000009b2    l87
-0x000009b4    l59
-0x000009b9 Section: minfat.o,.text.4
-0x000009b9    _FileNextSector
-0x000009d7    l91
-0x000009dc Section: minfat.o,.text.5
-0x000009dc    _FileRead
-0x00000a11    l94
-0x00000a13    l95
-0x00000a16 Section: minfat.o,.text.7
-0x00000a16    _ChangeDirectory
-0x00000a41    l111
-0x00000a43    l112
-0x00000a45    l109
-0x00000a69    l114
-0x00000a87    l117
-0x00000a8e    l118
-0x00000a92    l115
-0x00000a99 Section: minfat.o,.text.8
-0x00000a99    _NextDirEntry
-0x00000ac5    l165
-0x00000ad5    l166
-0x00000afd    l134
-0x00000b09    l135
-0x00000b8f    l140
-0x00000bae    l142
-0x00000bbc    l148
-0x00000bca    l143
-0x00000bd0    l149
-0x00000be0    l168
-0x00000bf0    l150
-0x00000c1b    l158
-0x00000c23    l156
-0x00000c36    l161
-0x00000c3b    l162
-0x00000c41    l157
-0x00000c64    l167
-0x00000c66    l119
-0x00000c6b Section: minfat.o,.data
-0x00000c6b    l120
-0x00000c6f    l124
-0x00000c73 Section: main.o,.text.0
-0x00000c73    _conf_nextfield
-0x00000c74    l6
-0x00000c86    l7
-0x00000c8a Section: main.o,.text.1
-0x00000c8a    _copytocomma
-0x00000cae    l26
-0x00000cc1    l15
-0x00000cc8    l18
-0x00000ce1    l27
-0x00000ce9    l22
-0x00000cf6    l24
-0x00000cf8    l25
-0x00000cfc    .functiontail
-0x00000d04 Section: main.o,.text.2
-0x00000d04    _getdigit
-0x00000d1e    l30
-0x00000d2f    l33
-0x00000d33 Section: main.o,.text.3
-0x00000d33    _matchextension
-0x00000d56    l65
-0x00000d66    l69
-0x00000d91    l41
-0x00000d99    l66
-0x00000da2    l48
-0x00000db9    l50
-0x00000dbf    l70
-0x00000dc5    l67
-0x00000dff    l55
-0x00000e11    l59
-0x00000e15    l60
-0x00000e23    l71
-0x00000e33    l68
-0x00000e43    l72
-0x00000e50 Section: main.o,.text.5
-0x00000e50    _LoadROM
-0x00000e8c    l156
-0x00000e98    l166
-0x00000ec2    l157
-0x00000ece    l167
-0x00000ee2    l158
-0x00000eee    l168
-0x00000f04    l159
-0x00000f10    l169
-0x00000f18    l160
-0x00000f30    l136
-0x00000f3b    l138
-0x00000f3f    l139
-0x00000f4b    l161
-0x00000f57    l171
-0x00000f68    l162
-0x00000f81    l172
-0x00000f8d    l163
-0x00000f99    l173
-0x00000fa8    l170
-0x00000fb4    l164
-0x00000fc1    l174
-0x00000fd7    l165
-0x00000fe4    l175
-0x00000fea    l119
-0x00000fec    l155
-0x00000ff1 Section: main.o,.text.7
-0x00000ff1    l188
-0x00001003    l199
-0x00001010    l194
-0x00001012    l195
-0x00001023    l198
-0x0000102c    l200
-0x00001032 Section: main.o,.text.8
-0x00001032    _selectrom
-0x0000106d    .cpywordloop0
-0x00001087    l203
-0x00001097 Section: main.o,.rodata
-0x00001097    l204
-0x000010a2    l253
-0x000010a9    l300
-0x000010b2    l344
-0x000010b5    l366
-0x000010bc    l368
-0x000010c3    l387
-0x000010cd    l394
-0x000010d0    l385
-0x000010dc Section: main.o,.text.9
-0x000010dc    l205
-0x000010f4    l208
-0x00001102 Section: main.o,.text.a
-0x00001102    l184
-0x0000112f    l214
-0x00001149    l217
-0x00001156    l218
-0x00001161    l210
-0x00001168 Section: main.o,.text.b
-0x00001168    l183
-0x00001193    l254
-0x000011a3    l225
-0x000011a8    l226
-0x000011cb    l257
-0x000011d3    l255
-0x000011e3    l234
-0x000011e8    l235
-0x00001247    l242
-0x0000125c    l240
-0x0000128a    l246
-0x000012a2    l247
-0x000012b6    l258
-0x000012bd    l256
-0x000012d0    l259
-0x00001300 Section: main.o,.text.c
-0x00001300    l260
-0x0000130e Section: main.o,.text.11
-0x0000130e    l185
-0x0000132f Section: main.o,.text.12
-0x0000132f    l271
-0x0000136c    l274
-0x0000139a    l281
-0x000013aa    l283
-0x000013e4    l282
-0x000013f4    l284
-0x00001415 Section: main.o,.text.13
-0x00001415    l285
-0x00001426 Section: main.o,.text.14
-0x00001426    l287
-0x00001446    l293
-0x00001451    l289
-0x0000146b Section: main.o,.text.15
-0x0000146b    _parseconf
-0x0000149e    l372
-0x000014ae    l378
-0x000014e8    .cpywordloop1
-0x0000151f    l302
-0x00001527    l303
-0x00001536    l373
-0x00001578    l309
-0x000015b8    l313
-0x000015c3    l311
-0x000015cd    l316
-0x000015e1    l318
-0x00001629    l374
-0x00001649    l380
-0x0000165e    l329
-0x00001669    l322
-0x00001673    l320
-0x000016a2    l337
-0x000016a8    l338
-0x0000170b    l341
-0x00001711    l342
-0x00001742    l375
-0x00001760    l348
-0x00001766    l349
-0x00001784    l381
-0x0000179c    l352
-0x000017a9    l353
-0x000017b6    l355
-0x000017c1    l335
-0x000017cb    l358
-0x000017d2    l308
-0x000017e1    l379
-0x000017e8    l376
-0x00001804    l382
-0x00001835    l365
-0x0000184b    l367
-0x00001869    l377
-0x0000187a    l383
-0x0000188a Section: main.o,.text.16
-0x0000188a    _buildmenu
-0x000018a7 Section: main.o,.text.17
-0x000018a7    _main
-0x000018d5    l392
-0x000018d7    l393
-0x000018e4    l389
-0x00001900    l398
-0x0000190c Section: main.o,.data
-0x0000190c    _bootrom_name
-0x00001910    l187
-0x0000197c Section: interrupts.o,.text.0
-0x0000197c    l1
-0x00001987 Section: interrupts.o,.text.1
-0x00001987    _SetIntHandler
-0x0000199d Section: interrupts.o,.rodata
-0x0000199d    l4
-0x000019aa    l6
-0x000019c4 Section: interrupts.o,.text.2
-0x000019c4    _intconstructor
-0x000019d6 Section: interrupts.o,.text.3
-0x000019d6    _GetInterrupts
-0x000019dd Section: interrupts.o,.text.4
-0x000019dd    _EnableInterrupts
-0x000019e5 Section: interrupts.o,.text.5
-0x000019e5    _DisableInterrupts
-0x000019ed Section: ps2.o,.text.0
-0x000019ed    _ps2_ringbuffer_init
-0x00001a03 Section: ps2.o,.text.1
-0x00001a03    _ps2_ringbuffer_write
-0x00001a26    l6
-0x00001a3a    l7
-0x00001a62    .functiontail
-0x00001a6a Section: ps2.o,.text.2
-0x00001a6a    _ps2_ringbuffer_read
-0x00001a83    l10
-0x00001aa8    l8
-0x00001aad Section: ps2.o,.text.4
-0x00001aad    _PS2Handler
-0x00001ae8    l16
-0x00001b23    l20
-0x00001b31 Section: ps2.o,.text.5
-0x00001b31    _PS2Init
-0x00001b45 Section: keyboard.o,.text.0
-0x00001b45    _HandlePS2RawCodes
-0x00001b58    l19
-0x00001b67    l8
-0x00001b76    l11
-0x00001b83    l14
-0x00001b85    l15
-0x00001bad    l17
-0x00001bc8    l18
-0x00001bd4    l12
-0x00001be4    l20
-0x00001be8    .functiontail
-0x00001bf0 Section: keyboard.o,.data
-0x00001bf0    l2
-0x00001bf4    l3
-0x00001bf8    _keytable
-0x00001c38 Section: keyboard.o,.text.1
-0x00001c38    _ClearKeyboard
-0x00001c3b    l26
-0x00001c4f Section: keyboard.o,.text.2
-0x00001c4f    _TestKey
-0x00001c87 Section: userio.o,.text.2
-0x00001c87    _spi_uio_cmd8_cont
-0x00001c99    l17
-0x00001ca9    l18
-0x00001cbf Section: userio.o,.text.3
-0x00001cbf    _spi_uio_cmd8
-0x00001cde    l23
-0x00001cee    l24
-0x00001cf7 Section: userio.o,.text.4
-0x00001cf7    _user_io_digital_joystick_ext
-0x00001d0b    .functiontail
-0x00001d13 Section: osd.o,.text.0
-0x00001d13    _spi_osd_cmd_cont
-0x00001d25    l5
-0x00001d35    l6
-0x00001d44 Section: osd.o,.text.1
-0x00001d44    _spi_osd_cmd
-0x00001d5c    l11
-0x00001d6c    l12
-0x00001d74 Section: osd.o,.text.4
-0x00001d74    _OsdWriteStart
-0x00001d84    l31
-0x00001d94    l41
-0x00001da4    l42
-0x00001dc3    l36
-0x00001dc5    l37
-0x00001dd4    l39
-0x00001dd8    l40
-0x00001de5    .functiontail
-0x00001ded Section: osd.o,.text.5
-0x00001ded    _OsdPutChar
-0x00001e0a    l45
-0x00001e0e    l46
-0x00001e10    l51
-0x00001e37 Section: osd.o,.text.6
-0x00001e37    _OsdPuts
-0x00001e42    l57
-0x00001e4d    l58
-0x00001e50 Section: osd.o,.text.7
-0x00001e50    _OsdWriteEnd
-0x00001e65    l66
-0x00001e80    l68
-0x00001e90    l67
-0x00001ea0    l69
-0x00001eae Section: font.o,.data
-0x00001eae    _font
-0x000021ee Section: menu.o,.text.0
-0x000021ee    _Menu_Draw
-0x00002210    l16
-0x00002223    l10
-0x00002228    l11
-0x00002258    l18
-0x00002263    l17
-0x0000227c    l19
-0x0000227d    .functiontail
-0x00002285 Section: menu.o,.text.1
-0x00002285    _Menu_Set
-0x000022a5 Section: menu.o,.text.3
-0x000022a5    _Menu_Hide
-0x000022b4 Section: menu.o,.text.4
-0x000022b4    _Menu_Run
-0x000022ee    l24
-0x000022f8    l95
-0x00002305    l100
-0x0000231c    l25
-0x00002335    l96
-0x0000234c    l36
-0x00002384    l31
-0x000023a8    l40
-0x000023b0    l38
-0x000023b6    l42
-0x000023cb    l43
-0x000023db    l47
-0x000023f3    l50
-0x000023f8    l44
-0x0000240d    l51
-0x0000242f    l55
-0x00002445    l58
-0x0000244a    l52
-0x0000246a    l62
-0x00002482    l65
-0x00002487    l60
-0x000024bb    l69
-0x000024d1    l72
-0x000024d6    l67
-0x000024e2    l97
-0x000024eb    l102
-0x00002503    l76
-0x0000251b    l98
-0x0000252b    l103
-0x00002546    l84
-0x00002551    l85
-0x0000255c    l99
-0x00002575    l91
-0x00002580    l104
-0x0000258e    l94
-0x00002593 Section: menu.o,.data
-0x00002593    _joy_keymap
-0x000025a3    _prevbuttons
-0x000025a7    _joy_timestamp
-0x000025ab    l2
-0x000025af Section: ../../firmware_overrides/overrides.a,.data
-0x000025af    _joy_keymap
-0x000025c0    _bootrom_name
-0x000025c4 Section: ../../firmware_overrides/overrides.a,.rodata
-0x000025c4    l1
-0x000025d0 Section: <internal>,__ctors_start__
-0x000025d0    __ctors_start__
-0x000025d0 Section: interrupts.o,.ctor.100.interrupts
-0x000025d4 Section: <internal>,__ctors_end__
-0x000025d4    __ctors_end__
-0x000025d4 Section: <internal>,__dtors_start__
-0x000025d4    __dtors_start__
-0x000025d4 Section: <internal>,__dtors_end__
-0x000025d4    __dtors_end__
-0x000025d4 Section: <internal>,__bss_start__
-0x000025d4    __bss_start__
-0x000025d4 Section: spi_sd.o,.bss
-0x000025d4    _sd_is_sdhc
-0x000025d8    _sd_size
-0x000025dc    _SPI_R1
-0x000025e2    _sizebuf
-0x000025f4 Section: minfat.o,.bss
-0x000025f4    l121
-0x000025f8    l122
-0x000025fc    l123
-0x00002600    _sector_buffer
-0x00002800    _cluster_size
-0x00002804    _cluster_mask
-0x00002808    _fat32
-0x0000280c    _dir_entries
-0x00002810    _longfilename
-0x00002914    _directory_cluster
-0x00002918    _entries_per_cluster
-0x0000291c    _fat_start
-0x00002920    _data_start
-0x00002924    _root_directory_cluster
-0x00002928    _root_directory_start
-0x0000292c    _root_directory_size
-0x00002930    _fat_number
-0x00002934    _fat_size
-0x00002938    _current_directory_cluster
-0x0000293c    _current_directory_start
-0x00002940    _partitioncount
-0x00002944    _file
-0x00002950 Section: main.o,.bss
-0x00002950    _statusword
-0x00002954    _menupage
-0x00002958    _romtype
-0x0000295c    _file
-0x00002968    _menuindex
-0x0000296c    _romindex
-0x00002970    _filename
-0x00002980    l186
-0x00002a52 Section: ps2.o,.bss
-0x00002a52    _kbbuffer
-0x00002ae2 Section: osd.o,.bss
-0x00002ae2    l25
-0x00002ae6    l26
-0x00002aea    l27
-0x00002aee    l28
-0x00002af2 Section: menu.o,.bss
-0x00002af2    _menu_toggle_bits
-0x00002af6    l1
-0x00002afa    l3
-0x00002afe    l4
-0x00002b02    l5
-0x00002b06 Section: <internal>,__bss_end__
-0x00002b08    __bss_end__
+0x0000003d    .stackloop
+0x0000004d    .clrwordloop
+0x0000005a    .clrbyteloop
+0x00000069    .ctorloop
+0x00000072    .ctordone
+0x0000007e    .dtorloop
+0x00000089    .endloop
+0x0000008c Section: ../EightThirtyTwo//lib832/libtiny832.a,.text.1
+0x0000008c    _puts
+0x0000009b    l11
+0x000000a8    l12
+0x000000b0 Section: ../EightThirtyTwo//lib832/libtiny832.a,.text.strncpy
+0x000000b0    ___strncpy
+0x000000b4    .strnloop
+0x000000be    .done
+0x000000c0 Section: uart.o,.text.0
+0x000000c0    _putchar
+0x000000c5    l5
+0x000000d8 Section: spi_sd.o,.text.0
+0x000000d8    _SPI_PUMP
+0x00000102    .functiontail
+0x0000010a Section: spi_sd.o,.text.2
+0x0000010a    _cmd_write
+0x0000012b    l5
+0x0000016e    l11
+0x0000017e    l12
+0x00000183 Section: spi_sd.o,.text.3
+0x00000183    _spi_spin
+0x00000186    l18
+0x00000197 Section: spi_sd.o,.text.4
+0x00000197    _wait_initV2
+0x000001a0    l29
+0x000001da    l27
+0x000001dd    l25
+0x000001e5    l20
+0x000001e8 Section: spi_sd.o,.text.5
+0x000001e8    _wait_init
+0x000001f9    l39
+0x00000215    l37
+0x00000220    l31
+0x00000223 Section: spi_sd.o,.rodata
+0x00000223    l32
+0x00000227    l59
+0x00000233    l77
+0x00000238    l63
+0x0000023c    l98
+0x0000024a Section: spi_sd.o,.text.6
+0x0000024a    _is_sdhc
+0x00000270    l43
+0x00000287    l45
+0x0000028d    l60
+0x000002bd    l54
+0x000002c1    l55
+0x000002d0    l58
+0x000002d8    l41
+0x000002db Section: spi_sd.o,.text.7
+0x000002db    _spi_init
+0x000002f7    l84
+0x00000303    l85
+0x0000030f    l89
+0x00000320    l86
+0x0000032c    l90
+0x00000341    l74
+0x00000351    l76
+0x00000370    l80
+0x00000389    l87
+0x00000395    l91
+0x0000039f    l62
+0x000003a3 Section: spi_sd.o,.text.9
+0x000003a3    l118
+0x000003bb    l120
+0x000003db    l142
+0x000003e9    l146
+0x000003ef    l126
+0x000003f9    l143
+0x0000040a    l135
+0x00000419    l147
+0x00000431    l144
+0x0000043f    l148
+0x00000444    l137
+0x00000447    l124
+0x00000453 Section: spi_sd.o,.text.a
+0x00000453    _sd_read_sector
+0x00000475    l158
+0x00000483    l160
+0x000004bd    l159
+0x000004cb    l161
+0x000004d0    l149
+0x000004d6 Section: spi_sd.o,.text.b
+0x000004d6    _sd_get_size
+0x000004f4    l173
+0x00000533    l168
+0x0000058e    l174
+0x0000059a    l176
+0x0000059f Section: minfat.o,.text.0
+0x0000059f    _compare
+0x000005b2    l8
+0x000005cb    l7
+0x000005d5    l9
+0x000005d7    l1
+0x000005d9    .functiontail
+0x000005e1 Section: minfat.o,.text.1
+0x000005e1    _FindDrive
+0x00000602    l12
+0x00000624    l14
+0x0000063e    l17
+0x0000065f    l22
+0x0000066b    l25
+0x00000680    l27
+0x0000069c    l29
+0x000006b6    l33
+0x000006d0    l35
+0x000006d5    l36
+0x000006ee    l39
+0x00000705    l41
+0x0000070a    l42
+0x0000075d    l47
+0x000007df    l45
+0x0000082a    l49
+0x00000831    l10
+0x00000834 Section: minfat.o,.rodata
+0x00000834    l48
+0x0000083d    l15
+0x00000846    l18
+0x0000084f    l30
+0x00000858    l34
+0x00000861 Section: minfat.o,.text.2
+0x00000861    _GetCluster
+0x0000087c    l52
+0x00000886    l53
+0x000008a1    l55
+0x000008ba    l57
+0x000008c5    l58
+0x000008c7    l50
+0x000008ca Section: minfat.o,.text.3
+0x000008ca    _FileOpen
+0x000008e3    l85
+0x000008f3    l86
+0x00000913    l68
+0x00000916    l69
+0x00000970    l78
+0x00000972    l79
+0x0000097f    l76
+0x00000990    l88
+0x000009c2    l87
+0x000009c4    l59
+0x000009c9 Section: minfat.o,.text.4
+0x000009c9    _FileNextSector
+0x000009e7    l91
+0x000009ec Section: minfat.o,.text.5
+0x000009ec    _FileRead
+0x00000a21    l94
+0x00000a23    l95
+0x00000a26 Section: minfat.o,.text.7
+0x00000a26    _ChangeDirectory
+0x00000a51    l111
+0x00000a53    l112
+0x00000a55    l109
+0x00000a79    l114
+0x00000a97    l117
+0x00000a9e    l118
+0x00000aa2    l115
+0x00000aa9 Section: minfat.o,.text.8
+0x00000aa9    _NextDirEntry
+0x00000ad5    l165
+0x00000ae5    l166
+0x00000b0d    l134
+0x00000b19    l135
+0x00000b9f    l140
+0x00000bbe    l142
+0x00000bcc    l148
+0x00000bda    l143
+0x00000be0    l149
+0x00000bf0    l168
+0x00000c00    l150
+0x00000c2b    l158
+0x00000c33    l156
+0x00000c46    l161
+0x00000c4b    l162
+0x00000c51    l157
+0x00000c74    l167
+0x00000c76    l119
+0x00000c7b Section: minfat.o,.data
+0x00000c7b    l120
+0x00000c7f    l124
+0x00000c83 Section: main.o,.text.0
+0x00000c83    _conf_nextfield
+0x00000c84    l6
+0x00000c96    l7
+0x00000c9a Section: main.o,.text.1
+0x00000c9a    _copytocomma
+0x00000cbe    l26
+0x00000cd1    l15
+0x00000cd8    l18
+0x00000cf1    l27
+0x00000cf9    l22
+0x00000d06    l24
+0x00000d08    l25
+0x00000d0c    .functiontail
+0x00000d14 Section: main.o,.text.2
+0x00000d14    _getdigit
+0x00000d2e    l30
+0x00000d3f    l33
+0x00000d43 Section: main.o,.text.3
+0x00000d43    _matchextension
+0x00000d66    l65
+0x00000d76    l69
+0x00000da1    l41
+0x00000da9    l66
+0x00000db2    l48
+0x00000dc9    l50
+0x00000dcf    l70
+0x00000dd5    l67
+0x00000e0f    l55
+0x00000e21    l59
+0x00000e25    l60
+0x00000e33    l71
+0x00000e43    l68
+0x00000e53    l72
+0x00000e60 Section: main.o,.text.5
+0x00000e60    _LoadROM
+0x00000e9c    l156
+0x00000ea8    l166
+0x00000ed2    l157
+0x00000ede    l167
+0x00000ef2    l158
+0x00000efe    l168
+0x00000f14    l159
+0x00000f20    l169
+0x00000f28    l160
+0x00000f40    l136
+0x00000f4b    l138
+0x00000f4f    l139
+0x00000f5b    l161
+0x00000f67    l171
+0x00000f78    l162
+0x00000f91    l172
+0x00000f9d    l163
+0x00000fa9    l173
+0x00000fb8    l170
+0x00000fc4    l164
+0x00000fd1    l174
+0x00000fe7    l165
+0x00000ff4    l175
+0x00000ffa    l119
+0x00000ffc    l155
+0x00001001 Section: main.o,.text.7
+0x00001001    l188
+0x00001013    l199
+0x00001020    l194
+0x00001022    l195
+0x00001033    l198
+0x0000103c    l200
+0x00001042 Section: main.o,.text.8
+0x00001042    _selectrom
+0x0000107d    .cpywordloop0
+0x00001097    l203
+0x000010a7 Section: main.o,.rodata
+0x000010a7    l204
+0x000010b2    l253
+0x000010b9    l300
+0x000010c2    l344
+0x000010c5    l366
+0x000010cc    l368
+0x000010d3    l387
+0x000010dd    l394
+0x000010e0    l385
+0x000010ec Section: main.o,.text.9
+0x000010ec    l205
+0x00001104    l208
+0x00001112 Section: main.o,.text.a
+0x00001112    l184
+0x0000113f    l214
+0x00001159    l217
+0x00001166    l218
+0x00001171    l210
+0x00001178 Section: main.o,.text.b
+0x00001178    l183
+0x000011a3    l254
+0x000011b3    l225
+0x000011b8    l226
+0x000011db    l257
+0x000011e3    l255
+0x000011f3    l234
+0x000011f8    l235
+0x00001257    l242
+0x0000126c    l240
+0x0000129a    l246
+0x000012b2    l247
+0x000012c6    l258
+0x000012cd    l256
+0x000012e0    l259
+0x00001310 Section: main.o,.text.c
+0x00001310    l260
+0x0000131e Section: main.o,.text.11
+0x0000131e    l185
+0x0000133f Section: main.o,.text.12
+0x0000133f    l271
+0x0000137c    l274
+0x000013aa    l281
+0x000013ba    l283
+0x000013f4    l282
+0x00001404    l284
+0x00001425 Section: main.o,.text.13
+0x00001425    l285
+0x00001436 Section: main.o,.text.14
+0x00001436    l287
+0x00001456    l293
+0x00001461    l289
+0x0000147b Section: main.o,.text.15
+0x0000147b    _parseconf
+0x000014ae    l372
+0x000014be    l378
+0x000014f8    .cpywordloop1
+0x0000152f    l302
+0x00001537    l303
+0x00001546    l373
+0x00001588    l309
+0x000015c8    l313
+0x000015d3    l311
+0x000015dd    l316
+0x000015f1    l318
+0x00001639    l374
+0x00001659    l380
+0x0000166e    l329
+0x00001679    l322
+0x00001683    l320
+0x000016b2    l337
+0x000016b8    l338
+0x0000171b    l341
+0x00001721    l342
+0x00001752    l375
+0x00001770    l348
+0x00001776    l349
+0x00001794    l381
+0x000017ac    l352
+0x000017b9    l353
+0x000017c6    l355
+0x000017d1    l335
+0x000017db    l358
+0x000017e2    l308
+0x000017f1    l379
+0x000017f8    l376
+0x00001814    l382
+0x00001845    l365
+0x0000185b    l367
+0x00001879    l377
+0x0000188a    l383
+0x0000189a Section: main.o,.text.16
+0x0000189a    _buildmenu
+0x000018b7 Section: main.o,.text.17
+0x000018b7    _main
+0x000018e5    l392
+0x000018e7    l393
+0x000018f4    l389
+0x00001910    l398
+0x0000191c Section: main.o,.data
+0x0000191c    _bootrom_name
+0x00001920    l187
+0x0000198c Section: interrupts.o,.text.0
+0x0000198c    l1
+0x00001997 Section: interrupts.o,.text.1
+0x00001997    _SetIntHandler
+0x000019ad Section: interrupts.o,.rodata
+0x000019ad    l4
+0x000019ba    l6
+0x000019d4 Section: interrupts.o,.text.2
+0x000019d4    _intconstructor
+0x000019e6 Section: interrupts.o,.text.3
+0x000019e6    _GetInterrupts
+0x000019ed Section: interrupts.o,.text.4
+0x000019ed    _EnableInterrupts
+0x000019f5 Section: interrupts.o,.text.5
+0x000019f5    _DisableInterrupts
+0x000019fd Section: ps2.o,.text.0
+0x000019fd    _ps2_ringbuffer_init
+0x00001a13 Section: ps2.o,.text.1
+0x00001a13    _ps2_ringbuffer_write
+0x00001a36    l6
+0x00001a4a    l7
+0x00001a72    .functiontail
+0x00001a7a Section: ps2.o,.text.2
+0x00001a7a    _ps2_ringbuffer_read
+0x00001a93    l10
+0x00001ab8    l8
+0x00001abd Section: ps2.o,.text.4
+0x00001abd    _PS2Handler
+0x00001af8    l16
+0x00001b33    l20
+0x00001b41 Section: ps2.o,.text.5
+0x00001b41    _PS2Init
+0x00001b55 Section: keyboard.o,.text.0
+0x00001b55    _HandlePS2RawCodes
+0x00001b68    l19
+0x00001b77    l8
+0x00001b86    l11
+0x00001b93    l14
+0x00001b95    l15
+0x00001bbd    l17
+0x00001bd8    l18
+0x00001be4    l12
+0x00001bf4    l20
+0x00001bf8    .functiontail
+0x00001c00 Section: keyboard.o,.data
+0x00001c00    l2
+0x00001c04    l3
+0x00001c08    _keytable
+0x00001c48 Section: keyboard.o,.text.1
+0x00001c48    _ClearKeyboard
+0x00001c4b    l26
+0x00001c5f Section: keyboard.o,.text.2
+0x00001c5f    _TestKey
+0x00001c97 Section: userio.o,.text.2
+0x00001c97    _spi_uio_cmd8_cont
+0x00001ca9    l17
+0x00001cb9    l18
+0x00001ccf Section: userio.o,.text.3
+0x00001ccf    _spi_uio_cmd8
+0x00001cee    l23
+0x00001cfe    l24
+0x00001d07 Section: userio.o,.text.4
+0x00001d07    _user_io_digital_joystick_ext
+0x00001d1b    .functiontail
+0x00001d23 Section: osd.o,.text.0
+0x00001d23    _spi_osd_cmd_cont
+0x00001d35    l5
+0x00001d45    l6
+0x00001d54 Section: osd.o,.text.1
+0x00001d54    _spi_osd_cmd
+0x00001d6c    l11
+0x00001d7c    l12
+0x00001d84 Section: osd.o,.text.4
+0x00001d84    _OsdWriteStart
+0x00001d94    l31
+0x00001da4    l41
+0x00001db4    l42
+0x00001dd3    l36
+0x00001dd5    l37
+0x00001de4    l39
+0x00001de8    l40
+0x00001df5    .functiontail
+0x00001dfd Section: osd.o,.text.5
+0x00001dfd    _OsdPutChar
+0x00001e1a    l45
+0x00001e1e    l46
+0x00001e20    l51
+0x00001e47 Section: osd.o,.text.6
+0x00001e47    _OsdPuts
+0x00001e52    l57
+0x00001e5d    l58
+0x00001e60 Section: osd.o,.text.7
+0x00001e60    _OsdWriteEnd
+0x00001e75    l66
+0x00001e90    l68
+0x00001ea0    l67
+0x00001eb0    l69
+0x00001ebe Section: font.o,.data
+0x00001ebe    _font
+0x000021fe Section: menu.o,.text.0
+0x000021fe    _Menu_Draw
+0x00002220    l16
+0x00002233    l10
+0x00002238    l11
+0x00002268    l18
+0x00002273    l17
+0x0000228c    l19
+0x0000228d    .functiontail
+0x00002295 Section: menu.o,.text.1
+0x00002295    _Menu_Set
+0x000022b5 Section: menu.o,.text.3
+0x000022b5    _Menu_Hide
+0x000022c4 Section: menu.o,.text.4
+0x000022c4    _Menu_Run
+0x000022fe    l24
+0x00002308    l95
+0x00002315    l100
+0x0000232c    l25
+0x00002345    l96
+0x0000235c    l36
+0x00002394    l31
+0x000023b8    l40
+0x000023c0    l38
+0x000023c6    l42
+0x000023db    l43
+0x000023eb    l47
+0x00002403    l50
+0x00002408    l44
+0x0000241d    l51
+0x0000243f    l55
+0x00002455    l58
+0x0000245a    l52
+0x0000247a    l62
+0x00002492    l65
+0x00002497    l60
+0x000024cb    l69
+0x000024e1    l72
+0x000024e6    l67
+0x000024f2    l97
+0x000024fb    l102
+0x00002513    l76
+0x0000252b    l98
+0x0000253b    l103
+0x00002556    l84
+0x00002561    l85
+0x0000256c    l99
+0x00002585    l91
+0x00002590    l104
+0x0000259e    l94
+0x000025a3 Section: menu.o,.data
+0x000025a3    _joy_keymap
+0x000025b3    _prevbuttons
+0x000025b7    _joy_timestamp
+0x000025bb    l2
+0x000025bf Section: ../../firmware_overrides/overrides.a,.data
+0x000025bf    _joy_keymap
+0x000025d0    _bootrom_name
+0x000025d4 Section: ../../firmware_overrides/overrides.a,.rodata
+0x000025d4    l1
+0x000025e0 Section: <internal>,__ctors_start__
+0x000025e0    __ctors_start__
+0x000025e0 Section: interrupts.o,.ctor.100.interrupts
+0x000025e4 Section: <internal>,__ctors_end__
+0x000025e4    __ctors_end__
+0x000025e4 Section: <internal>,__dtors_start__
+0x000025e4    __dtors_start__
+0x000025e4 Section: <internal>,__dtors_end__
+0x000025e4    __dtors_end__
+0x000025e4 Section: <internal>,__bss_start__
+0x000025e4    __bss_start__
+0x000025e4 Section: spi_sd.o,.bss
+0x000025e4    _sd_is_sdhc
+0x000025e8    _sd_size
+0x000025ec    _SPI_R1
+0x000025f2    _sizebuf
+0x00002604 Section: minfat.o,.bss
+0x00002604    l121
+0x00002608    l122
+0x0000260c    l123
+0x00002610    _sector_buffer
+0x00002810    _cluster_size
+0x00002814    _cluster_mask
+0x00002818    _fat32
+0x0000281c    _dir_entries
+0x00002820    _longfilename
+0x00002924    _directory_cluster
+0x00002928    _entries_per_cluster
+0x0000292c    _fat_start
+0x00002930    _data_start
+0x00002934    _root_directory_cluster
+0x00002938    _root_directory_start
+0x0000293c    _root_directory_size
+0x00002940    _fat_number
+0x00002944    _fat_size
+0x00002948    _current_directory_cluster
+0x0000294c    _current_directory_start
+0x00002950    _partitioncount
+0x00002954    _file
+0x00002960 Section: main.o,.bss
+0x00002960    _statusword
+0x00002964    _menupage
+0x00002968    _romtype
+0x0000296c    _file
+0x00002978    _menuindex
+0x0000297c    _romindex
+0x00002980    _filename
+0x00002990    l186
+0x00002a62 Section: ps2.o,.bss
+0x00002a62    _kbbuffer
+0x00002af2 Section: osd.o,.bss
+0x00002af2    l25
+0x00002af6    l26
+0x00002afa    l27
+0x00002afe    l28
+0x00002b02 Section: menu.o,.bss
+0x00002b02    _menu_toggle_bits
+0x00002b06    l1
+0x00002b0a    l3
+0x00002b0e    l4
+0x00002b12    l5
+0x00002b16 Section: <internal>,__bss_end__
+0x00002b18    __bss_end__

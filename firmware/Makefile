@@ -24,7 +24,7 @@ clean :
 	-rm *.asm
 	-rm *.S
 	-rm *.o
-	-rm *.vhd
+	-rm *_byte.vhd
 	-rm *.bin
 	-rm *.elf
 
@@ -37,7 +37,14 @@ clean :
 	sed 's/eightthirtytwo_rom/$*_rom/' >$*_rom_byte.vhd <$(ROMGENDIR)/rom_prologue_byte.vhd
 	$(ROMGEN) -b $*.bin >>$*_rom_byte.vhd
 	cat >>$*_rom_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
+	sed 's/eightthirtytwo_rom/$*_rom1/' >$*_rom1_byte.vhd <$(ROMGENDIR)/rom_prologue_byte.vhd
+	$(ROMGEN) -b -l8192 $*.bin >>$*_rom1_byte.vhd
+	cat >>$*_rom1_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
+	sed 's/eightthirtytwo_rom/$*_rom2/' >$*_rom2_byte.vhd <$(ROMGENDIR)/rom_prologue_byte.vhd
+	$(ROMGEN) -b -o8192 -l4096 $*.bin >>$*_rom2_byte.vhd
+	cat >>$*_rom2_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	grep __bss_ $*.map
+
 
 controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
 ifdef OVERRIDES
