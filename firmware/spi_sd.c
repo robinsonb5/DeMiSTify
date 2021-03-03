@@ -194,7 +194,7 @@ int is_sdhc()
 	spi_spin();
 
 	r=cmd_CMD8();		// test for SDHC capability
-	printf("cmd_CMD8 response: %d\n",r);
+	PDBG("cmd_CMD8 response: %d\n",r);
 	if(r!=1)
 	{
 		PDBG("CMD8_4 response: %d\n",r);
@@ -225,10 +225,10 @@ int is_sdhc()
 		{
 			if((r=cmd_CMD58())==0)
 			{
-				printf("CMD58 %d\n  ",r);
+				PDBG("CMD58 %d\n  ",r);
 				SPI(0xff);
 				r=SPI_READ();
-				printf("CMD58_2 %d\n  ",r);
+				PDBG("CMD58_2 %d\n  ",r);
 				SPI(0xff);
 				SPI(0xff);
 				SPI(0xff);
@@ -245,11 +245,11 @@ int is_sdhc()
 				}
 			}
 			else
-				printf("CMD58 %d\n  ",r);
+				PDBG("CMD58 %d\n  ",r);
 		}
 		if(i==2)
 		{
-			printf("SDHC Initialization error!\n");
+			puts("SDHC fail!\n");
 			return(0);
 		}
 	}
@@ -292,7 +292,7 @@ int spi_init()
 	SPI(0xFF);
 
 	sd_size=sd_get_size();
-	printf("SD card size is %d\n",sd_size);
+	PDBG("SD card size is %d\n",sd_size);
 
 
 	SPI_DISABLE(HW_SPI_SD);
@@ -432,18 +432,18 @@ int sd_get_size()
 		int c_size_mult=((sizebuf[9]<<1)&6)|(sizebuf[10]>>7);
 		int read_bl_len=sizebuf[5]&15;
 		int csize=((sizebuf[6]&3)<<10) | sizebuf[7]<<2 | ((sizebuf[8]&0xc0)>>6);
-		printf("c_size_mult: %d, read_bl_len: %d, csize: %d\n",c_size_mult,read_bl_len,csize);
+//		printf("c_size_mult: %d, read_bl_len: %d, csize: %d\n",c_size_mult,read_bl_len,csize);
 		c_size_mult=1<<(2+c_size_mult);
-		printf("Mult %d\n",c_size_mult);
+//		printf("Mult %d\n",c_size_mult);
 		read_bl_len=1<<(read_bl_len);
 		r=(csize+1)*c_size_mult;
-		printf("%d blocks of size %d\n",r,read_bl_len);
+//		printf("%d blocks of size %d\n",r,read_bl_len);
 		while(read_bl_len>512)
 		{
 			r<<=1;
 			read_bl_len>>=1;
 		}
-		printf("%d blocks of 512 bytes\n",r);
+//		printf("%d blocks of 512 bytes\n",r);
 	}
 	return(r);
 }

@@ -8,7 +8,7 @@ LIBDIR=$(832DIR)/lib832
 
 CFLAGS = -+ -O=1343 -size -unsigned-char
 ASFLAGS = -el
-LDFLAGS  = -el -s_STACKSIZE=0x400
+LDFLAGS  = -el -s_STACKSIZE=0x100
 
 START = $(LIBDIR)/crt0.a
 LIBS = $(LIBDIR)/libtiny832.a

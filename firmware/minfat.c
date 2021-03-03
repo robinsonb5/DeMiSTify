@@ -86,8 +86,18 @@ int partitioncount;
 // uint32_t buffered_fat_index;       // index of buffered FAT sector
 
 
-#define BootPrint(x) puts(x);
+//#define STATUS(x) puts(x);
+#define STATUS(x)
 
+#undef FAT_DEBUG
+
+#ifdef FAT_DEBUG
+#define DBG(x) printf(x)
+#define PDBG(x,y) printf(x,y)
+#else
+#define DBG(x)
+#define PDBG(x,y)
+#endif
 
 
 int compare(const char *s1, const char *s2,int b)
@@ -109,16 +119,16 @@ unsigned int FindDrive(void)
 //    buffered_fat_index = -1;
 	fat32=0;
 
-	puts("Reading MBR\n");
+	STATUS("Reading MBR\n");
 
     if (!sd_read_sector(0, sector_buffer)) // read MBR
 	{
-		puts("Read of MBR failed\n");
+		STATUS("Read of MBR failed\n");
         return(0);
 	}
 //	hexdump(sector_buffer,512);
 
-	puts("MBR successfully read\n");
+	STATUS("MBR successfully read\n");
 
 	boot_sector=0;
 	partitioncount=1;
@@ -129,7 +139,7 @@ unsigned int FindDrive(void)
     if (compare((const char*)&sector_buffer[0x52], "FAT32   ",8)==0) // check for FAT32
 		partitioncount=0;
 
-	printf("Partitioncount %d\n",partitioncount);
+	PDBG("Partitioncount %d\n",partitioncount);
 
 	if(partitioncount)
 	{
@@ -137,30 +147,28 @@ unsigned int FindDrive(void)
 		struct MasterBootRecord *mbr=(struct MasterBootRecord *)sector_buffer;
 		struct PartitionEntry *pe=(struct PartitionEntry *)&mbr->Partition[0][0];
 
-		printf("MBRsize: %d, partitionsize: %d, offset of sig: %d, sig 0x%x\n",sizeof(*mbr), sizeof(mbr->Partition[0]),((char *)&mbr->Signature)-((char*)mbr),mbr->Signature);
-
 		boot_sector = pe->startlba;
 		if(mbr->Signature==0x55aa)
 				boot_sector=ConvBBBB_LE(pe->startlba);
 		else if(mbr->Signature!=0xaa55)
 		{
-			puts("No partition signature found\n");
+			STATUS("No part sig");
 			return(0);
 		}
-		printf("Reading boot sector %d\n",boot_sector);
+		PDBG("Reading boot sector %d\n",boot_sector);
 		if (!sd_read_sector(boot_sector, sector_buffer)) // read discriptor
 		    return(0);
 //		hexdump(sector_buffer,512);
-		puts("Read boot sector from first partition\n");
+		STATUS("Boot sector...");
 	}
 
-	printf("Hunting for filesystem\n");
+	STATUS("Seeking FS...");
 
     if (compare(sector_buffer+0x52, "FAT32   ",8)==0) // check for FAT16
 		fat32=1;
 	else if (compare(sector_buffer+0x36, "FAT16   ",8)!=0) // check for FAT32
 	{
-        printf("Unsupported partition type!\r");
+        STATUS("Unsupported partition type!\r");
 		return(0);
 	}
 
@@ -181,7 +189,8 @@ unsigned int FindDrive(void)
     // calculate cluster mask
     cluster_mask = cluster_size - 1;
 
-	printf("Cluster size: %d, Cluster mask, %d\n",cluster_size,cluster_mask);
+	PDBG("Cluster size: %d\n",cluster_size);
+	PDBG("Cluster mask, %d\n",cluster_mask);
 
     fat_start = boot_sector + sector_buffer[0x0E] + (sector_buffer[0x0F] << 8); // reserved sector count before FAT table (usually 32 for FAT32)
 	fat_number = sector_buffer[0x10];
@@ -284,7 +293,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
             {
                 if (!(pEntry->Attributes & (ATTR_VOLUME | ATTR_DIRECTORY))) // not a volume nor directory
                 {
-					puts(pEntry->Name);
+//					puts(pEntry->Name);
                     if (compare((const char*)pEntry->Name, name,11) == 0)
                     {
                         file->size = ConvBBBB_LE(pEntry->FileSize); 		// for 68000
@@ -354,7 +363,7 @@ int LoadFile(const char *fn, unsigned char *buf)
 		int imgsize=(file.size+511)/512;
 		int c=0;
 		int sector=0;
-		puts("Opened file, loading...\n");
+		STATUS("Opened file, loading...\n");
 
 		while(c<imgsize)
 		{
@@ -368,7 +377,7 @@ int LoadFile(const char *fn, unsigned char *buf)
 	}
 	else
 	{
-		printf("Can't open %s\n",fn);
+		PDBG("Can't open %s\n",fn);
 		return(0);
 	}
 	return(1);

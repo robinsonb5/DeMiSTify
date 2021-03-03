@@ -195,7 +195,7 @@ int LoadROM(const char *fn)
 		int imgsize=file.size;
 		int sendsize;
 		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
-		printf("Opened file, loading %s, (idx %d)...\n",fn+8,extindex);
+//		printf("Opened file, loading %s, (idx %d)...\n",fn+8,extindex);
 
 		SPI_ENABLE(HW_SPI_FPGA);
 		SPI(SPI_FPGA_FILE_INDEX);
@@ -298,7 +298,7 @@ static DIRENTRY *nthfile(int n)
 void selectrom(int row)
 {
 	DIRENTRY *p=nthfile(romindex+row);
-	printf("File %s\n",p->Name);
+//	printf("File %s\n",p->Name);
 	if(p)
 	{
 		strncpy(longfilename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
@@ -677,9 +677,9 @@ int main(int argc,char **argv)
 	filename[0]=0;
 
 	SPI(0xff);
-	puts("Initializing SD card\n");
+	puts("SD Init..");
 	if(havesd=spi_init() && FindDrive())
-		puts("Have SD\n");
+		puts("OK");
 
 	LoadROM(bootrom_name);
 

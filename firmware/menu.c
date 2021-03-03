@@ -41,7 +41,7 @@ void Menu_Draw(int currentrow)
 	int i;
 	struct menu_entry *m=menu;
 	menurows=0;
-	printf("Highlight row %d\n",currentrow);
+//	printf("Highlight row %d\n",currentrow);
 	while(m->type!=MENU_ENTRY_NULL)
 	{
 		int i;
@@ -124,7 +124,7 @@ void Menu_Run()
 	{
 		while(TestKey(KEY_F12))
 			HandlePS2RawCodes();
-		printf("Menu visible %d\n",menu_visible);
+//		printf("Menu visible %d\n",menu_visible);
 		OsdShowHide(menu_visible^=1);
 		upd=1;
 	}
@@ -221,9 +221,10 @@ void Menu_Run()
 				Menu_Set(MENU_ACTION_SUBMENU(m->action));
 				break;
 			case MENU_ENTRY_CALLBACK:
-				printf("Callback %x\n",m->action);
+//				printf("Callback %x\n",m->action);
 				MENU_ACTION_CALLBACK(m->action)(currentrow);
 				break;
+#if 0
 			case MENU_ENTRY_TOGGLE:
 				i=1<<MENU_ACTION_TOGGLE(m->action);
 				menu_toggle_bits^=i;
@@ -236,6 +237,7 @@ void Menu_Run()
 				MENU_CYCLE_VALUE(m)=i;
 				upd=1;
 				break;
+#endif
 			default:
 				break;
 
