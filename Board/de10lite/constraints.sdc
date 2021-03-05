@@ -1,6 +1,8 @@
 create_clock -name {clk_50} -period 20.000 -waveform {0.000 10.000} { MAX10_CLK1_50 }
-derive_pll_clocks -create_base_clocks
 create_generated_clock -name spiclk -source [get_ports {MAX10_CLK1_50}] -divide_by 4 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
+
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
 
 # Set pin definitions for downstream constraints
 set RAM_CLK DRAM_CLK

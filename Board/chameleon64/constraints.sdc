@@ -1,13 +1,13 @@
 
 create_clock -name "clk8" -period 125.000ns [get_ports {clk8}] -waveform {0.000 62.500}
-derive_pll_clocks -create_base_clocks
-
 
 set hostclk {clocks|altpll_component|auto_generated|pll1|clk[1]}
 set supportclk {clocks|altpll_component|auto_generated|pll1|clk[0]}
 
 create_generated_clock -name spiclk -source [get_pins ${hostclk}] -divide_by 4 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
 
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
 
 # Set pin definitions for downstream constraints
 

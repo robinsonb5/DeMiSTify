@@ -12,16 +12,6 @@
 
 #define JOY_BUTTON_MENU 1
 
-
-enum menu_entry_type {
-	MENU_ENTRY_NULL,
-	MENU_ENTRY_TOGGLE,
-	MENU_ENTRY_CALLBACK,
-	MENU_ENTRY_CYCLE,
-	MENU_ENTRY_SUBMENU,
-	MENU_ENTRY_SLIDER
-};
-
 #define ROW_LINEUP -1
 #define ROW_LINEDOWN -2
 #define ROW_PAGEUP -3
@@ -53,12 +43,11 @@ typedef long menu_action;
 
 struct menu_entry
 {
-	char type;
+	menu_action action;	
+	char *label;
 	char val;
 	char limit;
 	char shift;
-	char *label;
-	menu_action action;	
 };
 
 struct hotkey

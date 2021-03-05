@@ -268,15 +268,15 @@ static char romfilenames[7][30];
 
 static struct menu_entry menu[]=
 {
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[0],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[1],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[2],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[3],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[4],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[5],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,romfilenames[6],MENU_ACTION(&selectrom)},
-	{MENU_ENTRY_CALLBACK,0,0,0,0,MENU_ACTION(&submenu)},
-	{MENU_ENTRY_NULL,0,0,0,0,MENU_ACTION(scrollroms)}
+	{MENU_ACTION(&selectrom),romfilenames[0],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[1],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[2],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[3],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[4],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[5],0,0,0},
+	{MENU_ACTION(&selectrom),romfilenames[6],0,0,0},
+	{MENU_ACTION(&submenu),0,0,0,0},
+	{MENU_ACTION(scrollroms),0,0,0,0}
 };
 
 
@@ -393,7 +393,6 @@ static void listroms(int row)
 	for(;j<7;++j)
 		romfilenames[j][0]=0;
 	menu[7].val=0;
-	menu[7].type=MENU_ENTRY_CALLBACK;
 	menu[7].action=MENU_ACTION(&submenu);
 	menu[7].label="\x80 Back";
 	menu[8].action=MENU_ACTION(&scrollroms);
@@ -550,7 +549,6 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 					{
 						title=menu[line].label;
 						menu[line].val=page;
-						menu[line].type=MENU_ENTRY_CALLBACK;
 						menu[line].action=MENU_ACTION(&submenu);
 						c=conf_next();
 						while(c && c!=';')
@@ -591,7 +589,6 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 
 					menu[line].shift=low;
 					menu[line].val=(1<<(1+high-low))-1;
-					menu[line].type=MENU_ENTRY_CALLBACK;
 					val=(statusword>>low)&menu[line].val;
 //					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].val);
 
@@ -640,7 +637,6 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 	if(selpage)
 	{
 		menu[7].val=0;
-		menu[7].type=MENU_ENTRY_CALLBACK;
 		menu[7].action=MENU_ACTION(&submenu);
 		menu[7].label="\x80 Back";
 	}

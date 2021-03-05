@@ -29,10 +29,12 @@
 #define OSD_ROWS OSDNLINE
 #define OSD_COLS (OSDLINELEN/8)
 
+#define menurows OSD_ROWS
+
 static struct menu_entry *menu;
 static int menu_visible=0;
 int menu_toggle_bits;
-static int menurows;
+
 static int currentrow;
 static struct hotkey *hotkeys;
 
@@ -40,25 +42,13 @@ void Menu_Draw(int currentrow)
 {
 	int i;
 	struct menu_entry *m=menu;
-	menurows=0;
-//	printf("Highlight row %d\n",currentrow);
-	while(m->type!=MENU_ENTRY_NULL)
+	for(i=0;i<OSD_ROWS;++i)
 	{
-		int i;
-		char **labels;
-		OsdWriteStart(menurows,menurows==currentrow,0);
+		OsdWriteStart(i,i==currentrow,0);
 		OsdPutChar(' ');
 		OsdPuts(m->label);
 		OsdWriteEnd();
-		++menurows;
 		m++;
-	}
-	i=menurows;
-	while(i<OSD_ROWS)
-	{
-		OsdWriteStart(menurows,0,0);
-		OsdWriteEnd();
-		++i;
 	}
 }
 
@@ -66,7 +56,7 @@ void Menu_Draw(int currentrow)
 void Menu_Set(struct menu_entry *head)
 {
 	menu=head;
-	Menu_Draw(currentrow);
+//	Menu_Draw(currentrow);
 	currentrow=menurows-1;
 	Menu_Draw(currentrow);
 }
@@ -199,49 +189,9 @@ void Menu_Run()
 	}
 
 	// Find the currently highlighted menu item
-	i=currentrow;
-	while(i>0)
-	{
-		++m;
-		--i;
-	}
-
 	if((joy&0xf0) || (TestKey(KEY_ENTER)&2))
 	{
-		struct menu_entry *m=menu;
-		i=currentrow;
-		while(i>0)
-		{
-			++m;
-			--i;
-		}
-		switch(m->type)
-		{
-			case MENU_ENTRY_SUBMENU:
-				Menu_Set(MENU_ACTION_SUBMENU(m->action));
-				break;
-			case MENU_ENTRY_CALLBACK:
-//				printf("Callback %x\n",m->action);
-				MENU_ACTION_CALLBACK(m->action)(currentrow);
-				break;
-#if 0
-			case MENU_ENTRY_TOGGLE:
-				i=1<<MENU_ACTION_TOGGLE(m->action);
-				menu_toggle_bits^=i;
-				upd=1;
-				break;
-			case MENU_ENTRY_CYCLE:
-				i=MENU_CYCLE_VALUE(m)+1;
-				if(i>=MENU_CYCLE_COUNT(m))
-					i=0;
-				MENU_CYCLE_VALUE(m)=i;
-				upd=1;
-				break;
-#endif
-			default:
-				break;
-
-		}
+		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 	}
 
 	while(hk && hk->key)
