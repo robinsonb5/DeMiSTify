@@ -257,6 +257,7 @@ void spin()
 }
 
 int menuindex;
+int moremenu;
 int romindex;
 static void listroms();
 void selectrom(int row);
@@ -302,12 +303,12 @@ void selectrom(int row)
 	if(p)
 	{
 		strncpy(longfilename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
-		strcpy(romfilenames[row],"Loading...");
+		menu[row].label="Loading...";
 		Menu_Draw(row);
+		menu[row].label=romfilenames[row];
 		LoadROM(longfilename);	// since loading it by name will overwrite the sector buffer which currently contains it!
 	}
-
-	Menu_Set(menu);
+	Menu_Draw(row);
 	Menu_Hide();
 }
 
@@ -331,15 +332,17 @@ static void scrollroms(int row)
 				--romindex;
 			break;
 		case ROW_PAGEUP:
-			romindex-=16;
+			romindex-=6;
 			if(romindex<0)
 				romindex=0;
 			break;
 		case ROW_LINEDOWN:
-			++romindex;
+			if(moremenu)
+				++romindex;
 			break;
 		case ROW_PAGEDOWN:
-			romindex+=16;
+			if(moremenu)
+				romindex+=6;
 			break;
 	}
 	listroms(row);
@@ -351,6 +354,7 @@ static void listroms(int row)
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
 	int i,j;
 	j=0;
+	moremenu=1;
 	for(i=0;(j<romindex) && p;++i)
 	{
 		p=NextDirEntry(i==0,matchextension);
@@ -391,7 +395,10 @@ static void listroms(int row)
 		}
 	}
 	for(;j<7;++j)
+	{
+		moremenu=0;
 		romfilenames[j][0]=0;
+	}
 	menu[7].val=0;
 	menu[7].action=MENU_ACTION(&submenu);
 	menu[7].label="\x80 Back";
@@ -482,7 +489,8 @@ static void scrollmenu(int row)
 				--menuindex;
 			break;
 		case ROW_LINEDOWN:
-			++menuindex;
+			if(moremenu)
+				++menuindex;
 			break;
 	}
 	parseconf(menupage,menu,0,7);
@@ -498,6 +506,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 	int line=0;
 	char *title;
 	int skip=menuindex;
+	moremenu=1;
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
@@ -631,6 +640,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 	}
 	for(;line<7;++line)
 	{
+		moremenu=0;
 		*menu[line].label=0;
 		menu[line].action=0;
 	}
