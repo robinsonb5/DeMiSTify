@@ -1,5 +1,4 @@
--- Control ROM for the FPGA PC Engine project.
--- the ROM is split between two different chunks of memory of different
+-- Control ROM split between two different chunks of memory of different
 -- size to reduce demands on block RAM.
 
 library ieee;
@@ -10,7 +9,7 @@ use ieee.numeric_std.all;
 entity controller_rom is
 generic
 	(
-		ADDR_WIDTH : integer := 15 -- Specify your actual ROM size to save LEs and unnecessary block RAM usage.
+		ADDR_WIDTH : integer := 15 -- Specify actual ROM size to save LEs and unnecessary block RAM usage.
 	);
 port (
 	clk : in std_logic;

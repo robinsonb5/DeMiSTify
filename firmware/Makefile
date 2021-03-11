@@ -25,6 +25,7 @@ clean :
 	-rm *.S
 	-rm *.o
 	-rm *_byte.vhd
+	-rm *_word.vhd
 	-rm *.bin
 	-rm *.elf
 
