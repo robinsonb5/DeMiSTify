@@ -14,5 +14,8 @@ cat $1 | while read a; do
 	if [ "${b: -2}" = ".v" ]; then
 		echo set_global_assignment -name VERILOG_FILE ../../${a}
 	fi
+	if [ "${b: -3}" = ".sv" ]; then
+		echo set_global_assignment -name SYSTEMVERILOG_FILE ../../${a}
+	fi
 done
 

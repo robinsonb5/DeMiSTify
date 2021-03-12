@@ -1,19 +1,21 @@
 OVERRIDES=
+DEMISTIFYPATH=
 
 all: firmware
 
-EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd:
-	git submodule init
+$(DEMISTIFYPATH)/EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd:
+	cd $(DEMISTIFYPATH) \
+	git submodule init \ 
 	git submodule update
 
-EightThirtyTwo/vbcc/bin/vbcc832: EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd
-	make -C EightThirtyTwo
+$(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832: $(DEMISTIFYPATH)/EightThirtyTwo/RTL/eightthirtytwo_cpu.vhd
+	make -C $(DEMISTIFYPATH)/EightThirtyTwo
 
-EightThirtyTwo/lib832/lib832.a: EightThirtyTwo/vbcc/bin/vbcc832
+$(DEMISTIFYPATH)/EightThirtyTwo/lib832/lib832.a: $(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832
 	make -C EightThirtyTwo/lib832
 
-firmware: EightThirtyTwo/vbcc/bin/vbcc832 EightThirtyTwo/lib832/lib832.a firmware/controller_ROM_byte.vhd
+firmware: $(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832 $(DEMISTIFYPATH)/EightThirtyTwo/lib832/lib832.a $(DEMISTIFYPATH)/firmware/controller_ROM_byte.vhd
 
-firmware/controller_ROM_byte.vhd:
-	make -C firmware OVERRIDES=$(OVERRIDES)
+$(DEMISTIFYPATH)/firmware/controller_ROM_byte.vhd:
+	make -C $(DEMISTIFYPATH)/firmware OVERRIDES=$(OVERRIDES)
 

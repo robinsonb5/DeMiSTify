@@ -1,0 +1,13 @@
+# files inherited from the guest core:
+project.qip
+
+# The controller module
+DeMiSTify/controller/controller.qip
+
+# Either:  firmware with customisations
+firmware/controller_rom1_byte.vhd
+firmware/controller_rom2_byte.vhd
+
+# or:  standard firmware
+DeMiSTify/controller/firmware_std.qip
+

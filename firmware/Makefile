@@ -1,4 +1,4 @@
-832DIR=../EightThirtyTwo/
+832DIR=../EightThirtyTwo
 CC=$(832DIR)/vbcc/bin/vbcc832
 AS=$(832DIR)/832a/832a
 LD=$(832DIR)/832a/832l
@@ -11,7 +11,7 @@ ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=0x100
 
 START = $(LIBDIR)/crt0.a
-LIBS = $(LIBDIR)/libtiny832.a
+LIBS = $(LIBDIR)/libtiny832.a libdemistify.a
 
 PRJ_OBJ = uart.o spi_sd.o minfat.o swap.o main.o interrupts.o ps2.o keyboard.o userio.o osd.o font.o menu.o
 
@@ -19,6 +19,8 @@ ROMGENDIR = ../EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
 
 all: controller_rom_byte.vhd controller_rom_word.vhd
+
+lib: libdemistify.a
 
 clean :
 	-rm *.asm
@@ -28,6 +30,7 @@ clean :
 	-rm *_word.vhd
 	-rm *.bin
 	-rm *.elf
+	-rm *.a
 
 %_rom_word.vhd: %.bin $(ROMGEN)
 	sed 's/eightthirtytwo_rom/$*_rom/' >$*_rom_word.vhd <$(ROMGENDIR)/rom_prologue_word.vhd
@@ -46,11 +49,16 @@ clean :
 	cat >>$*_rom2_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	grep __bss_ $*.map
 
+empty:=
+space:= $(empty) $(empty)
 
-controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
+libdemistify.a: $(PRJ_OBJ)
+	cat > $@ $+
+
+controller.bin : $(START) $(LIBS)
 ifdef OVERRIDES
-	make -C ../../$(OVERRIDES)
-	$(LD) $(LDFLAGS) -o $@ -M controller.map $+ ../../$(OVERRIDES)/overrides.a
+	make -C $(subst $(space),\$(space),$(OVERRIDES))
+	$(LD) $(LDFLAGS) -o $@ -M controller.map $+ $(subst $(space),\$(space),$(OVERRIDES))/overrides.a
 else
 	$(LD) $(LDFLAGS) -o $@ -M controller.map $+
 endif

@@ -1,8 +1,9 @@
 BOARD=none
 PROJECT=none
 PROJECTDIR=../../
+DEMISTIFYPATH=
 MANIFEST=../../project_files.rtl
-SCRIPTSDIR=../../DeMiSTify/Scripts
+SCRIPTSDIR=$(DEMISTIFYPATH)/Scripts
 
 SOF=$(PROJECT)_$(BOARD).sof
 QSF=$(PROJECT)_$(BOARD).qsf
