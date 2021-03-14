@@ -45,7 +45,7 @@
 #define UIO_SECTOR_RD   0x17  // SD card sector read
 #define UIO_SECTOR_WR   0x18  // SD card sector write
 #define UIO_SET_SDCONF  0x19  // send SD card configuration (CSD, CID)
-#define UIO_ASTICK      0x1a
+#define UIO_ASTICK      0x1a  // Analog joystick
 #define UIO_SIO_IN      0x1b  // serial in
 #define UIO_SET_SDSTAT  0x1c  // set sd card status 
 #define UIO_SET_SDINFO  0x1d  // send info about mounted image
@@ -191,7 +191,7 @@ void user_io_kbd(unsigned char m, unsigned char *k, uint8_t priority, unsigned s
 char user_io_create_config_name(char *s);
 void user_io_digital_joystick(unsigned char, unsigned char);
 void user_io_digital_joystick_ext(unsigned char, uint16_t);
-void user_io_analog_joystick(unsigned char, char, char);
+void user_io_analog_joystick(unsigned char, int *a);
 char user_io_osd_is_visible();
 void user_io_send_buttons(char);
 

@@ -74,6 +74,25 @@ void Menu_Hide()
 }
 
 
+/* Analogue joystick support - left with weak linkage so it can be overriden */
+
+__weak void Menu_JoystickToAnalogue(int *ana,int joy)
+{
+	int target=0;
+	if(joy&2)
+		target=-128;
+	if(joy&1)
+		target=127;
+	*ana=(*ana*7+target)>>3;
+}
+
+
+__weak void Menu_Joystick(int port,int joymap)
+{
+	user_io_digital_joystick_ext(port, joymap);
+}
+
+
 /* Key -> gamepad mapping.  Weak linkage to allow overrides.
    FIXME - needs to be wider to allow for extra buttons. */
 
@@ -130,8 +149,8 @@ void Menu_Run()
 				joy|=joybit;
 			joybit>>=1;
 		}
-		user_io_digital_joystick_ext(0, (joy&0xff));
-		user_io_digital_joystick_ext(1, (joy>>8));
+		Menu_Joystick(0,joy&0xff);
+		Menu_Joystick(1,joy>>8);
 
 		TestKey(KEY_PAGEUP);
 		TestKey(KEY_PAGEDOWN);

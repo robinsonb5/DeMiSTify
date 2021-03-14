@@ -23,5 +23,14 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+
+if {[$optimizeforspeed=1]} {
+	set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+} else {
+	set_global_assignment -name OPTIMIZATION_MODE BALANCED
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
+}
+
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 

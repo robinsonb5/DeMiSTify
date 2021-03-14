@@ -56,3 +56,10 @@ void user_io_digital_joystick_ext(unsigned char joystick, int map) {
 	spi_uio_cmd8(UIO_JOYSTICK0_EXT + joystick, map);
 }
 
+void user_io_analogue_joystick(unsigned char joystick, int *map) {
+	spi_uio_cmd8_cont(UIO_ASTICK, joystick);
+	SPI(*map++);
+	SPI(*map++);
+	DisableIO();
+}
+
