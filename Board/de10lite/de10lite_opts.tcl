@@ -24,8 +24,8 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 
-if {[$optimizeforspeed=1]} {
-	set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
+if {[info exists optimizeforspeed]} {
+	set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
 	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 } else {
 	set_global_assignment -name OPTIMIZATION_MODE BALANCED
