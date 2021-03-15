@@ -23,6 +23,7 @@
 #include "osd.h"
 #include "menu.h"
 #include "keyboard.h"
+#include "spi.h"
 
 #include "gamepadkeys.h"
 
@@ -116,23 +117,44 @@ __weak unsigned char joy_keymap[]=
 	KEY_RIGHTARROW,
 };
 
+void SetScandouble(int sd)
+{
+	SPI(0xff);
+	SPI_ENABLE(HW_SPI_CONF);
+	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
+	SPI(sd<<4);
+	SPI_DISABLE(HW_SPI_CONF);
+}
 
+
+int scandouble=0;
 int prevbuttons=0;
 unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
+#define SCANDOUBLE_TIMEOUT 1000
 void Menu_Run()
 {
 	int i;
 	int upd=0;
 	int buttons=HW_JOY(REG_JOY_EXTRA);
+	int menu_timestamp;
 	struct menu_entry *m=menu;
 	struct hotkey *hk=hotkeys;
 	int joy=HW_JOY(REG_JOY);
 
 	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 	{
-		while(TestKey(KEY_F12))
+		menu_timestamp=HW_TIMER(REG_MILLISECONDS);
+		while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
+		{
+			buttons=HW_JOY(REG_JOY_EXTRA);
 			HandlePS2RawCodes();
+			if((HW_TIMER(REG_MILLISECONDS)-menu_timestamp)>SCANDOUBLE_TIMEOUT)
+			{
+				SetScandouble(scandouble^=1);
+				menu_timestamp=HW_TIMER(REG_MILLISECONDS);
+			}
+		}
 //		printf("Menu visible %d\n",menu_visible);
 		OsdShowHide(menu_visible^=1);
 		upd=1;
