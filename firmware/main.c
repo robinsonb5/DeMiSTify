@@ -227,7 +227,7 @@ int LoadROM(const char *fn)
 				imgsize=0;
 			}
 
-			SPI_ENABLE(HW_SPI_FPGA|HW_SPI_FAST);
+			SPI_ENABLE_FAST(HW_SPI_FPGA);
 			SPI(SPI_FPGA_FILE_TX_DAT);
 			while(sendsize--)
 			{
@@ -309,7 +309,7 @@ void selectrom(int row)
 		LoadROM(longfilename);	// since loading it by name will overwrite the sector buffer which currently contains it!
 	}
 	Menu_Draw(row);
-	Menu_Hide();
+	Menu_ShowHide(0);
 }
 
 
@@ -415,20 +415,20 @@ static void fileselect(int row)
 
 static void reset(int row)
 {
-	Menu_Hide();
+	Menu_ShowHide(0);
 	// FIXME reset here
 }
 
 
 static void SaveSettings(int row)
 {
-	Menu_Hide();
+	Menu_ShowHide(0);
 	// FIXME reset here
 }
 
 static void MenuHide(int row)
 {
-	Menu_Hide();
+	Menu_ShowHide(0);
 }
 
 static void showrommenu(int row)
@@ -653,7 +653,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 	else
 	{
 		menu[7].label="\x80 Exit";
-		menu[7].action=MENU_ACTION(&Menu_Hide);
+		menu[7].action=MENU_ACTION(&MenuHide);
 	}
 	menu[8].action=MENU_ACTION(&scrollmenu);
 
@@ -671,12 +671,20 @@ void buildmenu(int offset)
 
 __weak const char *bootrom_name="BOOT    ROM";
 
+__weak char *autoboot()
+{
+	char *result=0;
+	LoadROM(bootrom_name);
+	return(result);
+}
+
 char filename[16];
 int main(int argc,char **argv)
 {
 	int havesd;
 	int i,c;
 	int osd=0;
+	char *err;
 
 	PS2Init();
 
@@ -687,12 +695,18 @@ int main(int argc,char **argv)
 	if(havesd=spi_init() && FindDrive())
 		puts("OK");
 
-	LoadROM(bootrom_name);
-
 	menuindex=0;
 	menupage=0;
+
 	buildmenu(0);
-//	Menu_Hide();
+
+	if(err=autoboot())
+	{
+		menu[7].label=err;
+		Menu_Draw(7);
+		Menu_ShowHide(1);
+	}
+
 	EnableInterrupts();
 
 	while(1)

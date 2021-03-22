@@ -57,8 +57,7 @@ struct hotkey
 };
 
 
-void Menu_Show();
-void Menu_Hide();
+void Menu_ShowHide(int visible);
 void Menu_Draw();
 void Menu_Set(struct menu_entry *head);
 void Menu_SetHotKeys(struct hotkey *head);

@@ -68,10 +68,10 @@ void Menu_SetHotKeys(struct hotkey *head)
 	hotkeys=head;
 }
 
-void Menu_Hide()
+void Menu_ShowHide(int visible)
 {
-	OsdShowHide(0);
-	menu_visible=0;
+	OsdShowHide(visible);
+	menu_visible=visible;
 }
 
 
@@ -79,12 +79,33 @@ void Menu_Hide()
 
 __weak void Menu_JoystickToAnalogue(int *ana,int joy)
 {
+	int a=*ana;
+	int min=-0x7f00,max=0x7f00;
+	if(joy&2)
+	{
+		max=-0x3000;
+		a-=0x10;
+	}
+	else if(joy&1)
+	{
+		min=0x3000;
+		a+=0x10;
+	}
+	else
+		a>>=1;
+	if(a<min)
+		a=min;
+	if(a>max)
+		a=max;
+	*ana=a;
+#if 0
 	int target=0;
 	if(joy&2)
-		target=-128;
+		target=-0x7fff;
 	if(joy&1)
-		target=127;
-	*ana=(*ana*7+target)>>3;
+		target=0x7fff;
+	*ana=(*ana*0x3ff+target)>>10;
+#endif
 }
 
 
@@ -155,8 +176,8 @@ void Menu_Run()
 				menu_timestamp=HW_TIMER(REG_MILLISECONDS);
 			}
 		}
-//		printf("Menu visible %d\n",menu_visible);
 		OsdShowHide(menu_visible^=1);
+//		printf("Menu visible %d\n",menu_visible);
 		upd=1;
 	}
 	prevbuttons=buttons;
