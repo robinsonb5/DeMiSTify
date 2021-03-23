@@ -26,10 +26,13 @@ void ps2_ringbuffer_init(struct ps2_ringbuffer *r)
 {
 	r->in_hw=0;
 	r->in_cpu=0;
+#ifdef PS2_WRITE
 	r->out_hw=0;
 	r->out_cpu=0;
+#endif
 }
 
+#ifdef PS2_WRITE
 void ps2_ringbuffer_write(struct ps2_ringbuffer *r,int in)
 {
 	while(r->out_hw==((r->out_cpu+1)&(PS2_RINGBUFFER_SIZE-1)))
@@ -41,7 +44,7 @@ void ps2_ringbuffer_write(struct ps2_ringbuffer *r,int in)
 	PS2Handler();
 	EnableInterrupts();
 }
-
+#endif
 
 int ps2_ringbuffer_read(struct ps2_ringbuffer *r)
 {
@@ -83,6 +86,7 @@ void PS2Handler()
 		kbbuffer.inbuf[kbbuffer.in_hw]=kbd&0xff;
 		kbbuffer.in_hw=(kbbuffer.in_hw+1) & (PS2_RINGBUFFER_SIZE-1);
 	}
+#ifdef PS2_WRITE
 	if(kbd & (1<<BIT_PS2_CTS))
 	{
 		if(kbbuffer.out_hw!=kbbuffer.out_cpu)
@@ -91,6 +95,8 @@ void PS2Handler()
 			kbbuffer.out_hw=(kbbuffer.out_hw+1) & (PS2_RINGBUFFER_SIZE-1);
 		}
 	}
+#endif
+
 #ifdef MOUSE
 	mouse=HW_PS2(REG_PS2_MOUSE);
 	if(mouse & (1<<BIT_PS2_RECV))

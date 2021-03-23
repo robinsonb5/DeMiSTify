@@ -10,16 +10,20 @@
 #define BIT_PS2_RECV 11
 #define BIT_PS2_CTS 10
 
+#undef PS2_WRITE
+
 // Private
-#define PS2_RINGBUFFER_SIZE 16
+#define PS2_RINGBUFFER_SIZE 8
 struct ps2_ringbuffer
 {
-	volatile int in_hw;
-	volatile int in_cpu;
-	volatile int out_hw;
-	volatile int out_cpu;
-	unsigned int inbuf[PS2_RINGBUFFER_SIZE]; // Int is much easier than char for ZPU to deal with
-	unsigned int outbuf[PS2_RINGBUFFER_SIZE];
+	volatile unsigned char in_hw;
+	volatile unsigned char in_cpu;
+	unsigned unsigned char inbuf[PS2_RINGBUFFER_SIZE]; // Int is much easier than char for ZPU to deal with
+#ifdef PS2_WRITE
+	volatile unsigned char out_hw;
+	volatile unsigned char out_cpu;
+	unsigned unsigned char outbuf[PS2_RINGBUFFER_SIZE];
+#endif
 };
 
 #ifdef __cplusplus

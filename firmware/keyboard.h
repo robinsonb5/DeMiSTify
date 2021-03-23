@@ -43,6 +43,14 @@
 #define KEY_RCTRL 0x94
 #define KEY_ALT	0x11
 #define KEY_ALTGR 0x91
+#define KEY_LGUI 0x9f
+#define KEY_RGUI 0xa7
+#define KEY_MENU 0xaf
+
+#define KEY_COMMA 0x41
+#define KEY_PERIOD 0x49
+#define KEY_SLASH 0x4a
+
 
 
 int HandlePS2RawCodes();
