@@ -77,22 +77,23 @@ void Menu_ShowHide(int visible)
 
 /* Analogue joystick support - left with weak linkage so it can be overriden */
 
+__weak int analoguesensitivity=0x10;
 __weak void Menu_JoystickToAnalogue(int *ana,int joy)
 {
 	int a=*ana;
 	int min=-0x7f00,max=0x7f00;
 	if(joy&2)
 	{
-		max=-0x3000;
-		a-=0x10;
+		max=-analoguesensitivity<<8;
+		a-=analoguesensitivity;
 	}
 	else if(joy&1)
 	{
-		min=0x3000;
-		a+=0x10;
+		min=analoguesensitivity<<8;
+		a+=analoguesensitivity;
 	}
 	else
-		a>>=1;
+		a=(a*15)>>4;
 	if(a<min)
 		a=min;
 	if(a>max)
