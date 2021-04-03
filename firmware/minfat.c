@@ -468,7 +468,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 				}
 				#endif
 				else if ((!(pEntry->Attributes & ATTR_VOLUME)) &&
-					 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name)))
+					 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name[0])))
 				{
 					if(!prevlfn)
 						longfilename[0]=0;

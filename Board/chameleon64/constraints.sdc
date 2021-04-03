@@ -18,6 +18,7 @@ set RAM_IN {ram_d*}
 set VGA_OUT {red* grn* blu* hsync_n vsync_n}
 
 set FALSE_OUT {sigma_l sigma_r}
+set FALSE_IN {freeze_n phi2_n*}
 
 set_false_path -to [get_ports {RAM_CLK}]
 
@@ -30,20 +31,6 @@ set_input_delay 0.5 -clock [get_clocks ${supportclk}] [get_ports {romlh_n ioef_n
 set_output_delay 0.5 -clock [get_clocks ${hostclk}] [get_ports { mux_d* }]
 
 set_output_delay 0.5 -clock [get_clocks ${supportclk}] [get_ports { mux_clk mux[*] }]
-
-
-#**************************************************************
-# Set Clock Uncertainty
-#**************************************************************
-
-derive_clock_uncertainty;
-
-#**************************************************************
-# Set False Path
-#**************************************************************
-
-set_false_path -from {freeze_n} -to {*}
-set_false_path -from {phi2_n*} -to {*}
 
 
 # JTAG constraints for debug interface (if enabled)

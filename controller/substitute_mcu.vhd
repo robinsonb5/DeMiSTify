@@ -58,7 +58,7 @@ entity substitute_mcu is
 		joy3 : in std_logic_vector(7 downto 0) := "11111111";
 		joy4 : in std_logic_vector(7 downto 0) := "11111111";
 		
-		menu_button : in std_logic :='1';
+		buttons : in std_logic_vector(7 downto 0) :="11111111";
 		
 		-- UART
 		rxd	: in std_logic;
@@ -639,7 +639,7 @@ begin
 
 						when X"EC" => -- Misc inputs;
 							from_mem<=(others => '0');
-							from_mem(0)<=not menu_button;
+							from_mem(7 downto 0)<=not buttons;
 							mem_busy<='0';
 
 						when others =>

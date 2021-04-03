@@ -18,11 +18,11 @@ struct ps2_ringbuffer
 {
 	volatile unsigned char in_hw;
 	volatile unsigned char in_cpu;
-	unsigned unsigned char inbuf[PS2_RINGBUFFER_SIZE]; // Int is much easier than char for ZPU to deal with
+	volatile unsigned char inbuf[PS2_RINGBUFFER_SIZE]; // Int is much easier than char for ZPU to deal with
 #ifdef PS2_WRITE
 	volatile unsigned char out_hw;
 	volatile unsigned char out_cpu;
-	unsigned unsigned char outbuf[PS2_RINGBUFFER_SIZE];
+	volatile unsigned char outbuf[PS2_RINGBUFFER_SIZE];
 #endif
 };
 

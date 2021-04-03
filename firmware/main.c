@@ -188,10 +188,14 @@ void VerifyROM()
 	SPI_DISABLE(HW_SPI_FPGA);
 }
 
+
+__weak int rom_minsize=1;
+
 int LoadROM(const char *fn)
 {
 	if(FileOpen(&file,fn))
 	{
+		int minsize=rom_minsize;
 		int imgsize=file.size;
 		int sendsize;
 		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
@@ -209,33 +213,39 @@ int LoadROM(const char *fn)
 		SPI(0x01); /* Upload */
 		SPI_DISABLE(HW_SPI_FPGA);
 
-		while(imgsize)
+		while(minsize>0)
 		{
-			char *buf=sector_buffer;
-//			if(!FileRead(&file,0))//sector_buffer))
-			if(!FileRead(&file,sector_buffer))
-				return(0);
-
-			if(imgsize>=512)
+			while(imgsize)
 			{
-				sendsize=512;
-				imgsize-=512;
-			}
-			else
-			{
-				sendsize=imgsize;
-				imgsize=0;
-			}
+				char *buf=sector_buffer;
+	//			if(!FileRead(&file,0))//sector_buffer))
+				if(!FileRead(&file,sector_buffer))
+					return(0);
 
-			SPI_ENABLE_FAST(HW_SPI_FPGA);
-			SPI(SPI_FPGA_FILE_TX_DAT);
-			while(sendsize--)
-			{
-				SPI(*buf++);
-			}
-			SPI_DISABLE(HW_SPI_FPGA);
+				if(imgsize>=512)
+				{
+					sendsize=512;
+					imgsize-=512;
+				}
+				else
+				{
+					sendsize=imgsize;
+					imgsize=0;
+				}
 
-			FileNextSector(&file);
+				SPI_ENABLE_FAST(HW_SPI_FPGA);
+				SPI(SPI_FPGA_FILE_TX_DAT);
+				while(sendsize--)
+				{
+					SPI(*buf++);
+				}
+				SPI_DISABLE(HW_SPI_FPGA);
+
+				FileNextSector(&file);
+			}
+			minsize-=file.size;
+			if(minsize>0)
+				FileOpen(&file,fn); // Start from the beginning again.
 		}
 
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -667,7 +677,6 @@ void buildmenu(int offset)
 	parseconf(menupage,menu,0,7);
 	Menu_Set(menu);
 }
-
 
 __weak const char *bootrom_name="BOOT    ROM";
 

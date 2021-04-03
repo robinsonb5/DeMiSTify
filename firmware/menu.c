@@ -178,7 +178,8 @@ void Menu_Run()
 			}
 		}
 		OsdShowHide(menu_visible^=1);
-//		printf("Menu visible %d\n",menu_visible);
+		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
+		//		printf("Menu visible %d\n",menu_visible);
 		upd=1;
 	}
 	prevbuttons=buttons;
