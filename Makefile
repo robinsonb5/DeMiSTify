@@ -14,9 +14,11 @@ firmware:
 	make -f $(DEMISTIFYPATH)/firmware.mk DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS)
 
 $(DEMISTIFYPATH)/site.mk:
+	$(info ************************************************)
 	$(info Copy the example site.template file to site.mk)
 	$(info and edit the paths for the version(s) of Quartus)
 	$(info you have installed.)
+	$(info ************************************************)
 	$(error site.mk not found.)
 
 .PHONY: init

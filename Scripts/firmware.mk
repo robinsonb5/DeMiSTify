@@ -49,6 +49,11 @@ clean :
 	-rm *.bin
 	-rm *.elf
 
+$(ROMGEN):
+	make -C $(ROMGENDIR)
+
+$(START):
+	make -C $(832DIR)
 
 $(FWDIR)/libdemistify.a:
 	make -C $(FWDIR) DEMISTIFYPATH=$(DEMISTIFYPATH) lib
