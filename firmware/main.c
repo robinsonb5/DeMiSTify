@@ -196,7 +196,6 @@ int LoadROM(const char *fn)
 	if(FileOpen(&file,fn))
 	{
 		int minsize=rom_minsize;
-		int imgsize=file.size;
 		int sendsize;
 		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
 //		printf("Opened file, loading %s, (idx %d)...\n",fn+8,extindex);
@@ -215,6 +214,8 @@ int LoadROM(const char *fn)
 
 		while(minsize>0)
 		{
+			int imgsize=file.size;
+			minsize-=imgsize;
 			while(imgsize)
 			{
 				char *buf=sector_buffer;
@@ -243,7 +244,6 @@ int LoadROM(const char *fn)
 
 				FileNextSector(&file);
 			}
-			minsize-=file.size;
 			if(minsize>0)
 				FileOpen(&file,fn); // Start from the beginning again.
 		}
