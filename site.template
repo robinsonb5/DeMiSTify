@@ -13,13 +13,13 @@ BOARDS=chameleon64 chameleon64v2 de10lite
 # Q13 for older devices.  13.0sp1 supports Cyclone II
 # while 13.1 is the last version to support Cyclone III
 
-Q13 = $(HOME)/altera/13.0sp1/quartus/bin/
+Q13 = /opt/altera/13.0sp1/quartus/bin/
 
 
 # Q18 for newer devices - I believe anything from version 15 upwards
 # will support the boards of interest.
 
-Q18 = $(HOME)/intelFPGA_lite/18.1/quartus/bin/
+Q18 = /opt/intelFPGA_lite/18.1/quartus/bin/
 
 
 # ISE for older Xilinx devices
