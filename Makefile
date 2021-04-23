@@ -2,12 +2,17 @@ PROJECTS=
 OVERRIDES=
 DEMISTIFYPATH=
 PROJECTPATH=fpga
+EIGHTTHIRTYTWOPATH=EightThirtyTwo
 include $(DEMISTIFYPATH)/site.mk
 
-all: $(DEMISTIFYPATH)/site.mk firmware init compile
+all: $(EIGHTTHIRTYTWOPATH)/Makefile $(DEMISTIFYPATH)/site.mk firmware init compile
 
 empty:=
 space:= $(empty) $(empty)
+
+$(EIGHTTHIRTYTWOPATH)/Makefile:
+	git submodule init
+	git submodule update --recursive
 
 .PHONY: firmware
 firmware:
