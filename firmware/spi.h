@@ -27,6 +27,7 @@
 #define SPI_FPGA_FILE_TX 0x53
 #define SPI_FPGA_FILE_TX_DAT 0x54
 #define SPI_FPGA_FILE_INDEX 0x55
+#define SPI_FPGA_FILE_INFO 0x56
 
 #define SPI_ENABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|1);}
 #define SPI_ENABLE_FAST(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST)|(1<<x)|1);}

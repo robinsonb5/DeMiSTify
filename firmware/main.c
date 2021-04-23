@@ -34,15 +34,18 @@
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
+#if 0
 #define UPLOADBASE 0xFFFFFFF8
 #define UPLOAD_ENA 0
 #define UPLOAD_DAT 4
 #define HW_UPLOAD(x) *(volatile unsigned int *)(UPLOADBASE+x)
+#endif
 
 int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
 #define LINELENGTH 32
-int menupage;
-int romtype;
+char menupage;
+char romtype;
+char coretype;
 
 #define conf_next() SPI(0xff)
 
@@ -83,7 +86,7 @@ int getdigit()
 //	printf("Getdigit %c\n",c);
 	if(c>='0' && c<='9')
 		c-='0';
-	if(c>='A' && c<='F')
+	if(c>='A' && c<='Z')
 		c-='A'-10;
 	return(c);	
 }
@@ -98,7 +101,7 @@ int matchextension(const char *ext)
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
-	SPI(SPI_CONF_READ); // Read conf string command
+	coretype=SPI(SPI_CONF_READ); // Read conf string command
 	
 //	printf("Matching %s with romtype %d\n",ext,romtype);
 
@@ -205,6 +208,15 @@ int LoadROM(const char *fn)
 		SPI((romtype+1)|((extindex-1)<<6)); /* Set ROM index */
 		SPI_DISABLE(HW_SPI_FPGA);
 
+		if(coretype&0x80)	/* Send a dummy file info */
+		{
+			int i;
+			SPI_ENABLE(HW_SPI_FPGA);
+			SPI(SPI_FPGA_FILE_INFO);
+			for(i=0;i<32;++i)
+				SPI(0xff);
+			SPI_DISABLE(HW_SPI_FPGA);
+		}
 		SPI(0xFF);
 
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -219,8 +231,12 @@ int LoadROM(const char *fn)
 			while(imgsize)
 			{
 				char *buf=sector_buffer;
-	//			if(!FileRead(&file,0))//sector_buffer))
-				if(!FileRead(&file,sector_buffer))
+				int result;
+				if(coretype&0x80)
+					result=FileRead(&file,0);
+				else
+					result=FileRead(&file,sector_buffer);
+				if(!result)
 					return(0);
 
 				if(imgsize>=512)
@@ -234,13 +250,16 @@ int LoadROM(const char *fn)
 					imgsize=0;
 				}
 
-				SPI_ENABLE_FAST(HW_SPI_FPGA);
-				SPI(SPI_FPGA_FILE_TX_DAT);
-				while(sendsize--)
+				if(!(coretype&0x80))
 				{
-					SPI(*buf++);
+					SPI_ENABLE_FAST(HW_SPI_FPGA);
+					SPI(SPI_FPGA_FILE_TX_DAT);
+					while(sendsize--)
+					{
+						SPI(*buf++);
+					}
+					SPI_DISABLE(HW_SPI_FPGA);
 				}
-				SPI_DISABLE(HW_SPI_FPGA);
 
 				FileNextSector(&file);
 			}
@@ -520,20 +539,25 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
-	SPI(SPI_CONF_READ); // Read conf string command
+	SPI(SPI_CONF_READ); /* Read conf string command */
 
 	conf_nextfield(); /* Skip over core name */
 	c=conf_next();
 	if(c!=';')
 	{
-		strcpy(menu[line].label,"Load *. ");
-		menu[line].action=MENU_ACTION(&fileselect);
-		menu[line].label[7]=c;
-		copytocomma(&menu[line].label[8],LINELENGTH-8,1);
-		if(line>=skip)
-			++line;
+		if(!selpage) /* Add the load item only for the first menu page */
+		{
+			strcpy(menu[line].label,"Load *. ");
+			menu[line].action=MENU_ACTION(&fileselect);
+			menu[line].label[7]=c;
+			copytocomma(&menu[line].label[8],LINELENGTH-8,1);
+			if(line>=skip)
+				++line;
+			else
+				--skip;
+		}
 		else
-			--skip;
+			conf_nextfield();
 	}
 	while(c && line<limit)
 	{
