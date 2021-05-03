@@ -232,26 +232,20 @@ int LoadROM(const char *fn)
 			{
 				char *buf=sector_buffer;
 				int result;
-				if(coretype&0x80)
-					result=FileRead(&file,0);
-				else
-					result=FileRead(&file,sector_buffer);
-				if(!result)
-					return(0);
 
-				if(imgsize>=512)
+				sendsize=512;
+				imgsize-=512;
+				if(imgsize<0)
 				{
-					sendsize=512;
-					imgsize-=512;
-				}
-				else
-				{
-					sendsize=imgsize;
+					sendsize=imgsize+512;
 					imgsize=0;
 				}
 
-				if(!(coretype&0x80))
+				if(coretype&0x80)
+					result=FileRead(&file,0);
+				else
 				{
+					result=FileRead(&file,sector_buffer);
 					SPI_ENABLE_FAST(HW_SPI_FPGA);
 					SPI(SPI_FPGA_FILE_TX_DAT);
 					while(sendsize--)
@@ -260,6 +254,8 @@ int LoadROM(const char *fn)
 					}
 					SPI_DISABLE(HW_SPI_FPGA);
 				}
+				if(!result)
+					return(0);
 
 				FileNextSector(&file);
 			}

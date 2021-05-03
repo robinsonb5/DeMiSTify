@@ -14,6 +14,7 @@ $(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832: $(DEMISTIFYPATH)/EightThirtyTw
 $(DEMISTIFYPATH)/EightThirtyTwo/lib832/lib832.a: $(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832
 	make -C EightThirtyTwo/lib832
 
+.phony: firmware
 firmware: $(DEMISTIFYPATH)/EightThirtyTwo/vbcc/bin/vbcc832 $(DEMISTIFYPATH)/EightThirtyTwo/lib832/lib832.a $(DEMISTIFYPATH)/firmware/controller_ROM_byte.vhd
 
 $(DEMISTIFYPATH)/firmware/controller_ROM_byte.vhd:

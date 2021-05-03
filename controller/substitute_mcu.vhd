@@ -72,6 +72,11 @@ constant sysclk_hz : integer := sysclk_frequency*1000;
 constant uart_divisor : integer := sysclk_hz/1152;
 constant maxAddrBit : integer := 31;
 
+-- Define speeds for fast and slow SPI clocks.
+-- Effective speed is sysclk / (2*(1+2^triggerbit))
+constant SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
+constant SPI_FASTBIT : integer := 2;  -- ~5MHz when sysclk is 50MHz
+
 signal reset_n : std_logic := '0';
 signal reset_counter : unsigned(15 downto 0) := X"FFFF";
 
@@ -306,9 +311,9 @@ begin
 	if rising_edge(clk) then
 		spiclk_in<='0';
 		spi_tick<=spi_tick+1;
-		if (spi_fast='1' and spi_tick(3)='1') or spi_tick(6)='1' then
+		if (spi_fast='1' and spi_tick(SPI_FASTBIT)='1') or spi_tick(SPI_SLOWBIT)='1' then
 			spiclk_in<='1'; -- Momentary pulse for SPI host.
-			spi_tick<='0'&X"00";
+			spi_tick<=(others=>'0');
 		end if;
 	end if;
 end process;

@@ -21,7 +21,12 @@ OBJDIR=832dir
 
 OBJ=overrides.o
 
-all: controller.bin controller_rom_byte.vhd controller_rom_word.vhd
+all: phonys controller.bin controller_rom_byte.vhd controller_rom_word.vhd
+
+.phony: phonys
+phonys:
+	make -C $(FWDIR) DEMISTIFYPATH=$(DEMISTIFYPATH) lib
+
 
 %_rom_word.vhd: %.bin $(ROMGEN)
 	sed 's/eightthirtytwo_rom/$*_rom/' >$*_rom_word.vhd <$(ROMGENDIR)/rom_prologue_word.vhd
