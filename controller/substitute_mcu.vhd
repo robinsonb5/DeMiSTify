@@ -21,7 +21,9 @@ use IEEE.numeric_std.ALL;
 entity substitute_mcu is
 	generic (
 		debug : boolean := false;
-		sysclk_frequency : integer := 500 -- Sysclk frequency * 10
+		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
+		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
+		SPI_FASTBIT : integer := 2  -- ~5MHz when sysclk is 50MHz
 	);
 	port (
 		clk 			: in std_logic;
@@ -74,8 +76,6 @@ constant maxAddrBit : integer := 31;
 
 -- Define speeds for fast and slow SPI clocks.
 -- Effective speed is sysclk / (2*(1+2^triggerbit))
-constant SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
-constant SPI_FASTBIT : integer := 2;  -- ~5MHz when sysclk is 50MHz
 
 signal reset_n : std_logic := '0';
 signal reset_counter : unsigned(15 downto 0) := X"FFFF";
