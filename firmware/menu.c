@@ -177,7 +177,8 @@ void Menu_Run()
 				menu_timestamp=HW_TIMER(REG_MILLISECONDS);
 			}
 		}
-		OsdShowHide(menu_visible^=1);
+		menu_visible^=1;
+		OsdShowHide(menu_visible);
 		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
 		//		printf("Menu visible %d\n",menu_visible);
 		upd=1;
@@ -255,6 +256,13 @@ void Menu_Run()
 	// Find the currently highlighted menu item
 	if((joy&0xf0) || (TestKey(KEY_ENTER)&2))
 	{
+		while((joy&0xf0) || TestKey(KEY_ENTER))
+		{
+			joy=HW_JOY(REG_JOY);
+			joy=(joy&0xff)|(joy>>8); // Merge ports;
+			HandlePS2RawCodes();
+		}
+
 		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 	}
 

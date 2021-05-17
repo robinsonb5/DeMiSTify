@@ -64,7 +64,8 @@ entity substitute_mcu is
 		
 		-- UART
 		rxd	: in std_logic;
-		txd	: out std_logic
+		txd	: out std_logic;
+		intercept : out std_logic
 );
 end entity;
 
@@ -172,13 +173,6 @@ signal mem_rd_d : std_logic;
 signal mem_wr_d : std_logic; 
 signal cache_valid : std_logic;
 signal flushcaches : std_logic;
-
--- ROM upload signals
-signal uploading : std_logic;
-signal upload_addr : unsigned(24 downto 0);
-signal upload_data : std_logic_vector(7 downto 0);
-signal upload_req : std_logic;
-signal upload_ack : std_logic;
 
 -- CPU Debug signals
 signal debug_req : std_logic;
@@ -484,6 +478,7 @@ end generate;
 process(clk)
 begin
 	if reset_n='0' then
+		intercept<='0';
 		spi_active<='0';
 		int_enabled<='0';
 		kbdrecvreg <='0';
@@ -493,8 +488,6 @@ begin
 		spi_ss3 <= '1';
 		spi_ss4 <= '1';
 		conf_data0 <= '1';
-		uploading<='0';
-		upload_req<='0';
 	elsif rising_edge(clk) then
 		mem_busy<='1';
 		ser_txgo<='0';
@@ -572,15 +565,10 @@ begin
 							mousesendbyte<=from_cpu(7 downto 0);
 							mousesendtrigger<='1';
 							mem_busy<='0';
-
-						when X"f8" =>
-							uploading <= from_cpu(0);
-							upload_addr<=(others=>'0');
-							mem_busy<='0';
 							
 						when X"fc" =>
-							upload_data<=from_cpu(7 downto 0);
-							upload_req<='1';
+							intercept <= from_cpu(0);
+							mem_busy<='0';
 							
 						when others =>
 							mem_busy<='0';

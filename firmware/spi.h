@@ -1,6 +1,9 @@
 #ifndef SPI_H
 #define SPI_H
 
+#define INTERCEPTBASE 0xFFFFFFFC
+#define HW_INTERCEPT(x) *(volatile unsigned int *)(INTERCEPTBASE+x)
+
 #define SPIBASE 0xFFFFFFD0
 #define HW_SPI(x) *(volatile unsigned int *)(SPIBASE+x)
 

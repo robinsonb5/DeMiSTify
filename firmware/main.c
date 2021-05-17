@@ -34,18 +34,13 @@
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
-#if 0
-#define UPLOADBASE 0xFFFFFFF8
-#define UPLOAD_ENA 0
-#define UPLOAD_DAT 4
-#define HW_UPLOAD(x) *(volatile unsigned int *)(UPLOADBASE+x)
-#endif
+#define DIRECTUPLOAD 0x10
 
 int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
 #define LINELENGTH 32
 char menupage;
-char romtype;
 char coretype;
+char romtype=0;
 
 #define conf_next() SPI(0xff)
 
@@ -202,13 +197,14 @@ int LoadROM(const char *fn)
 		int sendsize;
 		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
 //		printf("Opened file, loading %s, (idx %d)...\n",fn+8,extindex);
-
+		if(!extindex)
+			extindex=1;
 		SPI_ENABLE(HW_SPI_FPGA);
 		SPI(SPI_FPGA_FILE_INDEX);
 		SPI((romtype+1)|((extindex-1)<<6)); /* Set ROM index */
 		SPI_DISABLE(HW_SPI_FPGA);
 
-		if(coretype&0x80)	/* Send a dummy file info */
+		if(coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 		{
 			int i;
 			SPI_ENABLE(HW_SPI_FPGA);
@@ -241,7 +237,7 @@ int LoadROM(const char *fn)
 					imgsize=0;
 				}
 
-				if(coretype&0x80)
+				if(coretype&DIRECTUPLOAD)
 					result=FileRead(&file,0);
 				else
 				{
@@ -699,10 +695,12 @@ void buildmenu(int offset)
 }
 
 __weak const char *bootrom_name="BOOT    ROM";
+__weak char bootrom_type=0;
 
 __weak char *autoboot()
 {
 	char *result=0;
+	romtype=bootrom_type;
 	LoadROM(bootrom_name);
 	return(result);
 }
