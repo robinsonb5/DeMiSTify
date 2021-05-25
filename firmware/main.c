@@ -36,11 +36,12 @@
 
 #define DIRECTUPLOAD 0x10
 
-int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
+unsigned int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
 #define LINELENGTH 32
-char menupage;
-char coretype;
-char romtype=0;
+unsigned char menupage;
+unsigned char coretype;
+unsigned char romtype=0;
+unsigned char cfgidx=0;
 
 #define conf_next() SPI(0xff)
 
@@ -77,7 +78,7 @@ int copytocomma(char *buf, int limit,int copy)
 
 int getdigit()
 {
-	int c=conf_next();
+	unsigned int c=conf_next();
 //	printf("Getdigit %c\n",c);
 	if(c>='0' && c<='9')
 		c-='0';
@@ -90,20 +91,38 @@ int getdigit()
 int matchextension(const char *ext)
 {
 	int done=0;
-	int i=0;
+	unsigned int i=0;
 	int c=1;
 	int c1,c2,c3;
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
 	coretype=SPI(SPI_CONF_READ); // Read conf string command
-	
-//	printf("Matching %s with romtype %d\n",ext,romtype);
+
+/*  The first config entry has the corename, a semicolon, then optional match extensions.
+    Subsequent configs have a type, a comma, then the extensions.
+    We can find the correct entry by stepping over semicolons.  */
+
+	for(i=0;i<=cfgidx;++i)
+		conf_nextfield();
+
+/*	Having found the correct entry, we need to step over the descriptor if there is one. */
+
+	if(cfgidx) /* No descriptor for the first entry. */
+	{
+		do
+		{
+			c=conf_next();
+		} while(c && c!=',');
+	}
+
+#if 0	
+/*	printf("Matching %s with romtype %d\n",ext,romtype); */
 
 	if(c=conf_nextfield())
 	{
 		c1=conf_next();
-		if(c1==';' || romtype )
+		if(c1==';' || romtype>1 )
 		{
 			done=1;
 			while(c)
@@ -124,8 +143,11 @@ int matchextension(const char *ext)
 	}
 
 	// c1 will already have been read
+#endif
+	i=0;
 	while(!done)
 	{
+		c1=conf_next();
 		c2=conf_next();
 		c3=conf_next();
 //		printf("%d, %d, %d, %d, %d, %d\n",c1,c2,c3,ext[8],ext[9],ext[10]);
@@ -137,7 +159,6 @@ int matchextension(const char *ext)
 			i=0;
 			done=1;
 		}
-		c1=conf_next();
 	}
 	SPI_DISABLE(HW_SPI_CONF);
 //	printf("Second match result %d\n",i);
@@ -151,8 +172,8 @@ fileTYPE file;
 
 void VerifyROM()
 {
-	int imgsize=file.size;
-	int sendsize;
+	unsigned int imgsize=file.size;
+	unsigned int sendsize;
 	SPI_ENABLE(HW_SPI_FPGA)
 	SPI(SPI_FPGA_FILE_TX);
 	SPI(0x03);	/* Verify */
@@ -201,12 +222,12 @@ int LoadROM(const char *fn)
 			extindex=1;
 		SPI_ENABLE(HW_SPI_FPGA);
 		SPI(SPI_FPGA_FILE_INDEX);
-		SPI((romtype+1)|((extindex-1)<<6)); /* Set ROM index */
+		SPI(romtype|((extindex-1)<<6)); /* Set ROM index */
 		SPI_DISABLE(HW_SPI_FPGA);
 
 		if(coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 		{
-			int i;
+			unsigned int i;
 			SPI_ENABLE(HW_SPI_FPGA);
 			SPI(SPI_FPGA_FILE_INFO);
 			for(i=0;i<32;++i)
@@ -272,7 +293,7 @@ int LoadROM(const char *fn)
 
 void spin()
 {
-	int i,t;
+	unsigned int i,t;
 	for(i=0;i<1024;++i)
 		t=HW_SPI(HW_SPI_CS);
 }
@@ -302,9 +323,9 @@ static struct menu_entry menu[]=
 };
 
 
-static DIRENTRY *nthfile(int n)
+static DIRENTRY *nthfile(unsigned int n)
 {
-	int i,j=0;
+	unsigned int i,j=0;
 	DIRENTRY *p;
 	for(i=0;j<=n;++i)
 	{
@@ -373,7 +394,7 @@ static void scrollroms(int row)
 static void listroms(int row)
 {
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
-	int i,j;
+	unsigned int i,j;
 	j=0;
 	moremenu=1;
 	for(i=0;(j<romindex) && p;++i)
@@ -427,9 +448,10 @@ static void listroms(int row)
 	Menu_Draw(row);
 }
 
-static void fileselect(int row)
+static void fileselector(int row)
 {
-	romtype=row;
+	romtype=menu[row].val;
+	cfgidx=menu[row].limit;
 	listroms(row);
 }
 
@@ -489,7 +511,7 @@ static void cycle(int row)
 	SPI(statusword>>24);
 	SPI_DISABLE(HW_SPI_CONF);
 
-	parseconf(menupage,menu,0,7);
+	parseconf(menupage,menu,menuindex,7);
 	Menu_Draw(row);
 }
 
@@ -514,19 +536,21 @@ static void scrollmenu(int row)
 				++menuindex;
 			break;
 	}
-	parseconf(menupage,menu,0,7);
+	parseconf(menupage,menu,menuindex,7);
 	Menu_Draw(row);
 }
 
 
-int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
+int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
 {
 	int c;
-	int page=0;
-	int maxpage=0;
-	int line=0;
+	unsigned int page=0;
+	unsigned int maxpage=0;
+	unsigned int line=0;
 	char *title;
-	int skip=menuindex;
+	unsigned int skip=first;
+	unsigned int fileindex=1;
+	unsigned int configidx=0;
 	moremenu=1;
 
 	SPI(0xff);
@@ -540,8 +564,11 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 		if(!selpage) /* Add the load item only for the first menu page */
 		{
 			strcpy(menu[line].label,"Load *. ");
-			menu[line].action=MENU_ACTION(&fileselect);
+			menu[line].action=MENU_ACTION(&fileselector);
 			menu[line].label[7]=c;
+			menu[line].val=fileindex;
+			++fileindex;
+			menu[line].limit=0;
 			copytocomma(&menu[line].label[8],LINELENGTH-8,1);
 			if(line>=skip)
 				++line;
@@ -562,7 +589,10 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 					conf_next();
 					copytocomma(menu[line].label,10,0);
 					copytocomma(menu[line].label,LINELENGTH-2,1);
-					menu[line].action=MENU_ACTION(&fileselect);
+					menu[line].action=MENU_ACTION(&fileselector);
+					menu[line].val=fileindex;
+					menu[line].limit=configidx;
+					++fileindex;
 					if(line>=skip)
 						++line;
 					else
@@ -570,6 +600,10 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 				}
 				else
 					c=conf_nextfield();
+				break;
+			case 'S': // Disk image select
+				++fileindex;
+				conf_nextfield;
 				break;
 			case 'P':
 				page=getdigit();
@@ -609,9 +643,9 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 				if (page==selpage)
 				{
 					/* Must be a submenu entry */
-					int low,high=0;
-					int opt=0;
-					int val;
+					unsigned int low,high=0;
+					unsigned int opt=0;
+					unsigned int val;
 
 					/* Parse option */
 					low=getdigit();
@@ -663,6 +697,7 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 				c=conf_nextfield();
 				break;
 		}
+		++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 	}
 	for(;line<7;++line)
 	{
@@ -690,17 +725,16 @@ int parseconf(int selpage,struct menu_entry *menu,int first,int limit)
 
 void buildmenu(int offset)
 {
-	parseconf(menupage,menu,0,7);
+	parseconf(menupage,menu,menuindex,7);
 	Menu_Set(menu);
 }
 
 __weak const char *bootrom_name="BOOT    ROM";
-__weak char bootrom_type=0;
 
 __weak char *autoboot()
 {
 	char *result=0;
-	romtype=bootrom_type;
+	romtype=0;
 	LoadROM(bootrom_name);
 	return(result);
 }

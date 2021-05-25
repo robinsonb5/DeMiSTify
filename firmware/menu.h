@@ -45,9 +45,9 @@ struct menu_entry
 {
 	menu_action action;	
 	char *label;
-	char val;
-	char limit;
-	char shift;
+	unsigned char val;
+	unsigned char limit;
+	unsigned char shift;
 };
 
 struct hotkey

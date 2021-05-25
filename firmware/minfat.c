@@ -74,7 +74,7 @@ unsigned int current_directory_start;
 
 unsigned char sector_buffer[512];       // sector buffer
 #ifndef DISABLE_LONG_FILENAMES
-char longfilename[260];
+char longfilename[261];
 #endif
 
 //unsigned char *sector_buffer=0x18000;
@@ -360,19 +360,17 @@ int LoadFile(const char *fn, unsigned char *buf)
 {
 	if(FileOpen(&file,fn))
 	{
-		int imgsize=(file.size+511)/512;
-		int c=0;
-		int sector=0;
+		unsigned int c=0;
 		STATUS("Opened file, loading...\n");
 
-		while(c<imgsize)
+		while(c<file.size)
 		{
 			if(!FileRead(&file,buf))
 				return(0);
 			FileNextSector(&file);
 
 			buf+=512;
-			++c;
+			c+=512;
 		}
 	}
 	else
@@ -412,15 +410,15 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 	static unsigned long  iDirectorySector;     // current sector of directory entries table
 	static unsigned long  iDirectoryCluster;    // start cluster of subdirectory or FAT32 root directory
 	static unsigned long  iEntry;        // entry index in directory cluster or FAT16 root directory
-	static int prevlfn=0;
+	int prevlfn=0;
 
 	if(init)
 	{
 		iEntry=0;
 		iDirectorySector=current_directory_start;
 		iDirectoryCluster=current_directory_cluster;
-		prevlfn=0;
 	}
+	longfilename[13]=0;
 
 	while(1)
 	{
@@ -477,7 +475,10 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 					return(pEntry);
 				}
 				else
+				{
+					longfilename[13]=0;
 					prevlfn=0;
+				}
 			}
 		}
 //		printf("iEntry %d is >= dir_entries %d\n",iEntry,dir_entries);
