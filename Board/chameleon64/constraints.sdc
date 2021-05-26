@@ -1,4 +1,3 @@
-
 create_clock -name "clk8" -period 125.000ns [get_ports {clk8}] -waveform {0.000 62.500}
 
 set hostclk {clocks|altpll_component|auto_generated|pll1|clk[1]}
