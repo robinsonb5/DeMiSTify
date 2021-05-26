@@ -103,6 +103,8 @@ int matchextension(const char *ext)
     Subsequent configs have a type, a comma, then the extensions.
     We can find the correct entry by stepping over semicolons.  */
 
+//	putchar('0'+cfgidx);
+
 	for(i=0;i<=cfgidx;++i)
 		conf_nextfield();
 
@@ -550,7 +552,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	char *title;
 	unsigned int skip=first;
 	unsigned int fileindex=1;
-	unsigned int configidx=0;
+	unsigned int configidx=1;
 	moremenu=1;
 
 	SPI(0xff);
@@ -603,7 +605,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 				break;
 			case 'S': // Disk image select
 				++fileindex;
-				conf_nextfield;
+				conf_nextfield();
 				break;
 			case 'P':
 				page=getdigit();

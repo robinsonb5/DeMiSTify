@@ -29,12 +29,12 @@ void SetIntHandler(void(*handler)())
 {
 	HW_INTERRUPT(REG_INTERRUPT_CTRL)=0;
 	*(void **)13=(void *)handler;
-	puts("Set handler\n");
+//	puts("Set handler\n");
 }
 
 __constructor(100.interrupts) void intconstructor()
 {
-	puts("In interrupt constructor\n");
+//	puts("In interrupt constructor\n");
 	SetIntHandler(dummy_handler);
 }
 
