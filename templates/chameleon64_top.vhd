@@ -484,7 +484,6 @@ begin
 --		end if;
 --	end process;
 
-
 	-- Pass internal signals to external SPI interface
 	spi_clk <= spi_clk_int;
 
@@ -509,6 +508,7 @@ begin
 		spi_ss3 => spi_ss3,
 		spi_ss4 => spi_ss4,
 		conf_data0 => conf_data0,
+		spi_ack => spi_ack,
 		
 		-- PS/2 signals
 		ps2k_clk_in => ps2_keyboard_clk_in,
