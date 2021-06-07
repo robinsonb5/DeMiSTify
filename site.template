@@ -13,7 +13,7 @@ BOARDS=chameleon64 chameleon64v2 de10lite
 # Q13 for older devices.  13.0sp1 supports Cyclone II
 # while 13.1 is the last version to support Cyclone III
 
-Q13 = /opt/altera/13.0sp1/quartus/bin/
+Q13 = /opt/altera/13.1/quartus/bin/
 
 
 # Q18 for newer devices - I believe anything from version 15 upwards

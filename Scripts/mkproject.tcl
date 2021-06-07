@@ -5,18 +5,22 @@ variable ::argv0 $::quartus(args)
 set options {
    { "project.arg" "" "Project name" }
    { "board.arg" "" "Target board" }
+   { "rootpath.arg" "" "Root path from project" }
 }
 set usage "You need to specify options and values"
 array set optshash [::cmdline::getoptions ::argv $options $usage]
 set board $optshash(board)
 set project $optshash(project)
+set rootpath $optshash(rootpath)
 
 if {[string length $board]==0} {return -code error "Must specify a board"}
 if {[string length $project]==0} {return -code error "Must specify a project"}
+if {[string length $rootpath]==0} {return -code error "Must specify a root path"}
 
 set corename "${project}_${board}"
 
-set projectpath "../.."
+set projectpath $rootpath
+
 source ${projectpath}/project_defs.tcl
 source ${boardpath}${board}/${board}_defs.tcl
 
