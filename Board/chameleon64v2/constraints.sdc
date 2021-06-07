@@ -32,3 +32,5 @@ set_output_delay 0.5 -clock [get_clocks ${supportclk}] [get_ports {
 	altera_reserved_tdo game_out irq_out
 	mmc_cs ps2iec_sel rw_out sa15_out sa_oe sd_dir sd_oe
 	ser_out_clk ser_out_dat ser_out_rclk spi_clk spi_mosi }]
+
+set topmodule guest|

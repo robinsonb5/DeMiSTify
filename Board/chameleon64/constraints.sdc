@@ -37,3 +37,5 @@ set_output_delay 0.5 -clock [get_clocks ${supportclk}] [get_ports { mux_clk mux[
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
 set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
+
+set topmodule guest|

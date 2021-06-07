@@ -21,8 +21,11 @@ set FALSE_IN {UART_RX}
 
 # Constraints for board-specific signals
 
-set_input_delay -clock spiclk -min 0.5 { CONF_DATA0 SPI_DI SPI_SS2 SPI_SS3 }
-set_input_delay -clock spiclk -max 0.5 { CONF_DATA0 SPI_DI SPI_SS2 SPI_SS3 }
+set_input_delay -clock spiclk -min 0.5 { SPI_DO CONF_DATA0 SPI_DI SPI_SS2 SPI_SS3 }
+set_input_delay -clock spiclk -max 0.5 { SPI_DO CONF_DATA0 SPI_DI SPI_SS2 SPI_SS3 }
 set_output_delay -clock spiclk -min 0.5 { SPI_DO }
 set_output_delay -clock spiclk -max 0.5 { SPI_DO }
 set_false_path -to SDRAM_CLK
+
+set topmodule ""
+

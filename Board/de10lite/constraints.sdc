@@ -21,3 +21,5 @@ set FALSE_IN {ARDUINO_IO[*] GPIO[*] KEY[*]}
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
 set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
+
+set topmodule guest|
