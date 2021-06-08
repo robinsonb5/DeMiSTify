@@ -18,7 +18,7 @@ $(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST)
 	@bash $(SCRIPTSDIR)/expandtemplate_quartus.sh $(PROJECTTOROOT) $+ >$@
 
 %.qsf: $(PROJECT)_$(BOARD)_files.tcl
-	@echo -n "Making project file for $(PROJECT) on $(BOARD)... "
+	@echo -n "Making project file for $(PROJECT) on $(BOARD)..."
 	@$(TOOLPATH)/quartus_sh >init.log -t $(SCRIPTSDIR)/mkproject.tcl -project $(PROJECT) -board $(BOARD) -rootpath $(PROJECTTOROOT) && echo "Success" || grep Error init.log
 
 .PHONY compile:

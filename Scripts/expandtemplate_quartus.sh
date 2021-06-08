@@ -20,5 +20,8 @@ cat $2 | while read a; do
 	if [ "${b: -3}" = ".sv" ]; then
 		echo set_global_assignment -name SYSTEMVERILOG_FILE ${1}${a}
 	fi
+	if [ "${b: -4}" = ".tcl" ]; then
+		echo set_global_assignment -name PRE_FLOW_SCRIPT_FILE "quartus_sh:${1}${a}"
+	fi
 done
 

@@ -18,6 +18,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.ALL;
 
+library work;
+use work.demistify_config_pkg.all;
+
 entity substitute_mcu is
 	generic (
 		debug : boolean := false;
@@ -378,12 +381,9 @@ int_triggers<=(0=>timer_tick, 1=>ps2_int, others => '0');
 -- ROM
 
 	rom : entity work.controller_rom
-	generic map(
-		ADDR_WIDTH => 12
-	)
 	port map(
 		clk => clk,
-		addr => cpu_addr(13 downto 2),
+		addr => cpu_addr(demistify_romspace-1 downto 2),
 		d => from_cpu,
 		q => from_rom,
 		we => rom_wr,

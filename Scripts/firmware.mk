@@ -1,3 +1,5 @@
+ROMSIZE1=8192
+ROMSIZE2=4096
 DEMISTIFYPATH=
 832DIR=$(DEMISTIFYPATH)/EightThirtyTwo
 FWDIR=$(DEMISTIFYPATH)/firmware/
@@ -38,10 +40,10 @@ phonys:
 	$(ROMGEN) -b $*.bin >>$*_rom_byte.vhd
 	cat >>$*_rom_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	sed 's/eightthirtytwo_rom/$*_rom1/' >$*_rom1_byte.vhd <$(ROMGENDIR)/rom_prologue_byte.vhd
-	$(ROMGEN) -b -l8192 $*.bin >>$*_rom1_byte.vhd
+	$(ROMGEN) -b -l$(ROMSIZE1) $*.bin >>$*_rom1_byte.vhd
 	cat >>$*_rom1_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	sed 's/eightthirtytwo_rom/$*_rom2/' >$*_rom2_byte.vhd <$(ROMGENDIR)/rom_prologue_byte.vhd
-	$(ROMGEN) -b -o8192 -l4096 $*.bin >>$*_rom2_byte.vhd
+	$(ROMGEN) -b -o$(ROMSIZE1) -l$(ROMSIZE2) $*.bin >>$*_rom2_byte.vhd
 	cat >>$*_rom2_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	grep __bss_ $*.map
 

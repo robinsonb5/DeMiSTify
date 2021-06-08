@@ -694,6 +694,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 				}
 				else
 					c=conf_nextfield();
+				page=0;
 				break;
 			default:
 				c=conf_nextfield();

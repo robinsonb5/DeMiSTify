@@ -6,6 +6,11 @@ PROJECTTOROOT=../../
 EIGHTTHIRTYTWOPATH=EightThirtyTwo
 include $(DEMISTIFYPATH)/site.mk
 
+# Sizes of the two ROM parts - 8k + 4k = 12k by default
+ROMSIZE1=8192
+ROMSIZE2=4096
+
+
 all: $(EIGHTTHIRTYTWOPATH)/Makefile $(DEMISTIFYPATH)/site.mk firmware init compile
 
 empty:=
@@ -17,7 +22,7 @@ $(EIGHTTHIRTYTWOPATH)/Makefile:
 
 .PHONY: firmware
 firmware:
-	make -f $(DEMISTIFYPATH)/firmware.mk DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS)
+	make -f $(DEMISTIFYPATH)/firmware.mk DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2)
 
 $(DEMISTIFYPATH)/site.mk:
 	$(info ************************************************)
