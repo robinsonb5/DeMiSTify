@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #include "font.h"
-#include "userio.h"
+#include "user_io.h"
 #include "osd.h"
 #include "menu.h"
 #include "keyboard.h"

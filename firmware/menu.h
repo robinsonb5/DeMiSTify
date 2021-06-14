@@ -45,9 +45,26 @@ struct menu_entry
 {
 	menu_action action;	
 	char *label;
-	unsigned char val;
-	unsigned char limit;
-	unsigned char shift;
+	union {
+		/*	Options consist of a variable, the maximum allowed value,
+			and the option's position within the config string. */
+		struct {
+			unsigned char val;
+			unsigned char limit;
+			unsigned char shift;
+		} opt;
+		struct {
+			unsigned char page;
+		} menu;
+		/*	Files require an index to be used when uploading,
+			the config string entry from which the file extensions can be retrieved
+			and a unit number so the firmware knows what to do with the file. */
+		struct {
+			unsigned char index;
+			unsigned char cfgidx;
+			unsigned char unit;
+		} file;
+	} u;
 };
 
 struct hotkey

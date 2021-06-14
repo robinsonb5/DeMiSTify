@@ -15,7 +15,7 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "userio.h"
+#include "user_io.h"
 #include "spi.h"
 
 /* User_io related SPI functions */

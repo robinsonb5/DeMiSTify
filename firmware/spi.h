@@ -16,7 +16,8 @@
 /* #define HW_SPI_PUMP 0x08 */ /* Push 16-bits through SPI in one instruction */
 
 #define HW_SPI_CS_SD 0
-#define HW_SPI_FAST 8
+#define HW_SPI_FAST_SD 8
+#define HW_SPI_FAST_INT 9
 #define HW_SPI_BUSY 15
 
 #define HW_SPI_SD 1
@@ -32,19 +33,25 @@
 #define SPI_FPGA_FILE_INDEX 0x55
 #define SPI_FPGA_FILE_INFO 0x56
 
-#define SPI_ENABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|1);}
-#define SPI_ENABLE_FAST(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST)|(1<<x)|1);}
-#define SPI_DISABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|0);}
+//#define SPI_ENABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|1);}
+//#define SPI_ENABLE_FAST(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST)|(1<<x)|1);}
+//#define SPI_DISABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|0);}
+#define SPI_WAIT {while(HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY));}
+#define SPI_ENABLE(x) {HW_SPI(HW_SPI_CS)=((1<<x)|1);}
+#define SPI_ENABLE_FAST_SD(x) {HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST_SD)|(1<<x)|1);}
+#define SPI_ENABLE_FAST_INT(x) {HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST_INT)|(1<<x)|1);}
+#define SPI_DISABLE(x) {HW_SPI(HW_SPI_CS)=((1<<x)|0);}
 
-#define EnableSD() SPI_ENABLE_FAST(HW_SPI_CS_SD)
+#define EnableSD() SPI_ENABLE_FAST_SD(HW_SPI_CS_SD)
 #define DisableSD() SPI_DISABLE(HW_SPI_CD_SD)
-#define EnableDirectSD() SPI_ENABLE_FAST(HW_SPI_SNIFF)
+#define EnableDirectSD() SPI_ENABLE_FAST_SD(HW_SPI_SNIFF)
 #define DisableDirectSD() SPI_DISABLE(HW_SPI_SNIFF)
-#define EnableIO() SPI_ENABLE_FAST(HW_SPI_CONF)
+#define EnableIO() SPI_ENABLE_FAST_INT(HW_SPI_CONF)
 #define DisableIO() SPI_DISABLE(HW_SPI_CONF)
-#define EnableOsd() SPI_ENABLE_FAST(HW_SPI_OSD)
+#define EnableOsd() SPI_ENABLE_FAST_INT(HW_SPI_OSD)
 #define DisableOsd() SPI_DISABLE(HW_SPI_OSD)
-
+#define EnableFpga() SPI_ENABLE_FAST_INT(HW_SPI_FPGA)
+#define DisableFpga() SPI_DISABLE(HW_SPI_FPGA)
 
 #ifdef __cplusplus
 extern "C" {

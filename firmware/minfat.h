@@ -8,8 +8,10 @@
 typedef struct
 {
     uint32_t sector;          /* sector index in file */
-    uint32_t size;            /* file size */
     uint32_t cluster;         /* current cluster */
+    uint32_t size;            /* file size */
+    uint32_t firstcluster;
+	uint32_t cursor;	/* Offset within the current sector */
 } fileTYPE;
 
 struct PartitionEntry
@@ -102,17 +104,22 @@ extern unsigned int fat32;
 // functions
 unsigned int FindDrive(void);
 unsigned int GetFATLink(unsigned int cluster);
-unsigned int FileNextSector(fileTYPE *file);
+void FileFirstSector(fileTYPE *file);
+void FileNextSector(fileTYPE *file, int count);
 unsigned int FileOpen(fileTYPE *file, const char *name);
-unsigned int FileRead(fileTYPE *file, unsigned char *pBuffer);
+unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer);
 //unsigned char FileReadEx(fileTYPE *file, unsigned char *pBuffer, uint32_t nSize);
+void FileSeek(fileTYPE *file,unsigned int pos);
+#define FileTell(x) (x)->cursor
+unsigned int FileRead(fileTYPE *file, unsigned char *buffer,int count);
+char FileGetCh(fileTYPE *file);
 
 int LoadFile(const char *fn, unsigned char *buf);
 
 void ChangeDirectory(DIRENTRY *p);
 DIRENTRY *NextDirEntry(int prev,int (*matchfunc)(const char *fn));
 extern unsigned int dir_entries;             // number of entry's in directory table
-extern char longfilename[260];
+extern char longfilename[261];
 
 #endif
 

@@ -92,7 +92,8 @@ signal millisecond_tick : unsigned(19 downto 0);
 -- SPI Clock counter
 signal spi_tick : unsigned(8 downto 0);
 signal spiclk_in : std_logic;
-signal spi_fast : std_logic;
+signal spi_fast_sd : std_logic;
+signal spi_fast_int : std_logic;
 signal spi_cs_int : std_logic;
 
 -- SPI signals
@@ -101,6 +102,8 @@ signal spi_to_host : std_logic_vector(7 downto 0);
 signal spi_trigger : std_logic;
 signal spi_busy : std_logic;
 signal spi_active : std_logic;
+signal spi_write : std_logic;
+signal spi_setcs : std_logic;
 
 signal spi_fromguest_sd : std_logic;
 signal spi_mosi_int : std_logic;
@@ -308,7 +311,10 @@ begin
 	if rising_edge(clk) then
 		spiclk_in<='0';
 		spi_tick<=spi_tick+1;
-		if (spi_fast='1' and spi_tick(SPI_FASTBIT)='1') or spi_tick(SPI_SLOWBIT)='1' then
+		if (spi_fast_sd='1' and spi_tick(SPI_FASTBIT)='1')
+--				or (spi_fast_int='1' and spi_tick(0)='1')
+				or spi_fast_int='1'
+				or spi_tick(SPI_SLOWBIT)='1' then
 			spiclk_in<='1'; -- Momentary pulse for SPI host.
 			spi_tick<=(others=>'0');
 		end if;
@@ -488,6 +494,8 @@ begin
 		spi_ss3 <= '1';
 		spi_ss4 <= '1';
 		conf_data0 <= '1';
+		spi_setcs <= '0';
+		spi_write <= '0';
 	elsif rising_edge(clk) then
 		mem_busy<='1';
 		ser_txgo<='0';
@@ -527,27 +535,11 @@ begin
 							mem_busy<='0';
 
 						when X"D0" => -- SPI CS
-							if from_cpu(1)='1' then
-								spi_cs_int <= not from_cpu(0);
-							end if;
-							if from_cpu(2)='1' then
-								spi_ss2 <= not from_cpu(0);
-							end if;
-							if from_cpu(3)='1' then
-								spi_ss3 <= not from_cpu(0);
-							end if;
-							if from_cpu(4)='1' then
-								spi_ss4 <= not from_cpu(0);
-							end if;
-							if from_cpu(5)='1' then
-								conf_data0 <= not from_cpu(0);
-							end if;
-							spi_fast<=from_cpu(8);
-							mem_busy<='0';
+							spi_setcs<='1';
+							spi_active<='1';
 
 						when X"D4" => -- SPI Data
-							spi_trigger<='1';
-							host_to_spi<=from_cpu(7 downto 0);
+							spi_write<='1';
 							spi_active<='1';
 						
 						when X"D8" => -- SPI Pump
@@ -648,6 +640,31 @@ begin
 		-- SPI cycles
 
 		if spi_active='1' and spi_busy='0' then
+			if spi_write='1' then
+				spi_trigger<='1';
+				host_to_spi<=from_cpu(7 downto 0);
+				spi_write<='0';
+			end if;
+			if spi_setcs='1' then
+				if from_cpu(1)='1' then
+					spi_cs_int <= not from_cpu(0);
+				end if;
+				if from_cpu(2)='1' then
+					spi_ss2 <= not from_cpu(0);
+				end if;
+				if from_cpu(3)='1' then
+					spi_ss3 <= not from_cpu(0);
+				end if;
+				if from_cpu(4)='1' then
+					spi_ss4 <= not from_cpu(0);
+				end if;
+				if from_cpu(5)='1' then
+					conf_data0 <= not from_cpu(0);
+				end if;
+				spi_fast_sd<=from_cpu(8);
+				spi_fast_int<=from_cpu(9);
+				spi_setcs<='0';
+			end if;
 			from_mem<=X"000000"&spi_to_host;
 			spi_active<='0';
 			mem_busy<='0';

@@ -9,14 +9,14 @@ LIBDIR=$(832DIR)/lib832
 ROMSIZE1=8192
 ROMSIZE2=4096
 
-CFLAGS = -+ -O=1343 -size -unsigned-char
+CFLAGS = -+ -c99 -O=1343 -speed -unsigned-char
 ASFLAGS = -el
-LDFLAGS  = -el -s_STACKSIZE=0x100
+LDFLAGS  = -el -s_STACKSIZE=0x200
 
 START = $(LIBDIR)/crt0.a
 LIBS = $(LIBDIR)/libtiny832.a libdemistify.a
 
-PRJ_OBJ = uart.o spi_sd.o minfat.o swap.o main.o interrupts.o ps2.o keyboard.o userio.o osd.o font.o menu.o
+PRJ_OBJ = uart.o spi_sd.o minfat.o swap.o main.o interrupts.o ps2.o keyboard.o user_io.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o
 
 ROMGENDIR = ../EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen

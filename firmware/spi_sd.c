@@ -308,7 +308,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
     int i,t,timeout;
 
 	SPI(0xff);
-	SPI_ENABLE_FAST(HW_SPI_SD);
+	SPI_ENABLE_FAST_SD(HW_SPI_SD);
 	SPI(0xff);
 
 	t=cmd_writesector(lba);
@@ -363,15 +363,24 @@ static int sd_read(unsigned char *buf,int bytes)
 		v=SPI_READ();
 		if(v==0xfe)
 		{
-			if(!buf)
-				EnableDirectSD();
-			for(;bytes>0;--bytes)
+			register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+			if(buf)
 			{
-				int t,v;
-
-				t=SPI(0xff);
-				if(buf)
-					*buf++=t;
+				do
+				{
+					int t,v;
+					*spiptr=0xff;
+					*buf++=*spiptr;
+				} while(--bytes);
+			}
+			else
+			{
+				EnableDirectSD();
+				do
+				{
+					int t,v;
+					*spiptr=0xff;
+				} while(--bytes);
 			}
 			SPI(0xff);
 			SPI(0xff);
@@ -392,7 +401,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	int r;
 //	printf("sd_read_sector %d, %d\n",lba,buf);
 	SPI(0xff);
-	SPI_ENABLE_FAST(HW_SPI_SD);
+	SPI_ENABLE_FAST_SD(HW_SPI_SD);
 	SPI(0xff);
 
 	r=cmd_read(lba);

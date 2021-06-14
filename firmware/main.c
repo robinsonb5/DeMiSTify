@@ -27,10 +27,12 @@
 #include "interrupts.h"
 #include "keyboard.h"
 #include "ps2.h"
-#include "userio.h"
+#include "user_io.h"
 #include "osd.h"
 #include "menu.h"
 #include "font.h"
+#include "cue_parser.h"
+#include "pcecd.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
@@ -42,6 +44,7 @@ unsigned char menupage;
 unsigned char coretype;
 unsigned char romtype=0;
 unsigned char cfgidx=0;
+unsigned char unit=0;
 
 #define conf_next() SPI(0xff)
 
@@ -105,6 +108,8 @@ int matchextension(const char *ext)
 
 //	putchar('0'+cfgidx);
 
+//	printf("Config index %d\n",cfgidx);
+
 	for(i=0;i<=cfgidx;++i)
 		conf_nextfield();
 
@@ -115,38 +120,12 @@ int matchextension(const char *ext)
 		do
 		{
 			c=conf_next();
+//			putchar(c);
 		} while(c && c!=',');
 	}
 
-#if 0	
-/*	printf("Matching %s with romtype %d\n",ext,romtype); */
-
-	if(c=conf_nextfield())
-	{
-		c1=conf_next();
-		if(c1==';' || romtype>1 )
-		{
-			done=1;
-			while(c)
-			{
-				if(c!=';')
-					conf_nextfield();
-				c=conf_next();
-			//		printf("c: %c\n",c);
-				if(c=='F')
-				{
-					conf_next();
-					c1=conf_next();
-					c=0;
-					done=0;
-				}
-			}
-		}
-	}
-
-	// c1 will already have been read
-#endif
 	i=0;
+//	putchar('\n');
 	while(!done)
 	{
 		c1=conf_next();
@@ -181,7 +160,7 @@ void VerifyROM()
 	SPI(0x03);	/* Verify */
 	SPI_DISABLE(HW_SPI_FPGA);
 
-	SPI_ENABLE_FAST(HW_SPI_SNIFF);
+	SPI_ENABLE_FAST_INT(HW_SPI_SNIFF);
 	while(imgsize)
 	{
 		if(imgsize>=512)
@@ -211,6 +190,20 @@ void VerifyROM()
 
 
 __weak int rom_minsize=1;
+
+
+static void sendsector(const char *buf,int sendsize)
+{
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	int s=sendsize;
+	SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+	SPI(SPI_FPGA_FILE_TX_DAT);
+	do
+	{
+		*spiptr=*buf++;
+	} while(--s);
+	SPI_DISABLE(HW_SPI_FPGA);
+}
 
 int LoadROM(const char *fn)
 {
@@ -261,22 +254,16 @@ int LoadROM(const char *fn)
 				}
 
 				if(coretype&DIRECTUPLOAD)
-					result=FileRead(&file,0);
+					result=FileReadSector(&file,0);
 				else
 				{
-					result=FileRead(&file,sector_buffer);
-					SPI_ENABLE_FAST(HW_SPI_FPGA);
-					SPI(SPI_FPGA_FILE_TX_DAT);
-					while(sendsize--)
-					{
-						SPI(*buf++);
-					}
-					SPI_DISABLE(HW_SPI_FPGA);
+					result=FileReadSector(&file,sector_buffer);
+					sendsector(buf,sendsize);
 				}
 				if(!result)
 					return(0);
 
-				FileNextSector(&file);
+				FileNextSector(&file,1);
 			}
 			if(minsize>0)
 				FileOpen(&file,fn); // Start from the beginning again.
@@ -302,12 +289,13 @@ void spin()
 
 int menuindex;
 int moremenu;
-int romindex;
+int romindex; /* First file to be displayed */
 static void listroms();
 void selectrom(int row);
 static void scrollroms(int row);
 void buildmenu(int offset);
 static void submenu(int row);
+int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit);
 
 static char romfilenames[7][30];
 
@@ -339,21 +327,107 @@ static DIRENTRY *nthfile(unsigned int n)
 	return(p);
 }
 
+extern char cd_buffer[2352];
 
+static char string[18];
+
+void hexdump(unsigned char *p,unsigned int l)
+{
+	int i=0;
+	unsigned char *p2=p;
+	char *sp;
+	string[16]=0;
+	sp=string;
+	while(l--)
+	{
+		unsigned int t,t2;
+		t=*p2++;
+		t2=t>>4;
+		t2+='0'; if(t2>'9') t2+='@'-'9';
+		putchar(t2);
+		t2=t&0xf;
+		t2+='0'; if(t2>'9') t2+='@'-'9';
+		putchar(t2);
+
+		if(t<32 || (t>127 && t<160))
+			*sp++='.';
+		else
+			*sp++=t;
+		++i;
+		if((i&3)==0)
+			putchar(' ');
+		if((i&15)==0)
+		{
+			puts(string);
+			putchar('\n');
+			sp=string;
+		}
+	}
+	if(i&15)
+	{
+		*sp++=0;
+		puts(string);
+		putchar('\n');
+	}
+}
+
+void spi32le(int x)
+{
+	SPI(x&255);
+	SPI((x>>8)&255);
+	SPI((x>>16)&255);
+	SPI((x>>24)&255);
+} 
+
+char filename[12];
 void selectrom(int row)
 {
 	DIRENTRY *p=nthfile(romindex+row);
 //	printf("File %s\n",p->Name);
 	if(p)
 	{
-		strncpy(longfilename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
+		strncpy(filename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
+									// since loading it by name will overwrite the sector buffer which currently contains it!
 		menu[row].label="Loading...";
 		Menu_Draw(row);
 		menu[row].label=romfilenames[row];
-		LoadROM(longfilename);	// since loading it by name will overwrite the sector buffer which currently contains it!
+		switch(unit)
+		{
+			case 0:
+				LoadROM(filename);
+				break;
+			case 'C':
+//				printf("Opening %s\n",filename);
+				if(!cue_open(filename))
+				{
+					int i=1;
+
+//					printf("Parsing...\n");
+					do {
+						int cue_valid=cue_parse(i)==0;
+						// send mounted image size first then notify about mounting
+						EnableIO();
+						SPI(UIO_SET_SDINFO);
+						// use LE version, so following BYTE(s) may be used for size extension in the future.
+						spi32le(cue_valid ? toc.file.size : 0);
+						spi32le(cue_valid ? toc.file.size : 0);
+						spi32le(0); // reserved for future expansion
+						spi32le(0); // reserved for future expansion
+						DisableIO();
+
+						// notify core of possible sd image change
+						spi_uio_cmd8(UIO_SET_SDSTAT, 1);
+					} while(++i<=toc.last);
+
+//					printf("Tracks: %d, end: %d\n",toc.last,toc.end);
+				}
+				break;
+		}
 	}
 	Menu_Draw(row);
 	Menu_ShowHide(0);
+	menupage=0;
+	buildmenu(0);
 }
 
 
@@ -414,7 +488,7 @@ static void listroms(int row)
 			if(p->Attributes&ATTR_DIRECTORY)
 			{
 				menu[j].action=MENU_ACTION(&selectdir);
-				menu[j].val=-1;
+				menu[j].u.file.index=-1;
 				romfilenames[j][0]=FONT_ARROW_RIGHT; // Right arrow
 				romfilenames[j][1]=' ';
 				if(longfilename[0])
@@ -443,7 +517,7 @@ static void listroms(int row)
 		moremenu=0;
 		romfilenames[j][0]=0;
 	}
-	menu[7].val=0;
+	menu[7].u.menu.page=0;
 	menu[7].action=MENU_ACTION(&submenu);
 	menu[7].label="\x80 Back";
 	menu[8].action=MENU_ACTION(&scrollroms);
@@ -452,8 +526,9 @@ static void listroms(int row)
 
 static void fileselector(int row)
 {
-	romtype=menu[row].val;
-	cfgidx=menu[row].limit;
+	romtype=menu[row].u.file.index;
+	cfgidx=menu[row].u.file.cfgidx;
+	unit=menu[row].u.file.unit;
 	listroms(row);
 }
 
@@ -486,7 +561,7 @@ static void showrommenu(int row)
 
 static void submenu(int row)
 {
-	menupage=menu[row].val;
+	menupage=menu[row].u.menu.page;
 	putchar(row+'0');
 	buildmenu(0);
 }
@@ -496,13 +571,13 @@ static void cycle(int row)
 {
 	int v;
 	struct menu_entry *m=&menu[row];
-	v=(statusword>>m->shift);	// Extract value from existing statusword
-	v&=m->val;					// and mask...
+	v=(statusword>>m->u.opt.shift);	// Extract value from existing statusword
+	v&=m->u.opt.val;					// and mask...
 	++v;
-	if(v>=m->limit)
+	if(v>=m->u.opt.limit)
 		v=0;
-	statusword&=~(m->val<<m->shift); // Mask off old bits from status word
-	statusword|=v<<m->shift;		// and insert new value
+	statusword&=~(m->u.opt.val<<m->u.opt.shift); // Mask off old bits from status word
+	statusword|=v<<m->u.opt.shift;		// and insert new value
 
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
@@ -568,9 +643,9 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 			strcpy(menu[line].label,"Load *. ");
 			menu[line].action=MENU_ACTION(&fileselector);
 			menu[line].label[7]=c;
-			menu[line].val=fileindex;
+			menu[line].u.file.index=fileindex;
 			++fileindex;
-			menu[line].limit=0;
+			menu[line].u.file.cfgidx=0;
 			copytocomma(&menu[line].label[8],LINELENGTH-8,1);
 			if(line>=skip)
 				++line;
@@ -583,8 +658,12 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	while(c && line<limit)
 	{
 		c=conf_next();
+		menu[line].u.file.unit=0;	/* ensure ROMs have a disk unit of 0 */
 		switch(c)
 		{
+			case 'S': // Disk image select
+				menu[line].u.file.unit=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				// Fall through...
 			case 'F':
 				if(!selpage)
 				{
@@ -592,8 +671,8 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 					copytocomma(menu[line].label,10,0);
 					copytocomma(menu[line].label,LINELENGTH-2,1);
 					menu[line].action=MENU_ACTION(&fileselector);
-					menu[line].val=fileindex;
-					menu[line].limit=configidx;
+					menu[line].u.file.index=fileindex;
+					menu[line].u.file.cfgidx=configidx;
 					++fileindex;
 					if(line>=skip)
 						++line;
@@ -602,10 +681,6 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 				}
 				else
 					c=conf_nextfield();
-				break;
-			case 'S': // Disk image select
-				++fileindex;
-				conf_nextfield();
 				break;
 			case 'P':
 				page=getdigit();
@@ -619,7 +694,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 					if(selpage==0)
 					{
 						title=menu[line].label;
-						menu[line].val=page;
+						menu[line].u.menu.page=page;
 						menu[line].action=MENU_ACTION(&submenu);
 						c=conf_next();
 						while(c && c!=';')
@@ -658,10 +733,10 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 					else
 						conf_next();
 
-					menu[line].shift=low;
-					menu[line].val=(1<<(1+high-low))-1;
-					val=(statusword>>low)&menu[line].val;
-//					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].val);
+					menu[line].u.opt.shift=low;
+					menu[line].u.opt.val=(1<<(1+high-low))-1;
+					val=(statusword>>low)&menu[line].u.opt.val;
+//					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].u.opt.val);
 
 					title=menu[line].label;
 //					printf("selpage %d, page %d\n",selpage,page);
@@ -678,12 +753,12 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 
 					if(opt)
 					{
-						menu[line].limit=opt;
+						menu[line].u.opt.limit=opt;
 						menu[line].action=MENU_ACTION(&cycle);
 					}
 					else
 					{
-						menu[line].limit=2;
+						menu[line].u.opt.limit=2;
 						menu[line].action=MENU_ACTION(&toggle);
 					}
 
@@ -710,7 +785,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	}
 	if(selpage)
 	{
-		menu[7].val=0;
+		menu[7].u.menu.page=0;
 		menu[7].action=MENU_ACTION(&submenu);
 		menu[7].label="\x80 Back";
 	}
@@ -742,7 +817,6 @@ __weak char *autoboot()
 	return(result);
 }
 
-char filename[16];
 int main(int argc,char **argv)
 {
 	int havesd;
@@ -777,7 +851,11 @@ int main(int argc,char **argv)
 	{
 		HandlePS2RawCodes();
 
+		pcecd_poll();
+
 		Menu_Run();
+
+		pcecd_poll();
 	}
 
 	return(0);

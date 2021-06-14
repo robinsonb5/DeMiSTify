@@ -9,7 +9,7 @@ CC=$(832DIR)/vbcc/bin/vbcc832
 COPT = -O=1343 -size
 CFLAGS = -+ -unsigned-char $(COPT) -I$(832DIR)/include/ -I$(FWDIR)
 ASFLAGS = -el
-LDFLAGS  = -el -s_STACKSIZE=0x100
+LDFLAGS  = -el -s_STACKSIZE=0x200
 
 START = $(LIBDIR)/crt0.a
 LIBS = $(LIBDIR)/libtiny832.a $(FWDIR)/libdemistify.a
