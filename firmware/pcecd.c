@@ -261,8 +261,8 @@ static void pcecd_run() {
 		}
 //		putchar('t');
 
-		if(!CheckTimer(pcecd_read_timer)) return;
-		pcecd_read_timer = GetTimer(13);
+//		if(!CheckTimer(pcecd_read_timer)) return;
+//		pcecd_read_timer = GetTimer(13);
 //		putchar('g');
 
 		pcecdd.can_read_next = 0;
@@ -697,8 +697,8 @@ void pcecd_poll() {
 
 	pcecd_run();
 
-	if(CheckTimer(pcecd_timer)) {
-		pcecd_timer = GetTimer(13);
+//	if(CheckTimer(pcecd_timer)) {
+//		pcecd_timer = GetTimer(13);
 
 		if (pcecdd.has_status && !pcecdd.latency) {
 			SendStatus(pcecdd.stat);
@@ -711,5 +711,5 @@ void pcecd_poll() {
 			DisableFpga();
 			pcecdd.data_req = 0;
 		}
-	}
+//	}
 }

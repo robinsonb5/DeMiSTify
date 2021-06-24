@@ -26,7 +26,8 @@ entity substitute_mcu is
 		debug : boolean := false;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
-		SPI_FASTBIT : integer := 2  -- ~5MHz when sysclk is 50MHz
+		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
+		SPI_EXTERNALCLK : boolean := false
 	);
 	port (
 		clk 			: in std_logic;
@@ -44,6 +45,7 @@ entity substitute_mcu is
 		spi_ss3 : out std_logic;
 		spi_ss4 : out std_logic;
 		conf_data0 : out std_logic;
+		spi_req : out std_logic;
 		spi_ack : in std_logic := '1';
 		
 		-- PS/2 signals
@@ -90,8 +92,10 @@ signal millisecond_tick : unsigned(19 downto 0);
 
 
 -- SPI Clock counter
+signal spi_ack_d : std_logic;
+signal spi_req_out : std_logic;
+signal spi_ack_r : std_logic;
 signal spi_tick : unsigned(8 downto 0);
-signal spiclk_in : std_logic;
 signal spi_fast_sd : std_logic;
 signal spi_fast_int : std_logic;
 signal spi_cs_int : std_logic;
@@ -304,18 +308,22 @@ myuart : entity work.simple_uart
 			recvByte => mouserecvbyte
 		);
 
+spi_req<=spi_req_out;
 
 -- SPI Timer
 process(clk)
 begin
 	if rising_edge(clk) then
-		spiclk_in<='0';
 		spi_tick<=spi_tick+1;
-		if (spi_fast_sd='1' and spi_tick(SPI_FASTBIT)='1')
+		spi_ack_d<=spi_ack;
+		if (spi_fast_sd='1' and SPI_EXTERNALCLK=true) then
+			spi_ack_r<=spi_ack_d;
+			spi_tick<=(others=>'0');
+		elsif (spi_fast_sd='1' and spi_tick(SPI_FASTBIT)='1')
 --				or (spi_fast_int='1' and spi_tick(0)='1')
 				or spi_fast_int='1'
 				or spi_tick(SPI_SLOWBIT)='1' then
-			spiclk_in<='1'; -- Momentary pulse for SPI host.
+			spi_ack_r<=spi_req_out; -- Momentary pulse for SPI host.
 			spi_tick<=(others=>'0');
 		end if;
 	end if;
@@ -329,16 +337,16 @@ spi : entity work.spi_controller
 		reset => reset_n,
 
 		-- Host interface
-		spiclk_in => spiclk_in,
 		host_to_spi => host_to_spi,
 		spi_to_host => spi_to_host,
 		trigger => spi_trigger,
 		busy => spi_busy,
 
 		-- Hardware interface
+		spi_req => spi_req_out,
+		spi_ack => spi_ack_r,
 		miso => spi_fromguest_sd,
 		mosi => spi_mosi_int,
-		ack => spi_ack,
 		spiclk_out => spi_clk
 	);
 

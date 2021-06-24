@@ -379,9 +379,35 @@ void spi32le(int x)
 	SPI((x>>24)&255);
 } 
 
+void setcuefile(const char *filename)
+{
+	int cue_valid=0;
+	if(!cue_open(filename))
+	{
+		int i=1;
+		do {
+			if(cue_parse(i)==0)
+				cue_valid=1;
+		} while(++i<=toc.last);
+	}
+	// send mounted image size first then notify about mounting
+	EnableIO();
+	SPI(UIO_SET_SDINFO);
+	// use LE version, so following BYTE(s) may be used for size extension in the future.
+	spi32le(cue_valid ? toc.file.size : 0);
+	spi32le(cue_valid ? toc.file.size : 0);
+	spi32le(0); // reserved for future expansion
+	spi32le(0); // reserved for future expansion
+	// notify core of possible sd image change
+	DisableIO();
+	spi_uio_cmd8(UIO_SET_SDSTAT, 1);
+}
+
 char filename[12];
 void selectrom(int row)
 {
+	if(!romfilenames[row][0])	// Did the user select an empty row?
+		return;
 	DIRENTRY *p=nthfile(romindex+row);
 //	printf("File %s\n",p->Name);
 	if(p)
@@ -398,29 +424,7 @@ void selectrom(int row)
 				break;
 			case 'C':
 //				printf("Opening %s\n",filename);
-				if(!cue_open(filename))
-				{
-					int i=1;
-
-//					printf("Parsing...\n");
-					do {
-						int cue_valid=cue_parse(i)==0;
-						// send mounted image size first then notify about mounting
-						EnableIO();
-						SPI(UIO_SET_SDINFO);
-						// use LE version, so following BYTE(s) may be used for size extension in the future.
-						spi32le(cue_valid ? toc.file.size : 0);
-						spi32le(cue_valid ? toc.file.size : 0);
-						spi32le(0); // reserved for future expansion
-						spi32le(0); // reserved for future expansion
-						DisableIO();
-
-						// notify core of possible sd image change
-						spi_uio_cmd8(UIO_SET_SDSTAT, 1);
-					} while(++i<=toc.last);
-
-//					printf("Tracks: %d, end: %d\n",toc.last,toc.end);
-				}
+				setcuefile(filename);
 				break;
 		}
 	}
@@ -515,6 +519,7 @@ static void listroms(int row)
 	for(;j<7;++j)
 	{
 		moremenu=0;
+		menu[j].action=MENU_ACTION(&selectrom);
 		romfilenames[j][0]=0;
 	}
 	menu[7].u.menu.page=0;
@@ -529,6 +534,8 @@ static void fileselector(int row)
 	romtype=menu[row].u.file.index;
 	cfgidx=menu[row].u.file.cfgidx;
 	unit=menu[row].u.file.unit;
+	if(unit=='C')
+		setcuefile(NULL);		
 	listroms(row);
 }
 

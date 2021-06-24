@@ -329,30 +329,44 @@ void FileSeek(fileTYPE *file, unsigned int pos)
 }
 
 
-int FileRead(fileTYPE *file, unsigned char *buffer, int count)
+unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 {
+	unsigned char *p;
+	int c,curs;
 	if(count+file->cursor>file->size)
 		count=file->size-file->cursor;
 	if(count<=0)
 		return(0);
-	while(count)
+	curs=file->cursor&0x1ff;
+	if(curs)
 	{
-		unsigned char *p;
-		int c=count;
-		int curs=file->cursor&0x1ff;
-//		printf("Reading %d bytes, cursor %d\n",count,curs);
-		if (!curs) {
-			// load next sector
-			FileNextSector(file,1);
-			FileReadSector(file, sector_buffer);
-		}
-		if(c+curs>=512)
-			c=512-curs;
+		c=512-curs;
 		p=sector_buffer+curs;
+		if(c>count)
+			c=count;
 		file->cursor+=c;
 		count-=c;
 		while(c--)
 			*buffer++=*p++;
+	}
+	while(count>0)
+	{
+		FileNextSector(file,1);
+		if(count>511)
+		{
+			FileReadSector(file, buffer);
+			buffer+=512;
+			file->cursor+=512;
+			count-=512;
+		}
+		else
+		{
+			FileReadSector(file, sector_buffer);
+			p=sector_buffer;
+			file->cursor+=count;
+			while(count--)
+				*buffer++=*p++;
+		}
 	}
 	return(1);
 }
