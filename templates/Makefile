@@ -7,12 +7,9 @@ BOARD=
 
 all: $(DEMISTIFYPATH)/site.mk firmware init compile tns mist
 
-$(DEMISTIFYPATH)/site.mk:
+$(DEMISTIFYPATH)/site.mk: $(SUBMODULES)
 	$(info ******************************************************)
-	$(info Please checkout submodules using "git submodule init" )
-	$(info followed by "git submodule update --recursive")
-	$(info )
-	$(info Then Copy the example DeMiSTify/site.template file to)
+	$(info Please copy the example DeMiSTify/site.template file to)
 	$(info DeMiSTify/site.mk and edit the paths for the version(s))
 	$(info  of Quartus you have installed.)
 	$(info *******************************************************)

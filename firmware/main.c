@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
+
 #include "uart.h"
 #include "spi.h"
 #include "minfat.h"
@@ -212,7 +214,7 @@ int LoadROM(const char *fn)
 		int minsize=rom_minsize;
 		int sendsize;
 		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
-//		printf("Opened file, loading %s, (idx %d)...\n",fn+8,extindex);
+//		printf("Coretype %d, ROM filename %s, Romtype %d, cfgidx %d, extidx %d\n",coretype,fn,romtype,cfgidx,extindex);
 		if(!extindex)
 			extindex=1;
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -240,6 +242,7 @@ int LoadROM(const char *fn)
 		{
 			int imgsize=file.size;
 			minsize-=imgsize;
+//			printf("Sending %d bytes\n",imgsize);
 			while(imgsize)
 			{
 				char *buf=sector_buffer;
@@ -266,7 +269,7 @@ int LoadROM(const char *fn)
 				FileNextSector(&file,1);
 			}
 			if(minsize>0)
-				FileOpen(&file,fn); // Start from the beginning again.
+				FileFirstSector(&file); // Start from the beginning again.
 		}
 
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -379,6 +382,7 @@ void spi32le(int x)
 	SPI((x>>24)&255);
 } 
 
+#ifdef CONFIG_CD
 void setcuefile(const char *filename)
 {
 	int cue_valid=0;
@@ -402,6 +406,7 @@ void setcuefile(const char *filename)
 	DisableIO();
 	spi_uio_cmd8(UIO_SET_SDSTAT, 1);
 }
+#endif
 
 char filename[12];
 void selectrom(int row)
@@ -422,10 +427,12 @@ void selectrom(int row)
 			case 0:
 				LoadROM(filename);
 				break;
+#ifdef CONFIG_CD
 			case 'C':
 //				printf("Opening %s\n",filename);
 				setcuefile(filename);
 				break;
+#endif
 		}
 	}
 	Menu_Draw(row);
@@ -534,8 +541,10 @@ static void fileselector(int row)
 	romtype=menu[row].u.file.index;
 	cfgidx=menu[row].u.file.cfgidx;
 	unit=menu[row].u.file.unit;
+#ifdef CONFIG_CD
 	if(unit=='C')
 		setcuefile(NULL);		
+#endif
 	listroms(row);
 }
 
@@ -653,6 +662,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 			menu[line].u.file.index=fileindex;
 			++fileindex;
 			menu[line].u.file.cfgidx=0;
+			menu[line].u.file.unit=0;
 			copytocomma(&menu[line].label[8],LINELENGTH-8,1);
 			if(line>=skip)
 				++line;
@@ -664,22 +674,26 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	}
 	while(c && line<limit)
 	{
+		int diskunit=0;
 		c=conf_next();
-		menu[line].u.file.unit=0;	/* ensure ROMs have a disk unit of 0 */
 		switch(c)
 		{
 			case 'S': // Disk image select
-				menu[line].u.file.unit=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				diskunit=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				while(c!=',')
+					c=conf_next();
 				// Fall through...
 			case 'F':
 				if(!selpage)
 				{
-					conf_next();
+					if(c!=',')
+						conf_next();
 					copytocomma(menu[line].label,10,0);
 					copytocomma(menu[line].label,LINELENGTH-2,1);
 					menu[line].action=MENU_ACTION(&fileselector);
 					menu[line].u.file.index=fileindex;
 					menu[line].u.file.cfgidx=configidx;
+					menu[line].u.file.unit=diskunit;
 					++fileindex;
 					if(line>=skip)
 						++line;
@@ -858,11 +872,14 @@ int main(int argc,char **argv)
 	{
 		HandlePS2RawCodes();
 
+#ifdef CONFIG_CD
 		pcecd_poll();
-
+#endif
 		Menu_Run();
 
+#ifdef CONFIG_CD
 		pcecd_poll();
+#endif
 	}
 
 	return(0);

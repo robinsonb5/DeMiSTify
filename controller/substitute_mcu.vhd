@@ -27,6 +27,7 @@ entity substitute_mcu is
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
 		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
+		SPI_INTERNALBIT : integer := 0; -- Full speed when 0, half speed when 1
 		SPI_EXTERNALCLK : boolean := false
 	);
 	port (
@@ -321,7 +322,7 @@ begin
 			spi_tick<=(others=>'0');
 		elsif (spi_fast_sd='1' and spi_tick(SPI_FASTBIT)='1')
 --				or (spi_fast_int='1' and spi_tick(0)='1')
-				or spi_fast_int='1'
+				or (spi_fast_int='1' and (spi_tick(SPI_INTERNALBIT)='1' or SPI_INTERNALBIT=0))
 				or spi_tick(SPI_SLOWBIT)='1' then
 			spi_ack_r<=spi_req_out; -- Momentary pulse for SPI host.
 			spi_tick<=(others=>'0');
