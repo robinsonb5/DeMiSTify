@@ -27,5 +27,5 @@ set_output_delay -clock spiclk -min 0.5 { SPI_DO }
 set_output_delay -clock spiclk -max 0.5 { SPI_DO }
 set_false_path -to SDRAM_CLK
 
-set topmodule ""
+set topmodule "guest|"
 
