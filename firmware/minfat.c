@@ -315,6 +315,21 @@ unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer)
 }
 
 
+unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
+{
+    uint32_t sb;
+
+    sb = data_start;                         // start of data in partition
+    sb += cluster_size * (file->cluster-2);  // cluster offset
+    sb += file->sector & cluster_mask;      // sector offset in cluster
+	cachedsector=sb;
+    if (!sd_write_sector(sb, pBuffer)) // write sector to drive
+        return(0);
+    else
+        return(1);
+}
+
+
 void FileSeek(fileTYPE *file, unsigned int pos)
 {
 	int p=pos;

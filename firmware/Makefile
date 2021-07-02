@@ -17,8 +17,8 @@ LDFLAGS  = -el -s_STACKSIZE=0x200
 START = $(LIBDIR)/crt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
-PRJ_OBJ = spi_sd.o minfat.o swap.o main.o interrupts.o ps2.o keyboard.o user_io.o \
-	osd.o font.o menu.o cue_parser.o pcecd.o timer.o overrides.o
+PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o main.o interrupts.o ps2.o keyboard.o user_io.o \
+	osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen

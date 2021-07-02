@@ -427,6 +427,14 @@ void selectrom(int row)
 			case 0:
 				LoadROM(filename);
 				break;
+#ifdef CONFIG_DISKIMG
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+				diskimg_mount(filename,unit-'0');				
+				break;
+#endif
 #ifdef CONFIG_CD
 			case 'C':
 //				printf("Opening %s\n",filename);
@@ -851,7 +859,7 @@ int main(int argc,char **argv)
 
 	SPI(0xff);
 	puts("SD Init..");
-	if(havesd=spi_init() && FindDrive())
+	if(havesd=sd_init() && FindDrive())
 		puts("OK");
 
 	menuindex=0;
@@ -879,6 +887,10 @@ int main(int argc,char **argv)
 
 #ifdef CONFIG_CD
 		pcecd_poll();
+#endif
+
+#ifdef CONFIG_DISKIMG
+		diskimg_poll();
 #endif
 	}
 

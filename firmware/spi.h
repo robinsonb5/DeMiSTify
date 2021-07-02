@@ -57,14 +57,8 @@
 extern "C" {
 #endif
 
-int spi_init();
-int sd_read_sector(unsigned long lba,unsigned char *buf);
-int sd_write_sector(unsigned long lba,unsigned char *buf); // FIXME - stub
-int sd_get_size();
-
-extern int spi_checksum;
-extern int sd_is_sdhc;
-extern int sd_size;
+void spi_read(char *data,int len);
+void spi_write(const char *data,int len);
 
 #ifdef __cplusplus
 }

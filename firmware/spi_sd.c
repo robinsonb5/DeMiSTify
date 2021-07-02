@@ -20,6 +20,7 @@
 
 
 #include <stdio.h>
+#include "spi_sd.h"
 #include "spi.h"
 
 int sd_is_sdhc;
@@ -257,7 +258,7 @@ int is_sdhc()
 }
 
 
-int spi_init()
+int sd_init()
 {
 	int i;
 	int r;
@@ -323,6 +324,8 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
     SPI(0xFE); // send Data Token
 
     // send sector bytes
+	spi_write(buf,512);
+#if 0
     for (i = 0; i < 128; i++)
 	{
 		int t=*(int *)buf;
@@ -332,18 +335,16 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 		SPI(t&255);
 		buf+=4;
 	}
-
+#endif
     SPI(0xFF); // send CRC lo byte
     SPI(0xFF); // send CRC hi byte
     SPI(0xFF); // Pump the response byte
 
     timeout = 100000;
-	do
-	{
+	do {
 	    SPI(0xFF);
 		i=SPI_READ();
-	}
-	while((i==0) && --timeout);
+	} while((i==0) && --timeout);
 	SPI(0xff);
 	SPI_DISABLE(HW_SPI_SD);
 	return(0);
@@ -366,12 +367,15 @@ static int sd_read(unsigned char *buf,int bytes)
 			register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 			if(buf)
 			{
+				spi_read(buf,bytes);
+#if 0
 				do
 				{
 					int t,v;
 					*spiptr=0xff;
 					*buf++=*spiptr;
 				} while(--bytes);
+#endif
 			}
 			else
 			{

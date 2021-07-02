@@ -96,12 +96,6 @@ int gettrackbybcd(unsigned char in)
 	return(t);
 }
 
-void spi_write(const char *data,int len)
-{
-	while(len--)
-		SPI(*data++);
-}
-
 
 typedef struct
 {
