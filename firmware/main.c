@@ -687,7 +687,10 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 		switch(c)
 		{
 			case 'S': // Disk image select
-				diskunit=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				diskunit='0';
+				c=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				if(c!=',')
+					diskunit=c;
 				while(c!=',')
 					c=conf_next();
 				// Fall through...

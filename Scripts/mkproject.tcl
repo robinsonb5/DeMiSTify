@@ -19,8 +19,7 @@ if {[string length $rootpath]==0} {return -code error "Must specify a root path"
 
 set corename "${project}_${board}"
 
-set projectpath $rootpath
-source ${projectpath}/project_defs.tcl
+source ${rootpath}/project_defs.tcl
 source ${boardpath}${board}/${board}_defs.tcl
 
 if { ${requires_sdram}==0 || ${have_sdram}==1 } {
