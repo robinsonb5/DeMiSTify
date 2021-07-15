@@ -1,4 +1,3 @@
-set_global_assignment -name VHDL_FILE ${projectpath}/de10lite/de10lite_top.vhd
 set_global_assignment -name SDC_FILE  ${boardpath}/de10lite/constraints.sdc
 
 set_global_assignment -name VERILOG_MACRO "SDRAM_WINBOND=0"
