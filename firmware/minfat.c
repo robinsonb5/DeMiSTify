@@ -214,7 +214,10 @@ unsigned int FindDrive(void)
         data_start = root_directory_start + root_directory_size;
     }
 
-	ChangeDirectory(0);
+//	ChangeDirectory(0);
+	current_directory_cluster = root_directory_cluster;
+	current_directory_start = root_directory_start;
+	dir_entries = fat32 ?  cluster_size << 4 : root_directory_size << 4; // 16 entries per sector
 
     return(1);
 }
@@ -251,6 +254,8 @@ unsigned int GetCluster(unsigned int cluster)
 unsigned int FileOpen(fileTYPE *file, const char *name)
 {
     DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
+	int bm;
+
 	file->size=0;
 	while(p=NextDirEntry(p==NULL,0))
 	{
@@ -270,18 +275,20 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 		file->sector = 0;
 		file->firstcluster=file->cluster;
 		file->cursor=0;
+
+#ifdef CONFIG_FILEBOOKMARKS
+		for(bm=0;bm<CONFIG_FILEBOOKMARKS;++bm)
+		{
+			file->bookmarks[bm].sector=0;
+			file->bookmarks[bm].cluster=file->cluster;
+		}
+		file->bookmark_index=0;
+#endif
+
 		return(1);
 	}
 
     return(0);
-}
-
-
-void FileFirstSector(fileTYPE *file)
-{
-	file->sector=0;
-	file->cursor=0;
-	file->cluster=file->firstcluster;
 }
 
 
@@ -329,20 +336,81 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
         return(1);
 }
 
+#ifdef CONFIG_FILEBOOKMARKS
 
+void FileSeek(fileTYPE *file, unsigned int pos)
+{
+	int p=pos>>9;
+	int pm=p&~cluster_mask;
+
+	int currentsector=file->sector&~cluster_mask;
+	int cluster=file->cluster;
+
+	if(pm==currentsector)	// Is the new position within the same cluster?
+	{
+		file->sector=p;
+	}
+	else	// Crossing a cluster boundary
+	{
+		int idx,bestd=0x7fffffff,d,best;
+		best=-1;
+		for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
+		{
+			d=pm-file->bookmarks[idx].sector;
+//			printf("Considering bookmark %d, difference %d\n",idx,d);
+			if(d>=0 && d<bestd)
+			{
+				best=idx;
+				bestd=d;
+			}
+		}
+		if(best>=0)
+		{
+//			printf("Found bookmark %d for %x (%x, %x)\n",best,pm,file->bookmarks[best].sector,file->bookmarks[best].cluster);
+			file->sector=file->bookmarks[best].sector;
+			file->cluster=file->bookmarks[best].cluster;
+		}
+		else
+		{
+//			printf("No bookmark found\n");
+			file->sector=0;
+			file->cluster=file->firstcluster;
+		}
+
+		// record bookmark
+		p-=file->sector;
+
+		if((p>cluster_size*8) || (p<cluster_size*8))
+		{
+//			printf("Creating bookmark entry %d, %x, %x\n",file->bookmark_index,currentsector,cluster);
+			file->bookmarks[file->bookmark_index].sector=currentsector;
+			file->bookmarks[file->bookmark_index].cluster=cluster;
+			file->bookmark_index=file->bookmark_index==CONFIG_FILEBOOKMARKS-1 ? 0 : file->bookmark_index+1;
+		}
+
+		FileNextSector(file,p);
+	}
+	FileReadSector(file, sector_buffer);
+	file->cursor=pos;
+}
+#else
 void FileSeek(fileTYPE *file, unsigned int pos)
 {
 	int p=pos;
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
-	if(p<file->cursor)
-		FileFirstSector(file);
+	if(p<(file->cursor&(~cluster_mask)))
+	{
+		file->sector=0;
+		file->cursor=0;
+		file->cluster=file->firstcluster;
+	}
 	else
 		p-=file->cursor&~511;
 	FileNextSector(file,p>>9);
 	FileReadSector(file, sector_buffer);
 	file->cursor=pos;
 }
-
+#endif
 
 unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 {
@@ -412,9 +480,9 @@ int LoadFile(const char *fn, unsigned char *buf)
 
 		while(c<file.size)
 		{
-			if(!FileRead(&file,buf))
+			if(!FileReadSector(&file,buf))
 				return(0);
-			FileNextSector(&file);
+			FileNextSector(&file,1);
 
 			buf+=512;
 			c+=512;
@@ -465,7 +533,9 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 		iDirectorySector=current_directory_start;
 		iDirectoryCluster=current_directory_cluster;
 	}
+#ifndef DISABLE_LONG_FILENAMES
 	longfilename[13]=0;
+#endif
 
 	while(1)
 	{
@@ -516,15 +586,19 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 				else if ((!(pEntry->Attributes & ATTR_VOLUME)) &&
 					 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name[0])))
 				{
+#ifndef DISABLE_LONG_FILENAMES
 					if(!prevlfn)
 						longfilename[0]=0;
+#endif
 					prevlfn=0;
 					// FIXME - should check the lfn checksum here.
 					return(pEntry);
 				}
 				else
 				{
+#ifndef DISABLE_LONG_FILENAMES
 					longfilename[13]=0;
+#endif
 					prevlfn=0;
 				}
 			}

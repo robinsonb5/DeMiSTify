@@ -1,9 +1,14 @@
-#ifndef _FAT16_H_INCLUDED
-#define _FAT16_H_INCLUDED
-
-#define MAXDIRENTRIES 8
+#ifndef MINFAT_H
+#define MINFAT_H
 
 #include "sys/types.h"
+#include "config.h"
+
+struct fileBookmark
+{
+	uint32_t sector;
+	uint32_t cluster;
+};
 
 typedef struct
 {
@@ -12,6 +17,10 @@ typedef struct
     uint32_t size;            /* file size */
     uint32_t firstcluster;
 	uint32_t cursor;	/* Offset within the current sector */
+#ifdef CONFIG_FILEBOOKMARKS
+	struct fileBookmark bookmarks[FILE_BOOKMARKS];
+	int bookmark_index;
+#endif
 } fileTYPE;
 
 struct PartitionEntry
@@ -104,7 +113,6 @@ extern unsigned int fat32;
 // functions
 unsigned int FindDrive(void);
 unsigned int GetFATLink(unsigned int cluster);
-void FileFirstSector(fileTYPE *file);
 void FileNextSector(fileTYPE *file, int count);
 unsigned int FileOpen(fileTYPE *file, const char *name);
 unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer);
@@ -120,6 +128,8 @@ void ChangeDirectory(DIRENTRY *p);
 DIRENTRY *NextDirEntry(int prev,int (*matchfunc)(const char *fn));
 extern unsigned int dir_entries;             // number of entry's in directory table
 extern char longfilename[261];
+
+#define FileFirstSector(x) { (x)->sector=0; (x)->cursor=0; (x)->cluster=(x)->firstcluster; }
 
 #endif
 

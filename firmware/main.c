@@ -27,7 +27,6 @@
 #include "spi.h"
 #include "minfat.h"
 #include "interrupts.h"
-#include "keyboard.h"
 #include "ps2.h"
 #include "user_io.h"
 #include "osd.h"
@@ -881,8 +880,6 @@ int main(int argc,char **argv)
 
 	while(1)
 	{
-		HandlePS2RawCodes();
-
 #ifdef CONFIG_CD
 		pcecd_poll();
 #endif

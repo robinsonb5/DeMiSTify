@@ -53,7 +53,7 @@
 
 
 
-int HandlePS2RawCodes();
+int HandlePS2RawCodes(int blockkeys);
 void ClearKeyboard();
 
 int TestKey(int rawcode);

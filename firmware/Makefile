@@ -10,7 +10,8 @@ LIBDIR=$(832DIR)/lib832
 ROMSIZE1=8192
 ROMSIZE2=4096
 
-CFLAGS = -+ -c99 -O=1343 -speed -unsigned-char -I.
+CDEFS =
+CFLAGS = -+ -c99 -O=1343 -speed -unsigned-char -I. $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=0x200
 

@@ -18,8 +18,11 @@
 
 #include <stdio.h>
 
+#include "config.h"
 #include "keyboard.h"
 #include "ps2.h"
+#include "user_io.h"
+#include "spi.h"
 
 // Only need 2 bits per key in the keytable,
 // so we'll use 32-bit ints to store the key statuses
@@ -28,7 +31,7 @@
 // Shift each 2-bit tuple by (keycode & 15)*2.
 unsigned int keytable[16]={0};
 
-int HandlePS2RawCodes()
+int HandlePS2RawCodes(int blockkeys)
 {
 	int result=0;
 	static int keyup=0;
@@ -49,6 +52,19 @@ int HandlePS2RawCodes()
 				keytable[keyidx>>4]&=~(1<<((keyidx&15)*2));  // Mask off the "currently pressed" bit.
 			else
 				keytable[keyidx>>4]|=3<<((keyidx&15)*2);	// Currently pressed and pressed since last test.
+#ifdef CONFIG_SENDKEYS
+			if(!blockkeys)
+			{
+				EnableIO();
+				SPI(UIO_KEYBOARD);
+				if(extkey)
+					SPI(0xe0);
+				if(keyup)
+					SPI(0xf0);
+				SPI(key);
+				DisableIO();
+			}
+#endif
 			extkey=0;
 			keyup=0;
 		}

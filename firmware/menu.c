@@ -24,6 +24,7 @@
 #include "menu.h"
 #include "keyboard.h"
 #include "spi.h"
+#include "config.h"
 
 #include "gamepadkeys.h"
 
@@ -118,7 +119,7 @@ __weak void Menu_Joystick(int port,int joymap)
 
 /* Key -> gamepad mapping.  Weak linkage to allow overrides.
    FIXME - needs to be wider to allow for extra buttons. */
-
+#ifdef CONFIG_JOYKEYS
 __weak unsigned char joy_keymap[]=
 {
 	KEY_CAPSLOCK,
@@ -138,6 +139,7 @@ __weak unsigned char joy_keymap[]=
 	KEY_LEFTARROW,
 	KEY_RIGHTARROW,
 };
+#endif
 
 void SetScandouble(int sd)
 {
@@ -164,6 +166,8 @@ void Menu_Run()
 	struct hotkey *hk=hotkeys;
 	int joy=HW_JOY(REG_JOY);
 
+	HandlePS2RawCodes(menu_visible);
+
 	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 	{
 		menu_timestamp=HW_TIMER(REG_MILLISECONDS);
@@ -187,6 +191,7 @@ void Menu_Run()
 
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
+#ifdef CONFIG_JOYKEYS
 		int joybit=0x8000;
 		unsigned char *key=joy_keymap;
 		while(joybit)
@@ -195,6 +200,7 @@ void Menu_Run()
 				joy|=joybit;
 			joybit>>=1;
 		}
+#endif
 		Menu_Joystick(0,joy&0xff);
 		Menu_Joystick(1,joy>>8);
 
