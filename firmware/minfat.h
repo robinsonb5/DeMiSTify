@@ -18,7 +18,7 @@ typedef struct
     uint32_t firstcluster;
 	uint32_t cursor;	/* Offset within the current sector */
 #ifdef CONFIG_FILEBOOKMARKS
-	struct fileBookmark bookmarks[FILE_BOOKMARKS];
+	struct fileBookmark bookmarks[CONFIG_FILEBOOKMARKS];
 	int bookmark_index;
 #endif
 } fileTYPE;

@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include "configstring.h"
 #include "uart.h"
 #include "spi.h"
 #include "minfat.h"
@@ -34,6 +35,8 @@
 #include "font.h"
 #include "cue_parser.h"
 #include "pcecd.h"
+#include "spi_sd.h"
+#include "diskimg.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
@@ -44,108 +47,7 @@ unsigned int statusword; /* Support 32-bit status word initially - need to be 64
 unsigned char menupage;
 unsigned char coretype;
 unsigned char romtype=0;
-unsigned char cfgidx=0;
 unsigned char unit=0;
-
-#define conf_next() SPI(0xff)
-
-int conf_nextfield()
-{
-	int c;
-	do
-		c=conf_next();
-	while(c && c!=';');
-	return(c);
-}
-
-/* Copy a maximum of limit bytes to the output string, stopping when a comma is reached. */
-/* If the copy flag is zero, don't copy, just consume bytes from the input */
-
-int copytocomma(char *buf, int limit,int copy)
-{
-	int count=0;
-	int c;
-	c=conf_next();
-	while(c && c!=',' && c!=';')
-	{
-		if(count<limit && copy)
-			*buf++=c;
-		if(c)
-			++count;
-		c=conf_next();
-	}
-	if(copy)
-		*buf++=0;
-	return(c==';' ? -count : count);
-}
-
-
-int getdigit()
-{
-	unsigned int c=conf_next();
-//	printf("Getdigit %c\n",c);
-	if(c>='0' && c<='9')
-		c-='0';
-	if(c>='A' && c<='Z')
-		c-='A'-10;
-	return(c);	
-}
-
-
-int matchextension(const char *ext)
-{
-	int done=0;
-	unsigned int i=0;
-	int c=1;
-	int c1,c2,c3;
-
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	coretype=SPI(SPI_CONF_READ); // Read conf string command
-
-/*  The first config entry has the corename, a semicolon, then optional match extensions.
-    Subsequent configs have a type, a comma, then the extensions.
-    We can find the correct entry by stepping over semicolons.  */
-
-//	putchar('0'+cfgidx);
-
-//	printf("Config index %d\n",cfgidx);
-
-	for(i=0;i<=cfgidx;++i)
-		conf_nextfield();
-
-/*	Having found the correct entry, we need to step over the descriptor if there is one. */
-
-	if(cfgidx) /* No descriptor for the first entry. */
-	{
-		do
-		{
-			c=conf_next();
-//			putchar(c);
-		} while(c && c!=',');
-	}
-
-	i=0;
-//	putchar('\n');
-	while(!done)
-	{
-		c1=conf_next();
-		c2=conf_next();
-		c3=conf_next();
-//		printf("%d, %d, %d, %d, %d, %d\n",c1,c2,c3,ext[8],ext[9],ext[10]);
-		++i;
-		if(c1==ext[8] && c2==ext[9] && c3==ext[10])
-			done=1;
-		else if(c1==',' || c1==';')
-		{
-			i=0;
-			done=1;
-		}
-	}
-	SPI_DISABLE(HW_SPI_CONF);
-//	printf("Second match result %d\n",i);
-	return(i);
-}
 
 
 /* Upload data to FPGA */
@@ -212,8 +114,9 @@ int LoadROM(const char *fn)
 	{
 		int minsize=rom_minsize;
 		int sendsize;
-		int extindex=matchextension(fn); /* Figure out which extension matches, and thus which index we need to use */
-//		printf("Coretype %d, ROM filename %s, Romtype %d, cfgidx %d, extidx %d\n",coretype,fn,romtype,cfgidx,extindex);
+		int extindex=configstring_matchextension(fn); /* Figure out which extension configstring_matches, and thus which index we need to use */
+//		printf("Coretype %d, ROM filename %s, Romtype %d, configstring_index %d, extidx %d\n",coretype,fn,romtype,configstring_index,extindex);
+		printf("Got extind");
 		if(!extindex)
 			extindex=1;
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -321,7 +224,7 @@ static DIRENTRY *nthfile(unsigned int n)
 	DIRENTRY *p;
 	for(i=0;j<=n;++i)
 	{
-		p=NextDirEntry(i==0,matchextension);
+		p=NextDirEntry(i==0,configstring_matchextension);
 		++j;
 		if(!p)
 			j=n;
@@ -493,13 +396,13 @@ static void listroms(int row)
 	moremenu=1;
 	for(i=0;(j<romindex) && p;++i)
 	{
-		p=NextDirEntry(i==0,matchextension);
+		p=NextDirEntry(i==0,configstring_matchextension);
 		++j;
 	}
 
 	for(j=0;(j<7) && p;++i)
 	{
-		p=NextDirEntry(i==0,matchextension);
+		p=NextDirEntry(i==0,configstring_matchextension);
 		if(p)
 		{
 			// FIXME declare a global long file name buffer.
@@ -546,7 +449,7 @@ static void listroms(int row)
 static void fileselector(int row)
 {
 	romtype=menu[row].u.file.index;
-	cfgidx=menu[row].u.file.cfgidx;
+	configstring_index=menu[row].u.file.cfgidx;
 	unit=menu[row].u.file.unit;
 #ifdef CONFIG_CD
 	if(unit=='C')
@@ -590,6 +493,19 @@ static void submenu(int row)
 }
 
 
+__weak void sendstatus(int statusword)
+{
+	SPI(0xff);
+	SPI_ENABLE(HW_SPI_CONF);
+	SPI(UIO_SET_STATUS2); // Read conf string command
+	SPI(statusword);
+	SPI(statusword>>8);
+	SPI(statusword>>16);
+	SPI(statusword>>24);
+	SPI_DISABLE(HW_SPI_CONF);
+}
+
+
 static void cycle(int row)
 {
 	int v;
@@ -602,14 +518,7 @@ static void cycle(int row)
 	statusword&=~(m->u.opt.val<<m->u.opt.shift); // Mask off old bits from status word
 	statusword|=v<<m->u.opt.shift;		// and insert new value
 
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	SPI(UIO_SET_STATUS2); // Read conf string command
-	SPI(statusword);
-	SPI(statusword>>8);
-	SPI(statusword>>16);
-	SPI(statusword>>24);
-	SPI_DISABLE(HW_SPI_CONF);
+	sendstatus(statusword);
 
 	parseconf(menupage,menu,menuindex,7);
 	Menu_Draw(row);
@@ -653,12 +562,10 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	unsigned int configidx=1;
 	moremenu=1;
 
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	SPI(SPI_CONF_READ); /* Read conf string command */
+	configstring_begin();
 
-	conf_nextfield(); /* Skip over core name */
-	c=conf_next();
+	configstring_nextfield(); /* Skip over core name */
+	c=configstring_next();
 	if(c!=';')
 	{
 		if(!selpage) /* Add the load item only for the first menu page */
@@ -670,36 +577,36 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 			++fileindex;
 			menu[line].u.file.cfgidx=0;
 			menu[line].u.file.unit=0;
-			copytocomma(&menu[line].label[8],LINELENGTH-8,1);
+			configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
 			if(line>=skip)
 				++line;
 			else
 				--skip;
 		}
 		else
-			conf_nextfield();
+			configstring_nextfield();
 	}
 	while(c && line<limit)
 	{
 		int diskunit=0;
-		c=conf_next();
+		c=configstring_next();
 		switch(c)
 		{
 			case 'S': // Disk image select
 				diskunit='0';
-				c=conf_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+				c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
 				if(c!=',')
 					diskunit=c;
 				while(c!=',')
-					c=conf_next();
+					c=configstring_next();
 				// Fall through...
 			case 'F':
 				if(!selpage)
 				{
 					if(c!=',')
-						conf_next();
-					copytocomma(menu[line].label,10,0);
-					copytocomma(menu[line].label,LINELENGTH-2,1);
+						configstring_next();
+					configstring_copytocomma(menu[line].label,10,0);
+					configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
 					menu[line].action=MENU_ACTION(&fileselector);
 					menu[line].u.file.index=fileindex;
 					menu[line].u.file.cfgidx=configidx;
@@ -711,14 +618,14 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						--skip;
 				}
 				else
-					c=conf_nextfield();
+					c=configstring_nextfield();
 				break;
 			case 'P':
-				page=getdigit();
+				page=configstring_getdigit();
 
 				if(page>maxpage)
 					maxpage=page;
-				c=getdigit();
+				c=configstring_getdigit();
 				if(c==',')
 				{
 					/* Is this a submenu declaration? */
@@ -727,11 +634,11 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						title=menu[line].label;
 						menu[line].u.menu.page=page;
 						menu[line].action=MENU_ACTION(&submenu);
-						c=conf_next();
+						c=configstring_next();
 						while(c && c!=';')
 						{
 							*title++=c;
-							c=conf_next();
+							c=configstring_next();
 						}
 						*title++=' ';
 						*title++=FONT_ARROW_RIGHT;
@@ -742,7 +649,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 							--skip;
 					}
 					else
-						c=conf_nextfield();
+						c=configstring_nextfield();
 					break;
 				}
 				// Fall through to O
@@ -756,13 +663,13 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 					unsigned int val;
 
 					/* Parse option */
-					low=getdigit();
-					high=getdigit();
+					low=configstring_getdigit();
+					high=configstring_getdigit();
 
 					if(high==',')
 						high=low;
 					else
-						conf_next();
+						configstring_next();
 
 					menu[line].u.opt.shift=low;
 					menu[line].u.opt.val=(1<<(1+high-low))-1;
@@ -771,7 +678,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 
 					title=menu[line].label;
 //					printf("selpage %d, page %d\n",selpage,page);
-					if((c=copytocomma(title,LINELENGTH,selpage==page))>0)
+					if((c=configstring_copytocomma(title,LINELENGTH,selpage==page))>0)
 					{
 						title+=c;
 						strncpy(title,": ",menu[line].label+LINELENGTH-title);
@@ -779,7 +686,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						do
 						{
 							++opt;
-						} while(copytocomma(title,menu[line].label+LINELENGTH-title,opt==(val+1))>0);
+						} while(configstring_copytocomma(title,menu[line].label+LINELENGTH-title,opt==(val+1))>0);
 					}
 
 					if(opt)
@@ -799,11 +706,11 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						--skip;
 				}
 				else
-					c=conf_nextfield();
+					c=configstring_nextfield();
 				page=0;
 				break;
 			default:
-				c=conf_nextfield();
+				c=configstring_nextfield();
 				break;
 		}
 		++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
@@ -827,7 +734,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	}
 	menu[8].action=MENU_ACTION(&scrollmenu);
 
-	SPI_DISABLE(HW_SPI_CONF);
+	configstring_end();
 	return(maxpage);
 }
 
@@ -848,7 +755,7 @@ __weak char *autoboot()
 	return(result);
 }
 
-int main(int argc,char **argv)
+__weak int main(int argc,char **argv)
 {
 	int havesd;
 	int i,c;
