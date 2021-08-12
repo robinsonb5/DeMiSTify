@@ -10,22 +10,28 @@ entity deca_top is
 		ADC_CLK_10		:	 IN STD_LOGIC;
 		MAX10_CLK1_50		:	 IN STD_LOGIC;
 		MAX10_CLK2_50		:	 IN STD_LOGIC;
-		KEY		:	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		KEY		        :	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 		DRAM_CLK		:	 OUT STD_LOGIC;
 		DRAM_CKE		:	 OUT STD_LOGIC;
 		DRAM_ADDR		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-		DRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-		DRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+		DRAM_BA		        :	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+		DRAM_DQ		        :	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
 		DRAM_LDQM		:	 OUT STD_LOGIC;
 		DRAM_UDQM		:	 OUT STD_LOGIC;
 		DRAM_CS_N		:	 OUT STD_LOGIC;
 		DRAM_WE_N		:	 OUT STD_LOGIC;
 		DRAM_CAS_N		:	 OUT STD_LOGIC;
 		DRAM_RAS_N		:	 OUT STD_LOGIC;
-		PS2_CLK_IO      :    INOUT STD_LOGIC;
-		PS2_DATA_IO      :    INOUT STD_LOGIC;
-		PS2_MOUSE_CLK_IO      :    INOUT STD_LOGIC;
-		PS2_MOUSE_DATA_IO      :    INOUT STD_LOGIC;
+		PS2_KEYBOARD_CLK        :    INOUT STD_LOGIC;
+		PS2_KEYBOARD_DAT        :    INOUT STD_LOGIC;
+		PS2_MOUSE_CLK           :    INOUT STD_LOGIC;
+		PS2_MOUSE_DATA          :    INOUT STD_LOGIC;
+		-- Audio
+		SIGMA_R                 :   OUT STD_LOGIC;
+		SIGMA_L                 :   OUT STD_LOGIC;
+		-- UART
+		UART_TXD                :   OUT STD_LOGIC;
+		UART_RXD                :   IN  STD_LOGIC;
 		-- SD Card
 		sd_cs_n_o                       : out   std_logic                                                               := '1';
 		sd_sclk_o                       : out   std_logic                                                               := '0';
@@ -65,8 +71,6 @@ architecture RTL of deca_top is
 	signal n_reset : std_logic;
 
 -- PS/2 Keyboard socket - used for second mouse
-	alias ps2_keyboard_clk : std_logic is PS2_CLK_IO;
-	alias ps2_keyboard_dat : std_logic is PS2_DATA_IO;
 
 	signal ps2_keyboard_clk_in : std_logic;
 	signal ps2_keyboard_dat_in : std_logic;
@@ -74,8 +78,6 @@ architecture RTL of deca_top is
 	signal ps2_keyboard_dat_out : std_logic;
 
 -- PS/2 Mouse
-	alias ps2_mouse_clk : std_logic is PS2_MOUSE_CLK_IO;
-	alias ps2_mouse_dat : std_logic is PS2_MOUSE_DATA_IO;
 
 	signal ps2_mouse_clk_in: std_logic;
 	signal ps2_mouse_dat_in: std_logic;
@@ -104,8 +106,6 @@ architecture RTL of deca_top is
 	signal audio_l : std_logic_vector(15 downto 0);
 	signal audio_r : std_logic_vector(15 downto 0);
 
-	alias sigma_l : std_logic is GPIO(18);
-	alias sigma_r : std_logic is GPIO(20);
 
 	
 -- IO
@@ -240,7 +240,7 @@ virtualtoplevel : entity work.VirtualToplevel
 );
 
 	
--- Dither the video down to 5 bits per gun.
+-- Dither the video down to 3 bits per gun.
 	vga_window<='1';
 	VGA_HS<= not vga_hsync;
 	VGA_VS<= not vga_vsync;	
@@ -278,11 +278,11 @@ audio_sd: component hybrid_pwm_sd
 SD_SEL                          <= '0';  -- 0 = 3.3V at sdcard   
 SD_CMD_DIR                      <= '1';  -- MOSI FPGA output
 SD_D0_DIR                       <= '0';  -- MISO FPGA input     
-SD_D123_DIR             <= '1';  -- CS FPGA output  
+SD_D123_DIR                     <= '1';  -- CS FPGA output  
 
---GPIO(0)<=rs232_txd;
+UART_TXD<=rs232_txd;
 --GPIO(1) <= 'Z';
---rs232_rxd<=GPIO(1);
+rs232_rxd<=UART_RXD;;
 --ARDUINO_IO(1) <= esp_txd;
 --ARDUINO_IO(0) <= 'Z';
 --esp_rxd <= ARDUINO_IO(0);

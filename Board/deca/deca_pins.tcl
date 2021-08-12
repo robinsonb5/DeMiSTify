@@ -99,28 +99,28 @@ set_location_assignment PIN_AA7 -to VGA_R[2]
 set_location_assignment PIN_W6 -to VGA_VS
 
 # Teclado (GPIO1_D0/1) y ratón (GPIO1_D16/17)
-set_location_assignment PIN_Y5 -to ps2_clk_io
-set_location_assignment PIN_Y6 -to ps2_data_io
-#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_clk_io
-#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_data_io
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_clk_io
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_data_io
+set_location_assignment PIN_Y5 -to PS2_KEYBOARD_CLK
+set_location_assignment PIN_Y6 -to PS2_KEYBOARD_DAT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to PS2_KEYBOARD_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to PS2_KEYBOARD_DAT
 
-set_location_assignment PIN_W9 -to ps2_mouse_clk_io
-set_location_assignment PIN_W5 -to ps2_mouse_data_io
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_mouse_clk_io
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_mouse_data_io
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_mouse_clk_io
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_mouse_data_io
+set_location_assignment PIN_W9 -to PS2_MOUSE_CLK
+set_location_assignment PIN_W5 -to PS2_MOUSE_DAT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_MOUSE_CLK
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_MOUSE_DAT
 
 
 # Audio (GPIO1_D18/19)
-set_location_assignment PIN_R9 -to dac_l_o
-set_location_assignment PIN_W4 -to dac_r_o
-set_location_assignment PIN_Y19 -to mic_o
-set_location_assignment PIN_AA17 -to ear_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to dac_l_o
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to dac_r_o
+set_location_assignment PIN_R9 -to SIGMA_L
+set_location_assignment PIN_W4 -to SIGMA_R
+set_location_assignment PIN_Y19 -to UART_TXD
+set_location_assignment PIN_AA17 -to UART_RXD
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 #Botones y switchs
 set_location_assignment PIN_J22 -to btn_n_i[4]
