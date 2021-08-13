@@ -1,6 +1,8 @@
 #ifndef PS2_H
 #define PS2_H
 
+#include "config.h"
+
 #define PS2BASE 0xffffffe0
 #define HW_PS2(x) *(volatile unsigned int *)(PS2BASE+x)
 
@@ -10,15 +12,13 @@
 #define BIT_PS2_RECV 11
 #define BIT_PS2_CTS 10
 
-#undef PS2_WRITE
-
 // Private
 #define PS2_RINGBUFFER_SIZE 8
 struct ps2_ringbuffer
 {
 	volatile unsigned char in_hw;
 	volatile unsigned char in_cpu;
-	volatile unsigned char inbuf[PS2_RINGBUFFER_SIZE]; // Int is much easier than char for ZPU to deal with
+	volatile unsigned char inbuf[PS2_RINGBUFFER_SIZE];
 #ifdef PS2_WRITE
 	volatile unsigned char out_hw;
 	volatile unsigned char out_cpu;

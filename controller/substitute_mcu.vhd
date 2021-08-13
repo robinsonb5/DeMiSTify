@@ -24,6 +24,7 @@ use work.demistify_config_pkg.all;
 entity substitute_mcu is
 	generic (
 		debug : boolean := false;
+		jtag_uart : boolean := true;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
 		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
@@ -242,6 +243,32 @@ end process;
 
 -- UART
 
+genjtaguart:
+if jtag_uart=true generate
+
+myuart : entity work.jtag_uart
+	generic map(
+		enable_tx=>true,
+		enable_rx=>true
+	)
+	port map(
+		clk => clk,
+		reset => reset_n, -- active low
+		txdata => ser_txdata,
+		txready => ser_txready,
+		txgo => ser_txgo,
+		rxdata => ser_rxdata,
+		rxint => ser_rxint,
+		txint => open,
+		clock_divisor => to_unsigned(uart_divisor,16), -- 42MHz / 115,200 bps
+		rxd => rxd,
+		txd => txd
+	);
+end generate;
+
+genuart:
+if jtag_uart=false generate
+
 myuart : entity work.simple_uart
 	generic map(
 		enable_tx=>true,
@@ -260,6 +287,7 @@ myuart : entity work.simple_uart
 		rxd => rxd,
 		txd => txd
 	);
+end generate;
 
 
 -- PS2 devices
