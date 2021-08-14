@@ -204,7 +204,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 
 static char romfilenames[7][30];
 
-static struct menu_entry menu[]=
+struct menu_entry menu[]=
 {
 	{MENU_ACTION(&selectrom),romfilenames[0],0,0,0},
 	{MENU_ACTION(&selectrom),romfilenames[1],0,0,0},
@@ -506,7 +506,7 @@ __weak void sendstatus(int statusword)
 }
 
 
-static void cycle(int row)
+void cycle(int row)
 {
 	int v;
 	struct menu_entry *m=&menu[row];
@@ -525,7 +525,7 @@ static void cycle(int row)
 }
 
 
-static void toggle(int row)
+__weak void toggle(int row)
 {
 	cycle(row);
 	cycle(row);
