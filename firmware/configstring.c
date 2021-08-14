@@ -9,7 +9,7 @@ __weak unsigned char configstring_index=0;
 
 __weak int configstring_next()
 {
-	SPI(0xff);
+	return(SPI(0xff));
 }
 
 __weak void configstring_begin()

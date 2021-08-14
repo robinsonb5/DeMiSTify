@@ -310,6 +310,31 @@ void setcuefile(const char *filename)
 }
 #endif
 
+__weak void loadimage(char *filename,int unit)
+{
+	switch(unit)
+	{
+		case 0:
+			LoadROM(filename);
+			break;
+#ifdef CONFIG_DISKIMG
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+			diskimg_mount(0,unit-'0');				
+			diskimg_mount(filename,unit-'0');				
+			break;
+#endif
+#ifdef CONFIG_CD
+		case 'C':
+//				printf("Opening %s\n",filename);
+			setcuefile(filename);
+			break;
+#endif
+	}
+}
+
 char filename[12];
 void selectrom(int row)
 {
@@ -324,26 +349,7 @@ void selectrom(int row)
 		menu[row].label="Loading...";
 		Menu_Draw(row);
 		menu[row].label=romfilenames[row];
-		switch(unit)
-		{
-			case 0:
-				LoadROM(filename);
-				break;
-#ifdef CONFIG_DISKIMG
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-				diskimg_mount(filename,unit-'0');				
-				break;
-#endif
-#ifdef CONFIG_CD
-			case 'C':
-//				printf("Opening %s\n",filename);
-				setcuefile(filename);
-				break;
-#endif
-		}
+		loadimage(filename,unit)
 	}
 	Menu_Draw(row);
 	Menu_ShowHide(0);
