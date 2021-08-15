@@ -98,7 +98,7 @@ void diskimg_unmount(unsigned char idx)
 
 void diskimg_mount(const unsigned char *name, unsigned char idx) {
 	int imgsize=0;
-//	printf("Mounting %s as unit %d\n",name,idx);
+
 	if(idx>3)
 		return;
 	if (name)
@@ -108,13 +108,10 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 			diskimg[idx].valid=1;
 			imgsize=diskimg[idx].file.size;
 		}
-//		else
-//			printf("Failed to open file %s\n",name);
 	} else {
 		diskimg_unmount(idx);
 	}
 
-//	printf("Setting image size to %d\n",imgsize);
 	// send mounted image size first then notify about mounting
 	EnableIO();
 	SPI(UIO_SET_SDINFO);

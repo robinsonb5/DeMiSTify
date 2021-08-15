@@ -68,7 +68,7 @@ int ps2_ringbuffer_count(struct ps2_ringbuffer *r)
 
 struct ps2_ringbuffer kbbuffer;
 
-#ifdef MOUSE
+#ifdef PS2_MOUSE
 struct ps2_ringbuffer mousebuffer;
 #endif
 
@@ -97,7 +97,7 @@ void PS2Handler()
 	}
 #endif
 
-#ifdef MOUSE
+#ifdef PS2_MOUSE
 	mouse=HW_PS2(REG_PS2_MOUSE);
 	if(mouse & (1<<BIT_PS2_RECV))
 	{
@@ -120,7 +120,7 @@ void PS2Handler()
 void PS2Init()
 {
 	ps2_ringbuffer_init(&kbbuffer);
-#ifdef MOUSE
+#ifdef PS2_MOUSE
 	ps2_ringbuffer_init(&mousebuffer);
 #endif
 	SetIntHandler(&PS2Handler);

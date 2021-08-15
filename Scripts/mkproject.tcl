@@ -30,8 +30,8 @@ if { ${requires_sdram}==0 || ${have_sdram}==1 } {
 	source ${boardpath}${board}/${board}_opts.tcl
 	source ${boardpath}${board}/${board}_pins.tcl
 	source ${boardpath}${board}/${board}_support.tcl
-	source ${corename}_files.tcl
 	set_global_assignment -name QIP_FILE ${projectpath}${board}/top.qip
+	source ${corename}_files.tcl
 } else {
 	puts "Board ${board} has no SDRAM, not building ${project}"
 }
