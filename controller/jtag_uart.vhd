@@ -63,6 +63,10 @@ architecture rtl of jtag_uart is
 	signal t_dav : std_logic;
 	signal t_ena : std_logic;
 	signal t_pause : std_logic;
+	
+	signal inuse : std_logic;
+	signal r_ena_d : std_logic;
+	signal connected : std_logic :='0';
 
 begin
 
@@ -90,14 +94,23 @@ begin
 	
 		if reset='0' then
 			tx_pending<='0';
+			connected<='0';
+			inuse<='0';
 		elsif rising_edge(clk) then
 
+			r_ena_d<=r_ena;
 			txint<='0';
 			rxint<='0';
 			t_dav<=rxready;
 			r_val<='0';
-			txready<=not tx_pending;
 			
+			-- Don't block until the UART is actually connected
+			if inuse='1' and r_ena='1' and r_ena_d='0' then
+				connected<='1';
+			end if;
+
+			txready<=not (tx_pending and connected);
+
 			if t_ena = '1' then
 				rxdata<=t_dat;
 				rxint<='1';
@@ -111,6 +124,7 @@ begin
 			end if;
 			
 			if txgo='1' then
+				inuse<='1';
 				tx_pending<='1';
 			end if;
 						

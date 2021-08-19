@@ -24,7 +24,7 @@ use work.demistify_config_pkg.all;
 entity substitute_mcu is
 	generic (
 		debug : boolean := false;
-		jtag_uart : boolean := true;
+		jtag_uart : boolean := false;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
 		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
