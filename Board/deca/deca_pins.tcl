@@ -98,7 +98,10 @@ set_location_assignment PIN_Y7 -to VGA_R[1]
 set_location_assignment PIN_AA7 -to VGA_R[2]
 set_location_assignment PIN_W6 -to VGA_VS
 
-# Teclado (GPIO1_D0/1) y ratón (GPIO1_D16/17)
+#============================================================
+# KBD (GPIO1_D0/1) and mouse (GPIO1_D16/17)
+#============================================================
+
 set_location_assignment PIN_Y5 -to PS2_KEYBOARD_CLK
 set_location_assignment PIN_Y6 -to PS2_KEYBOARD_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
@@ -106,19 +109,42 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 set_instance_assignment -name IO_STANDARD "2.5 V" -to PS2_KEYBOARD_CLK
 set_instance_assignment -name IO_STANDARD "2.5 V" -to PS2_KEYBOARD_DAT
 
-set_location_assignment PIN_W9 -to PS2_MOUSE_CLK
-set_location_assignment PIN_W5 -to PS2_MOUSE_DAT
+set_location_assignment PIN_W18 -to PS2_MOUSE_CLK
+set_location_assignment PIN_Y18 -to PS2_MOUSE_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_MOUSE_CLK
-#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_MOUSE_DAT
+
+
+#set_location_assignment PIN_P18 -to ear
+#set_instance_assignment -name IO_STANDARD "1.5 V" -to ear
+set_location_assignment PIN_R14 -to i2sSck
+set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sSck
+set_location_assignment PIN_P15 -to i2sD
+set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sD
+set_location_assignment PIN_M22 -to AUDIO_GPIO_MFP5
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_GPIO_MFP5
+set_location_assignment PIN_P14 -to i2sMck
+set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sMck
+set_location_assignment PIN_N21 -to AUDIO_MISO_MFP4
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_MISO_MFP4
+set_location_assignment PIN_M21 -to AUDIO_RESET_n
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_RESET_n
+set_location_assignment PIN_P19 -to AUDIO_SCLK_MFP3
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SCLK_MFP3
+set_location_assignment PIN_P20 -to AUDIO_SCL_SS_n
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SCL_SS_n
+set_location_assignment PIN_P21 -to AUDIO_SDA_MOSI
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SDA_MOSI
+set_location_assignment PIN_N22 -to AUDIO_SPI_SELECT
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SPI_SELECT
+set_location_assignment PIN_R15 -to i2sLr
+set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sLr
 
 
 # Audio (GPIO1_D18/19)
-set_location_assignment PIN_R9 -to SIGMA_L
-set_location_assignment PIN_W4 -to SIGMA_R
-set_location_assignment PIN_Y19 -to UART_TXD
-set_location_assignment PIN_AA17 -to UART_RXD
+set_location_assignment PIN_Y19  -to SIGMA_L
+set_location_assignment PIN_AA17 -to SIGMA_R
+set_location_assignment PIN_H4 -to UART_RXD
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
