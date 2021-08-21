@@ -24,6 +24,8 @@
 #include "menu.h"
 #include "keyboard.h"
 #include "spi.h"
+#include "timer.h"
+
 #include "config.h"
 
 #include "gamepadkeys.h"
@@ -35,7 +37,7 @@
 
 static struct menu_entry *menu;
 static int menu_visible=0;
-int menu_toggle_bits;
+char menu_longpress;
 
 static int currentrow;
 static struct hotkey *hotkeys;
@@ -100,14 +102,6 @@ __weak void Menu_JoystickToAnalogue(int *ana,int joy)
 	if(a>max)
 		a=max;
 	*ana=a;
-#if 0
-	int target=0;
-	if(joy&2)
-		target=-0x7fff;
-	if(joy&1)
-		target=0x7fff;
-	*ana=(*ana*0x3ff+target)>>10;
-#endif
 }
 
 
@@ -156,6 +150,7 @@ int prevbuttons=0;
 unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
 #define SCANDOUBLE_TIMEOUT 1000
+#define LONGPRESS_TIMEOUT 1000
 void Menu_Run()
 {
 	int i;
@@ -170,15 +165,15 @@ void Menu_Run()
 
 	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 	{
-		menu_timestamp=HW_TIMER(REG_MILLISECONDS);
+		menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
 		while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
 		{
 			buttons=HW_JOY(REG_JOY_EXTRA);
 			HandlePS2RawCodes();
-			if((HW_TIMER(REG_MILLISECONDS)-menu_timestamp)>SCANDOUBLE_TIMEOUT)
+			if(CheckTimer(menu_timestamp))
 			{
 				SetScandouble(scandouble^=1);
-				menu_timestamp=HW_TIMER(REG_MILLISECONDS);
+				menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
 			}
 		}
 		menu_visible^=1;
@@ -262,11 +257,15 @@ void Menu_Run()
 	// Find the currently highlighted menu item
 	if((joy&0xf0) || (TestKey(KEY_ENTER)&2))
 	{
-		while((joy&0xf0) || TestKey(KEY_ENTER))
+		menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
+		menu_longpress=0;
+		while(!menu_longpress && ((joy&0xf0) || TestKey(KEY_ENTER)))
 		{
 			joy=HW_JOY(REG_JOY);
 			joy=(joy&0xff)|(joy>>8); // Merge ports;
 			HandlePS2RawCodes();
+			if(CheckTimer(menu_timestamp))
+				menu_longpress=1;
 		}
 
 		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
