@@ -6,14 +6,13 @@
 #include "spi.h"
 #include "minfat.h"
 
-
 struct diskimage
 {
 	fileTYPE file;
 	int valid;
 };
 
-struct diskimage diskimg[4];
+struct diskimage diskimg[CONFIG_DISKIMG_UNITS];
 
 
 // read 8+32 bit sd card status word from FPGA
@@ -50,7 +49,7 @@ void diskimg_poll()
 	c=user_io_sd_get_status(&lba,&idx);
 //	printf("diskimg: cmd: %d, lba: %d, idx: %d\n",c,lba,idx);
 
-	if(idx>3)
+	if(idx>=CONFIG_DISKIMG_UNITS)
 		return;
 
 	// valid sd commands start with "5x" (old API), or "6x" (new API)
@@ -76,6 +75,7 @@ void diskimg_poll()
 		// Read from file/SD Card
 		if((c & 0x03) == 0x01)
 		{
+			putchar('.');
 			FileSeek(&diskimg[idx].file,lba<<9);
 
 			// FIXME - DirectIO?
@@ -90,7 +90,7 @@ void diskimg_poll()
 
 void diskimg_unmount(unsigned char idx)
 {
-	if(idx<4)
+	if(idx<CONFIG_DISKIMG_UNITS)
 		diskimg[idx].valid=0;
 }
 

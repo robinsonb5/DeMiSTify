@@ -19,27 +19,9 @@
 
 typedef long menu_action;
 #define MENU_ACTION(x) ((long)(x))
-#define MENU_ACTION_TOGGLE(x) x
-#define MENU_ACTION_CYCLE(x) x
 #define MENU_ACTION_CALLBACK(x) ((void (*)(int row))x)
-#define MENU_ACTION_SUBMENU(x) ((struct menu_entry *)(x))
 
-/* Big endian */
-/*
-#define MENU_CYCLE_VALUE(x) (*(char *)(&(x->action)))
-#define MENU_CYCLE_COUNT(x) (*((char *)(&x->action)+3))
-
-#define MENU_SLIDER_VALUE(x) (*(char *)(&(x->action)))
-#define MENU_SLIDER_MAX(x) (*((char *)(&x->action)+3))
-*/
-
-/* Little endian versions */
-#define MENU_CYCLE_VALUE(x) (*((char *)(&x->action)+3))
-#define MENU_CYCLE_COUNT(x) (*(char *)(&x->action))
-
-#define MENU_SLIDER_VALUE(x) (*((char *)(&x->action)+3))
-#define MENU_SLIDER_MAX(x) (*(char *)(&x->action)
-
+extern char menu_longpress;
 
 struct menu_entry
 {
@@ -79,9 +61,6 @@ void Menu_Draw();
 void Menu_Set(struct menu_entry *head);
 void Menu_SetHotKeys(struct hotkey *head);
 void Menu_Run();
-
-extern int menu_toggle_bits;
-#define MENU_TOGGLE_VALUES menu_toggle_bits
 
 extern int joya,joyb;
 

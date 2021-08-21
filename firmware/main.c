@@ -116,7 +116,7 @@ int LoadROM(const char *fn)
 		int sendsize;
 		int extindex=configstring_matchextension(fn); /* Figure out which extension configstring_matches, and thus which index we need to use */
 //		printf("Coretype %d, ROM filename %s, Romtype %d, configstring_index %d, extidx %d\n",coretype,fn,romtype,configstring_index,extindex);
-		printf("Got extind");
+//		printf("Got extind");
 		if(!extindex)
 			extindex=1;
 		SPI_ENABLE(HW_SPI_FPGA);
@@ -457,10 +457,7 @@ static void fileselector(int row)
 	romtype=menu[row].u.file.index;
 	configstring_index=menu[row].u.file.cfgidx;
 	unit=menu[row].u.file.unit;
-#ifdef CONFIG_CD
-	if(unit=='C')
-		setcuefile(NULL);		
-#endif
+	loadimage(NULL,unit); /* Dismount existing disk when entering the menu */
 	listroms(row);
 }
 

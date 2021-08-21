@@ -275,7 +275,7 @@ int cue_parse(int trackno)
               if (index == 0) {
 				//amr
                 if (track == trackno+1 && !toc.track.end) {
-					printf("t1 %d, lba %d, pregap %d\n",track,lba,pregap);
+//					printf("t1 %d, lba %d, pregap %d\n",track,lba,pregap);
                   toc.track.end =  lba + 150 + pregap;
                 }
 				//gs

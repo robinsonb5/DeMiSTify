@@ -5,12 +5,18 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* PS/2 Mouse support */
+#define PS2_MOUSE
+#define PS2_WRITE
+
 /* CDROM support - used by the TurboGrafx core */
 #undef CONFIG_CD
 
 /* Disk Image support - used for Save RAM on consoles as well as the
-more obvious application of disk images on computer cores */
+more obvious application of disk images on computer cores.  If not defined
+here, the number of units defaults to 4. */
 #define CONFIG_DISKIMG
+#define CONFIG_DISKIMG_UNITS 4
 
 /* Speed up file operations by "bookmarking" the file.
    (Undef to disable, or set to the number of desired bookmarks - a reasonable
