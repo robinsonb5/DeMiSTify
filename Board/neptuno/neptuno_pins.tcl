@@ -132,7 +132,7 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
 set_location_assignment PIN_A3 -to SIGMA_L
 set_location_assignment PIN_B4 -to SIGMA_R
 #set_location_assignment PIN_N5 -to mic_o -- No asignado
-set_location_assignment PIN_A14 -to AUDIO_INPUT
+set_location_assignment PIN_AA13 -to AUDIO_INPUT
 
 ## I2S audio
 set_location_assignment PIN_M20 -to I2S_BCLK
