@@ -2,3 +2,5 @@ db/
 *.o
 *.bak
 *~
+site.mk
+

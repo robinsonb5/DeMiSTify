@@ -121,17 +121,24 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
 
 
-#NEPTUNO#
-set_location_assignment PIN_AA18 -to joy_p7_o
-set_location_assignment PIN_A20 -to joy_clock_o
-set_location_assignment PIN_B19 -to joy_Q_i
-set_location_assignment PIN_B20 -to joy_load_o
+#NEPTUNO JOYSTICKS#
+set_location_assignment PIN_AA18 -to joyP7_o
+set_location_assignment PIN_A20 -to JOY_CLK
+set_location_assignment PIN_B19 -to JOY_DATA
+set_location_assignment PIN_B20 -to JOY_LOAD
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
 
 #NEPTUNO#
 set_location_assignment PIN_A3 -to SIGMA_L
 set_location_assignment PIN_B4 -to SIGMA_R
 #set_location_assignment PIN_N5 -to mic_o -- No asignado
-set_location_assignment PIN_AA13 -to UART_RXD
+set_location_assignment PIN_A14 -to AUDIO_INPUT
+
+## I2S audio
+set_location_assignment PIN_M20 -to I2S_BCLK
+set_location_assignment PIN_AA15 -to I2S_DATA 
+set_location_assignment PIN_AB14 -to I2S_LRCLK
+
 
 #NEPTUNO SD/MMC#
 set_location_assignment PIN_D22 -to sd_cs_n_o
