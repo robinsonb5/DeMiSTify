@@ -1,7 +1,14 @@
+-- -----------------------------------------------------------------------
+--
+-- Toplevel file for Turbo Chameleon 64 V2
+--
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+library work;
+use work.demistify_config_pkg.all;
 
 -- -----------------------------------------------------------------------
 
@@ -145,6 +152,8 @@ architecture rtl of chameleon64v2_top is
 	signal ps2_mouse_clk_out: std_logic;
 	signal ps2_mouse_dat_out: std_logic;
 	
+	signal intercept : std_logic;
+	
 	signal sdram_req : std_logic := '0';
 	signal sdram_ack : std_logic;
 	signal sdram_we : std_logic := '0';
@@ -180,23 +189,18 @@ architecture rtl of chameleon64v2_top is
 	signal audio_r : std_logic_vector(15 downto 0);
 
 -- IO	
-	signal power_button : std_logic;
-	signal play_button : std_logic;
 	signal c64_keys : unsigned(63 downto 0);
 	signal c64_restore_key_n : std_logic;
 	signal c64_nmi_n : std_logic;
 	signal c64_joy1 : unsigned(6 downto 0);
 	signal c64_joy2 : unsigned(6 downto 0);
-	signal joystick3 : unsigned(6 downto 0);
-	signal joystick4 : unsigned(6 downto 0);
-	signal cdtv_joya : unsigned(5 downto 0);
-	signal cdtv_joyb : unsigned(5 downto 0);
+	signal c64_joy3 : unsigned(6 downto 0);
+	signal c64_joy4 : unsigned(6 downto 0);
 	signal joy1 : unsigned(7 downto 0);
 	signal joy2 : unsigned(7 downto 0);
 	signal joy3 : unsigned(7 downto 0);
 	signal joy4 : unsigned(7 downto 0);
-	signal ir : std_logic;
-	signal ir_d : std_logic;
+	signal menu_button_n : std_logic;
 
 	signal amiga_reset_n : std_logic;
 	signal amiga_key : unsigned(7 downto 0);
@@ -214,55 +218,15 @@ architecture rtl of chameleon64v2_top is
 
 	-- Declare guest component, since it's written in systemverilog
 	
-	COMPONENT NES_mist
-		PORT
-		(
-			CLOCK_27 :	IN STD_LOGIC_VECTOR(1 downto 0);
-	--		RESET_N :   IN std_logic;
-			SDRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-			SDRAM_A		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-			SDRAM_DQML		:	 OUT STD_LOGIC;
-			SDRAM_DQMH		:	 OUT STD_LOGIC;
-			SDRAM_nWE		:	 OUT STD_LOGIC;
-			SDRAM_nCAS		:	 OUT STD_LOGIC;
-			SDRAM_nRAS		:	 OUT STD_LOGIC;
-			SDRAM_nCS		:	 OUT STD_LOGIC;
-			SDRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-			SDRAM_CLK		:	 OUT STD_LOGIC;
-			SDRAM_CKE		:	 OUT STD_LOGIC;
-			SPI_DO		:	 OUT STD_LOGIC;
-	--		SPI_SD_DI	:	 IN STD_LOGIC;
-			SPI_DI		:	 IN STD_LOGIC;
-			SPI_SCK		:	 IN STD_LOGIC;
-			SPI_SS2		:	 IN STD_LOGIC;
-			SPI_SS3		:	 IN STD_LOGIC;
-			SPI_SS4		:	 IN STD_LOGIC;
-			CONF_DATA0		:	 IN STD_LOGIC;
-			VGA_HS		:	 OUT STD_LOGIC;
-			VGA_VS		:	 OUT STD_LOGIC;
-			VGA_R		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-			VGA_G		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-			VGA_B		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-			AUDIO_L  : out std_logic;
-			AUDIO_R  : out std_logic
-		);
+	COMPONENT throbber
+	PORT
+	(
+		clk		:	 IN STD_LOGIC;
+		reset_n		:	 IN STD_LOGIC;
+		q		:	 OUT STD_LOGIC
+	);
 	END COMPONENT;
-	
-	signal vol_up : std_logic;
-	signal vol_down : std_logic;
-	signal cdtv_port : std_logic;
-
-	signal keys_safe : std_logic;
-	signal c64_menu : std_logic;
-	signal gp1_run : std_logic;
-	signal gp1_select :std_logic;
-	signal gp2_run : std_logic;
-	signal gp2_select : std_logic;
-	
-	signal porta_start : std_logic;
-	signal porta_select : std_logic;
-	signal portb_start : std_logic;
-	signal portb_select : std_logic;
+	signal act_led : std_logic;
 	
 begin
 
@@ -270,11 +234,11 @@ begin
 -- Unused pins
 -- -----------------------------------------------------------------------
 	iec_clk_out <= '0';
-	iec_atn_out <= '0';
+	iec_atn_out <= rs232_txd or not demistify_serialdebug;
 	iec_dat_out <= '0';
 	iec_srq_out <= '0';
 	nmi_out <= '0';
-	usart_rx<='1';
+--	usart_rx<='1';
 
 	-- put these here?
 	flash_cs <= '1';
@@ -356,20 +320,6 @@ begin
 			led_red => led_red
 		);
 
-	cdtv : entity work.chameleon_cdtv_remote
-	port map(
-		clk => clk_100,
-		ena_1mhz => ena_1mhz,
-		ir => ir,
-		key_power => power_button,
-		key_play => play_button,
-		joystick_a => cdtv_joya,
-		joystick_b => cdtv_joyb,
-		key_vol_up => vol_up,
-		key_vol_dn => vol_down,
-		currentport => cdtv_port
-	);
-
 
 -- -----------------------------------------------------------------------
 -- Chameleon IO, docking station and cartridge port
@@ -391,7 +341,7 @@ begin
 
 				reset => not reset_n,
 
-				ir_data => ir,
+				ir_data => '1',
 				ioef => ioef,
 				romlh => romlh,
 
@@ -421,8 +371,8 @@ begin
 
 				joystick1 => c64_joy1,
 				joystick2 => c64_joy2,
-				joystick3 => joystick3,
-				joystick4 => joystick4,
+				joystick3 => c64_joy3,
+				joystick4 => c64_joy4,
 				keys => c64_keys,
 --				restore_key_n => restore_n
 				restore_key_n => open,
@@ -436,47 +386,41 @@ begin
 			);
 	end block;
 
-	-- Synchronise IR signal
-	process (clk_100)
-	begin
-		if rising_edge(clk_100) then
-			ir_d<=ir_data;
-			ir<=ir_d;
-		end if;
-	end process;
+-- Input mapping
 
+mergeinputs : entity work.chameleon_mergeinputs
+generic map (
+	button1=>demistify_button1,
+	button2=>demistify_button2,
+	button3=>demistify_button3,
+	button4=>demistify_button4
+)
+port map (
+	clk => clk_100,
+	reset_n => reset_n,
+	ena_1mhz => ena_1mhz,
+	ir_data => ir_data,
+	button_menu_n => usart_cts,
+	button_freeze_n => freeze_btn,
+	button_reset_n => reset_btn,
+	c64_joy1 => c64_joy1,
+	c64_joy2 => c64_joy2,
+	c64_joy3 => c64_joy3,
+	c64_joy4 => c64_joy4,
+	c64_keys => c64_keys,
+	c64_joykey_ena => '1',
 
-	--joy1<=not gp1_run & not gp1_select & (c64_joy1 and cdtv_joy1);
-	--runstop<='0' when c64_keys(63)='0' and c64_joy1="1111111" else '1';
-	-- gp1_run<=c64_keys(11) and c64_keys(56) when c64_joy1="111111" else '1';
-	-- gp1_select<=c64_keys(60) when c64_joy1="111111" else '1';
+	joy1_out => joy1,
+	joy2_out => joy2,
+	joy3_out => joy3,
+	joy4_out => joy4,
+	menu_out_n => menu_button_n,
 
-	keys_safe <= '1' when c64_joy1="1111111" else '0';
-
-	-- Update c64 keys only when the joystick isn't active.
-	process (clk_100)
-	begin
-		if rising_edge(clk_100) then
-			if keys_safe='1' then
-				gp1_run <= c64_keys(8); -- Return
-				gp1_select <= c64_keys(38); -- Right shift
-				gp2_run <= c64_keys(63); -- Run/stop
-				gp2_select <= c64_keys(57); -- Left shift;
-				c64_menu <= c64_keys(15); -- Left arrow;
-			end if;
-		end if;
-	end process;
-	
-	porta_start <= cdtv_port or ((not play_button) and gp1_run);
-	porta_select <= (cdtv_port or ((not vol_up) and gp1_select)) and c64_joy1(6);
-
-	portb_start <= (not cdtv_port) or ((not play_button) and gp2_run);
-	portb_select <= ((not cdtv_port) or ((not vol_up) and gp2_select)) and c64_joy2(6);
-
-	joy1<=porta_start & porta_select & (c64_joy1(5 downto 0) and cdtv_joya);
-	joy2<=portb_start & portb_select & (c64_joy2(5 downto 0) and cdtv_joyb);
-	joy3<="1" & joystick3;
-	joy4<="1" & joystick4;
+	usart_cts => usart_rts,
+	usart_rxd => usart_tx,
+	usart_txd => usart_rx,
+	usart_clk => usart_clk
+);
 
 	-- Guest core
 	
@@ -489,10 +433,11 @@ begin
 	blu <= unsigned(vga_blue(7 downto 3));
 
 
-	guest: COMPONENT NES_mist
+	guest: COMPONENT guest_top
 	PORT map
 	(
-		CLOCK_27 => clk50m&clk50m,
+		CLOCK_27 => clk50m&clk50m, -- Comment out one of these lines to match the guest core.
+		CLOCK_27 => clk50m,
 --		RESET_N => reset_n,
 		-- clocks
 		SDRAM_DQ => ram_d,
@@ -507,14 +452,13 @@ begin
 		SDRAM_CLK => ram_clk,
 --		SDRAM_CKE => ram_cke,
 		
---		SPI_SD_DI => sd_miso,
+		SPI_DO_IN => spi_miso,
 		SPI_DO => spi_fromguest,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
 		SPI_SS3 => spi_ss3,
 		SPI_SS4	=> spi_ss4,
-		
 		CONF_DATA0 => conf_data0,
 
 		VGA_HS => vga_hsync,
@@ -532,7 +476,8 @@ begin
 	controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
-		debug => false
+		debug => false,
+		jtag_uart => true
 	)
 	port map (
 		clk => clk_50,
@@ -562,18 +507,31 @@ begin
 		ps2m_dat_out => ps2_mouse_dat_out,
 
 		-- Joysticks
-		
-		joy1 => std_logic_vector(joy1(7 downto 6)&joy1(4)&joy1(5)&joy1(3 downto 0)), -- Swap buttons A & B
-		joy2 => std_logic_vector(joy2(7 downto 6)&joy2(4)&joy2(5)&joy2(3 downto 0)), -- Swap buttons A & B
+
+		joy1 => std_logic_vector(joy1),
+		joy2 => std_logic_vector(joy2),
 		joy3 => std_logic_vector(joy3),
 		joy4 => std_logic_vector(joy4),
 
-		menu_button => c64_menu and usart_cts and not power_button,
-		
+		buttons => (0=>menu_button_n,others=>'0'),
+
 		-- UART
 		rxd => rs232_rxd,
-		txd => rs232_txd
+		txd => rs232_txd,
+		
+		intercept => intercept
 	);
+
+--pulseleds : COMPONENT throbber
+--PORT map
+--(
+--	clk => clk_50,
+--	reset_n => reset_btn,
+--	q => act_led
+--);
+
+led_red<=act_led and not spi_ss4;
+led_green<=(not act_led) and not spi_ss4;
 	
 end architecture;
 

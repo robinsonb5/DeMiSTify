@@ -108,6 +108,7 @@ signal spi_to_host : std_logic_vector(7 downto 0);
 signal spi_trigger : std_logic;
 signal spi_busy : std_logic;
 signal spi_active : std_logic;
+signal spi_active_d : std_logic_vector(4 downto 0);
 signal spi_write : std_logic;
 signal spi_setcs : std_logic;
 
@@ -533,6 +534,7 @@ begin
 		conf_data0 <= '1';
 		spi_setcs <= '0';
 		spi_write <= '0';
+		spi_active_d<=(others=>'0');
 	elsif rising_edge(clk) then
 		mem_busy<='1';
 		ser_txgo<='0';
@@ -546,6 +548,14 @@ begin
 		
 		mem_rd_d<=mem_rd;
 		mem_wr_d<=mem_wr;
+
+		-- Delay action of the SPI CS signals.
+		if spi_busy='0' then
+			if spi_active_d(spi_active_d'high)='1' then
+				spi_active<='1';
+			end if;
+			spi_active_d<=spi_active_d(spi_active_d'high-1 downto 0)&'0';
+		end if;
 
 		-- Write from CPU?
 		if mem_wr='1' and mem_wr_d='0' and mem_busy='1' then
@@ -573,7 +583,7 @@ begin
 
 						when X"D0" => -- SPI CS
 							spi_setcs<='1';
-							spi_active<='1';
+							spi_active_d(0)<='1';
 
 						when X"D4" => -- SPI Data
 							spi_write<='1';
@@ -672,7 +682,6 @@ begin
 					mem_busy<='0';
 			end case;
 		end if;
-
 	
 		-- SPI cycles
 
