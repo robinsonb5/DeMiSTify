@@ -62,7 +62,6 @@ int HandlePS2RawCodes(int blockkeys)
 				if(keyup)
 					SPI(0xf0);
 				SPI(key);
-				EnableIO(); // Ensure the chip select doesn't de-assert too soon.
 				DisableIO();
 			}
 #endif

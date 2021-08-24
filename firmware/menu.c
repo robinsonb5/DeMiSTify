@@ -107,7 +107,11 @@ __weak void Menu_JoystickToAnalogue(int *ana,int joy)
 
 __weak void Menu_Joystick(int port,int joymap)
 {
+	#ifdef CONFIG_EXTJOYSTICK
 	user_io_digital_joystick_ext(port, joymap);
+	#else
+	user_io_digital_joystick(port, joymap);
+	#endif
 }
 
 

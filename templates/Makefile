@@ -1,41 +1,44 @@
 DEMISTIFYPATH=DeMiSTify
-SUBMODULES=$(DEMISTIFYPATH)/EightThirtyTwo/Makefile
-PROJECT=tgfx16
+SUBMODULES=$(DEMISTIFYPATH)/EightThirtyTwo/lib832/lib832.a
+PROJECT=project
 PROJECTPATH=./
 PROJECTTOROOT=../
 BOARD=
+ROMSIZE1=8192
+ROMSIZE2=4096
 
-all: $(DEMISTIFYPATH)/site.mk firmware init compile tns mist
+all: $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns mist
 
-$(DEMISTIFYPATH)/site.mk: $(SUBMODULES)
+$(DEMISTIFYPATH)/site.mk:
 	$(info ******************************************************)
 	$(info Please copy the example DeMiSTify/site.template file to)
 	$(info DeMiSTify/site.mk and edit the paths for the version(s))
-	$(info  of Quartus you have installed.)
+	$(info of Quartus you have installed.)
 	$(info *******************************************************)
 	$(error site.mk not found.)
 
 include $(DEMISTIFYPATH)/site.mk
 
-$(SUBMODULES):
+$(DEMISTIFYPATH)/EightThirtyTwo/Makefile:
 	git submodule update --init --recursive
+
+$(SUBMODULES): $(DEMISTIFYPATH)/EightThirtyTwo/Makefile
 	make -C $(DEMISTIFYPATH) -f bootstrap.mk
 
 .PHONY: firmware
 firmware: $(SUBMODULES)
-	make -C firmware -f ../$(DEMISTIFYPATH)/Scripts/firmware.mk DEMISTIFYPATH=../$(DEMISTIFYPATH)
+	make -C firmware -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2)
+
+.PHONY: firmware_clean
+firmware_clean: $(SUBMODULES)
+	make -C firmware -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2) clean
 
 .PHONY: init
 init:
 	make -f $(DEMISTIFYPATH)/Makefile DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTTOROOT=$(PROJECTTOROOT) PROJECTPATH=$(PROJECTPATH) PROJECTS=$(PROJECT) BOARD=$(BOARD) init 
 
-.PHONY: buildid
-buildid:
-	cd toplevels; \
-	$(Q13)/quartus_sh -t ../mist/build_id_verilog.tcl
-
 .PHONY: compile
-compile: buildid
+compile: 
 	make -f $(DEMISTIFYPATH)/Makefile DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTTOROOT=$(PROJECTTOROOT) PROJECTPATH=$(PROJECTPATH) PROJECTS=$(PROJECT) BOARD=$(BOARD) compile
 
 .PHONY: clean
@@ -44,9 +47,12 @@ clean:
 
 .PHONY: tns
 tns:
-	grep -r Design-wide\ TNS fpga/*
+	@for BOARD in ${BOARDS}; do \
+		echo $$BOARD; \
+		grep -r Design-wide\ TNS Board/$$BOARD/*.rpt; \
+	done
 
 .PHONY: mist
 mist:
-	$(Q13)/quartus_sh --flow compile Board/mist/fpgagen.qpf
+	$(Q13)/quartus_sh --flow compile Board/mist/$(PROJECT)_mist.qpf
 

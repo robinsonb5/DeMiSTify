@@ -56,6 +56,14 @@ void user_io_digital_joystick_ext(unsigned char joystick, uint16_t map) {
 	spi_uio_cmd8(UIO_JOYSTICK0_EXT + joystick, map);
 }
 
+void user_io_digital_joystick(unsigned char joystick, unsigned char map) {
+	if(joystick<2)
+		joystick+=UIO_JOYSTICK0;
+	else
+		joystick+=UIO_JOYSTICK2-2;
+	spi_uio_cmd8(joystick, map);
+}
+
 void user_io_analogue_joystick(unsigned char joystick, int *map) {
 	spi_uio_cmd8_cont(UIO_ASTICK, joystick);
 	SPI((*map++)>>8);

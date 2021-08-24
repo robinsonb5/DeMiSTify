@@ -95,6 +95,7 @@ architecture RTL of de10lite_top is
 	signal ps2_mouse_clk_out: std_logic;
 	signal ps2_mouse_dat_out: std_logic;
 
+	signal intercept : std_logic;
 	
 -- Video
 	signal vga_red: std_logic_vector(7 downto 0);
@@ -120,39 +121,15 @@ architecture RTL of de10lite_top is
 	signal uart_rxd : std_logic;
 	signal uart_txd : std_logic;
 
-COMPONENT NES_mist
-	PORT
-	(
-		CLOCK_27 :	IN STD_LOGIC_VECTOR(1 downto 0);
---		RESET_N :   IN std_logic;
-		SDRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-		SDRAM_A		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-		SDRAM_DQML		:	 OUT STD_LOGIC;
-		SDRAM_DQMH		:	 OUT STD_LOGIC;
-		SDRAM_nWE		:	 OUT STD_LOGIC;
-		SDRAM_nCAS		:	 OUT STD_LOGIC;
-		SDRAM_nRAS		:	 OUT STD_LOGIC;
-		SDRAM_nCS		:	 OUT STD_LOGIC;
-		SDRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-		SDRAM_CLK		:	 OUT STD_LOGIC;
-		SDRAM_CKE		:	 OUT STD_LOGIC;
-		SPI_DO		:	 OUT STD_LOGIC;
---		SPI_SD_DI	:	 IN STD_LOGIC;
-		SPI_DI		:	 IN STD_LOGIC;
-		SPI_SCK		:	 IN STD_LOGIC;
-		SPI_SS2		:	 IN STD_LOGIC;
-		SPI_SS3		:	 IN STD_LOGIC;
-		SPI_SS4		:	 IN STD_LOGIC;
-		CONF_DATA0		:	 IN STD_LOGIC;
-		VGA_HS		:	 OUT STD_LOGIC;
-		VGA_VS		:	 OUT STD_LOGIC;
-		VGA_R		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-		VGA_G		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-		VGA_B		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
-		AUDIO_L  : out std_logic;
-		AUDIO_R  : out std_logic
-	);
-END COMPONENT;
+	COMPONENT throbber
+		PORT
+		(
+			clk		:	 IN STD_LOGIC;
+			reset_n		:	 IN STD_LOGIC;
+			q		:	 OUT STD_LOGIC
+		);
+	END COMPONENT;
+	signal act_led : std_logic;
 
 begin
 
@@ -213,10 +190,11 @@ joyd<=(others=>'1');
 --assign DRAM clock
 --asign DRAM clock enable
 
-guest: COMPONENT NES_mist
+guest: COMPONENT guest_top
 	PORT map
 	(
-		CLOCK_27 => MAX10_CLK2_50&MAX10_CLK1_50,
+		CLOCK_27 => MAX10_CLK2_50&MAX10_CLK2_50, -- Comment out one of these lines to match the guest core.
+		CLOCK_27 => MAX10_CLK2_50,
 --		RESET_N => reset_n,
 		-- clocks
 		SDRAM_DQ => DRAM_DQ,
@@ -231,13 +209,13 @@ guest: COMPONENT NES_mist
 		SDRAM_CLK => DRAM_CLK,
 		SDRAM_CKE => DRAM_CKE,
 		
---		SPI_SD_DI => sd_miso,
+		SPI_DO_IN => sd_mosi,
 		SPI_DO => spi_fromguest,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
 		SPI_SS3 => spi_ss3,
-		SPI_SS4	=> spi_ss4,
+		SPI_SS4 => spi_ss4,
 		
 		CONF_DATA0 => conf_data0,
 
@@ -247,7 +225,11 @@ guest: COMPONENT NES_mist
 		VGA_G => vga_green(7 downto 2),
 		VGA_B => vga_blue(7 downto 2),
 		AUDIO_L => sigma_l,
-		AUDIO_R => sigma_r
+		AUDIO_R => sigma_r,
+		PS2K_CLK => ps2_keyboard_clk_in or intercept, -- Block keyboard when OSD is active
+		PS2K_DAT => ps2_keyboard_dat_in,
+		PS2M_CLK => ps2_mouse_clk_in,
+		PS2M_DAT => ps2_mouse_dat_in
 );
 
 -- Pass internal signals to external SPI interface
@@ -256,7 +238,8 @@ sd_clk <= spi_clk_int;
 controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
-		debug => true
+		debug => true,
+		jtag_uart => false
 	)
 	port map (
 		clk => MAX10_CLK1_50,
@@ -285,14 +268,25 @@ controller : entity work.substitute_mcu
 		ps2m_clk_out => ps2_mouse_clk_out,
 		ps2m_dat_out => ps2_mouse_dat_out,
 
-		-- Menu button
-		
-		menu_button => KEY(1),
-		
+		buttons => (0=>KEY(1),others=>'1'),
+
 		-- UART
 		rxd => rs232_rxd,
-		txd => rs232_txd
+		txd => rs232_txd,
+		intercept => intercept
 );
+
+
+--pulseleds : COMPONENT throbber
+--PORT map
+--(
+--	clk => MAX10_CLK1_50,
+--	reset_n => KEY(0),
+--	q => act_led
+--);
+--
+--LEDR(0)<=act_led and not spi_ss4;
+--LEDR(1)<=(not act_led) and not spi_ss4;
 
 end rtl;
 
