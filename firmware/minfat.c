@@ -263,7 +263,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 		if(strcasecmp(longfilename,name)==0)
 			break;
 #endif
-		if(strncmp((const char*)p->Name, name,11)==0)
+		if(strncasecmp((const char*)p->Name, name,11)==0)
 			break;
 	}
 

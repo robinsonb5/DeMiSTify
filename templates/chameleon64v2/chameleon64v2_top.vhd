@@ -216,16 +216,6 @@ architecture rtl of chameleon64v2_top is
 	signal conf_data0 : std_logic;
 	signal spi_clk_int : std_logic;
 
-	-- Declare guest component, since it's written in systemverilog
-	
-	COMPONENT throbber
-	PORT
-	(
-		clk		:	 IN STD_LOGIC;
-		reset_n		:	 IN STD_LOGIC;
-		q		:	 OUT STD_LOGIC
-	);
-	END COMPONENT;
 	signal act_led : std_logic;
 	
 begin
@@ -521,14 +511,6 @@ port map (
 		
 		intercept => intercept
 	);
-
---pulseleds : COMPONENT throbber
---PORT map
---(
---	clk => clk_50,
---	reset_n => reset_btn,
---	q => act_led
---);
 
 led_red<=act_led and not spi_ss4;
 led_green<=(not act_led) and not spi_ss4;

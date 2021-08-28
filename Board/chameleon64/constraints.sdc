@@ -17,7 +17,7 @@ set RAM_IN {ram_d*}
 set VGA_OUT {red* grn* blu* hsync_n vsync_n}
 
 set FALSE_OUT {sigma_l sigma_r}
-set FALSE_IN {freeze_n phi2_n*}
+set FALSE_IN {freeze_n phi2_n* usart_tx usart_rts usart_clk}
 
 set_false_path -to [get_ports {RAM_CLK}]
 
