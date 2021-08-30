@@ -138,6 +138,7 @@ set_location_assignment PIN_AA16 -to SRAM_Q[0]
 set_location_assignment PIN_D21 -to  SRAM_WE
 
 # JOYSTICKS
+
 set_location_assignment PIN_B16 -to JOYSTICK1[0]
 set_location_assignment PIN_B17 -to JOYSTICK1[1]
 set_location_assignment PIN_B18 -to JOYSTICK1[2]
