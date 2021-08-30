@@ -53,7 +53,7 @@ __weak int configstring_copytocomma(char *buf, int limit,int copy)
 	}
 	if(copy)
 		*buf++=0;
-	return(c==';' ? -count : count);
+	return(c==',' ? count : -count);
 }
 
 

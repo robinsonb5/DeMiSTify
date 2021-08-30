@@ -14,6 +14,9 @@ cat $2 | while read a; do
 	if [ "${b: -4}" = ".qip" ]; then
 		echo set_global_assignment -name QIP_FILE ${1}${a}
 	fi
+        if [ "${b: -4}" = ".sdc" ]; then
+                echo set_global_assignment -name SDC_FILE ${1}${a}
+        fi
 	if [ "${b: -2}" = ".v" ]; then
 		echo set_global_assignment -name VERILOG_FILE ${1}${a}
 	fi
