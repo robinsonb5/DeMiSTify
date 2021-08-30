@@ -92,11 +92,52 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 set_location_assignment PIN_A8 -to AUDIO_IN
 set_location_assignment PIN_A5 -to LED
 
+# I2C
+set_location_assignment PIN_A13 -to I2C_SCL
+set_location_assignment PIN_A14 -to I2C_SDA
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to I2C_SCL
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to I2C_SDA
+
+# 2nd SD
 set_location_assignment PIN_C22 -to SD_SCK
 set_location_assignment PIN_B22 -to SD_CS
 set_location_assignment PIN_C21 -to SD_MISO
 set_location_assignment PIN_B21 -to SD_MOSI
 
+# SRAM
+
+set_location_assignment PIN_AB14 -to SRAM_A[20]
+set_location_assignment PIN_AB13 -to SRAM_A[19]
+set_location_assignment PIN_E21 -to SRAM_A[18]
+set_location_assignment PIN_F21 -to SRAM_A[17]
+set_location_assignment PIN_H21 -to SRAM_A[16]
+set_location_assignment PIN_J21 -to SRAM_A[15]
+set_location_assignment PIN_K21 -to SRAM_A[14]
+set_location_assignment PIN_L21 -to SRAM_A[13]
+set_location_assignment PIN_M21 -to SRAM_A[12]
+set_location_assignment PIN_N21 -to SRAM_A[11]
+set_location_assignment PIN_P21 -to SRAM_A[10]
+set_location_assignment PIN_R21 -to SRAM_A[9]
+set_location_assignment PIN_U21 -to SRAM_A[8]
+set_location_assignment PIN_V21 -to SRAM_A[7]
+set_location_assignment PIN_W21 -to SRAM_A[6]
+set_location_assignment PIN_Y21 -to SRAM_A[5]
+set_location_assignment PIN_AB20 -to SRAM_A[4]
+set_location_assignment PIN_AB19 -to SRAM_A[3]
+set_location_assignment PIN_AB18 -to SRAM_A[2]
+set_location_assignment PIN_AB17 -to SRAM_A[1]
+set_location_assignment PIN_AB16 -to SRAM_A[0]
+set_location_assignment PIN_AB15 -to SRAM_Q[7]
+set_location_assignment PIN_W22 -to SRAM_Q[6]
+set_location_assignment PIN_Y22 -to SRAM_Q[5]
+set_location_assignment PIN_AA20 -to SRAM_Q[4]
+set_location_assignment PIN_AA19 -to SRAM_Q[3]
+set_location_assignment PIN_AA18 -to SRAM_Q[2]
+set_location_assignment PIN_AA17 -to SRAM_Q[1]
+set_location_assignment PIN_AA16 -to SRAM_Q[0]
+set_location_assignment PIN_D21 -to  SRAM_WE
+
+# JOYSTICKS
 set_location_assignment PIN_B16 -to JOYSTICK1[0]
 set_location_assignment PIN_B17 -to JOYSTICK1[1]
 set_location_assignment PIN_B18 -to JOYSTICK1[2]
@@ -124,10 +165,11 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[4]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[5]
 
 set_location_assignment PIN_A15 -to JOY_SELECT
-
+### I2S
 set_location_assignment PIN_E22 -to SCLK
 set_location_assignment PIN_J22 -to SDIN
 set_location_assignment PIN_H22 -to MCLK
 set_location_assignment PIN_F22 -to LRCLK
 
+#
 set_location_assignment PIN_A7 -to STM_RST

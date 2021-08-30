@@ -138,6 +138,9 @@ set_location_assignment PIN_AA13 -to AUDIO_INPUT
 set_location_assignment PIN_M20 -to I2S_BCLK
 set_location_assignment PIN_AA15 -to I2S_DATA 
 set_location_assignment PIN_AB14 -to I2S_LRCLK
+## Neptuno I2C
+set_location_assignment PIN_R22 -to I2C_SCL
+set_location_assignment PIN_V21 -to I2C_SDA 
 
 
 #NEPTUNO SD/MMC#
