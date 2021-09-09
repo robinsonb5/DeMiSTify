@@ -69,6 +69,8 @@ entity substitute_mcu is
 		
 		buttons : in std_logic_vector(7 downto 0) :="11111111";
 		
+		c64_keys	: in std_logic_vector(63 downto 0) :=X"FFFFFFFFFFFFFFFF";
+
 		-- UART
 		rxd	: in std_logic;
 		txd	: out std_logic;
@@ -622,6 +624,14 @@ begin
 
 				when X"F" =>	-- Peripherals
 					case cpu_addr(7 downto 0) is
+
+						when X"90" => -- c64 keyboard
+							from_mem<=c64_keys(63 downto 32);
+							mem_busy<='0';
+
+						when X"94" => -- c64 keyboard
+							from_mem<=c64_keys(31 downto 0);
+							mem_busy<='0';
 					
 						when X"B0" => -- Interrupt
 							from_mem<=(others=>'X');
