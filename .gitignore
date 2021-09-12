@@ -3,4 +3,5 @@ db/
 *.bak
 *~
 site.mk
-
+upd.sh
+clean.sh
