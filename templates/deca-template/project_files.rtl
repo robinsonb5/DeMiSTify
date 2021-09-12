@@ -1,0 +1,16 @@
+# files inherited from the guest core:
+
+mistcore.qip
+# sys/sys.qip
+
+demistify_config_pkg.vhd
+
+# The controller module
+DeMiSTify/controller/controller.qip
+
+# Either:  firmware with customisations
+firmware/controller_rom1_byte.vhd
+firmware/controller_rom2_byte.vhd
+
+# Pre-flow scripts
+# rtl/build_id.tcl
