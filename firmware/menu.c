@@ -73,8 +73,11 @@ void Menu_SetHotKeys(struct hotkey *head)
 
 void Menu_ShowHide(int visible)
 {
-	OsdShowHide(visible);
-	menu_visible=visible;
+	if(visible<0)
+		menu_visible=!menu_visible;
+	else
+		menu_visible=visible;
+	OsdShowHide(menu_visible);
 }
 
 
@@ -173,7 +176,7 @@ void Menu_Run()
 		while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
 		{
 			buttons=HW_JOY(REG_JOY_EXTRA);
-			HandlePS2RawCodes();
+			HandlePS2RawCodes(menu_visible);
 			if(CheckTimer(menu_timestamp))
 			{
 				SetScandouble(scandouble^=1);
@@ -267,7 +270,7 @@ void Menu_Run()
 		{
 			joy=HW_JOY(REG_JOY);
 			joy=(joy&0xff)|(joy>>8); // Merge ports;
-			HandlePS2RawCodes();
+			HandlePS2RawCodes(menu_visible);
 			if(CheckTimer(menu_timestamp))
 				menu_longpress=1;
 		}
