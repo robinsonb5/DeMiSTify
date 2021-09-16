@@ -28,4 +28,4 @@ rm -f *.bak
 rm -f rtl/*.bak
 rm -f V/*.bak
 rm -rf greybox_tmp 
-
+rm -rf *.log
