@@ -12,8 +12,8 @@ set RAM_IN {DRAM_D*}
 set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS}
 
 # non timing-critical pins would be in the "FALSE_IN/OUT" collection (IN inputs, OUT outputs)
-set FALSE_OUT {GPIO[*] LED[*]}
-set FALSE_IN  {GPIO[*] KEY[*]}
+set FALSE_OUT {LED[*]}
+set FALSE_IN  {KEY[*] SW[*]}
 
 # create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
