@@ -101,11 +101,11 @@ set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SPI_SELECT
 set_location_assignment PIN_R15 -to i2sLr
 set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sLr
 #alternative ear
-#set_location_assignment PIN_P18 -to AUDIO_DOUT_MFP2
-#set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_DOUT_MFP2
+set_location_assignment PIN_P18 -to AUDIO_DOUT_MFP2
+set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_DOUT_MFP2
 
 #============================================================
-# Audio pwm output (P8:5,6 GPIO0_D02/03) 
+# Audio pwm output (P8:5,6 GPIO0_D02/03)   #(Atlas board: T12_left 1, 2 gnd, 3 R11_right)
 #============================================================
 set_location_assignment PIN_Y19  -to SIGMA_L
 set_location_assignment PIN_AA17 -to SIGMA_R
@@ -180,6 +180,45 @@ set_location_assignment PIN_AA16 -to DRAM_CKE
 set_location_assignment PIN_Y11 -to DRAM_LDQM
 set_location_assignment PIN_W13 -to DRAM_UDQM
 
+# SDRAM set_instance_assignment
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[12]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SDRAM_A[11]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[10]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[9]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[8]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_A[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[15]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[14]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[13]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[12]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[11]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[10]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[9]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[8]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQ[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_BA[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_BA[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQMH
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_DQML
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_CKE
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_nCAS
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_nRAS
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_nWE
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to SDRAM_nCS
 set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to DRAM_DQ[0]
 set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to DRAM_DQ[1]
 set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to DRAM_DQ[2]
@@ -225,11 +264,14 @@ set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_DQ[12]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_DQ[13]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_DQ[14]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_DQ[15]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_BA[0]
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_BA[1]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_LDQM
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_UDQM
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_RAS_N
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_CAS_N
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_WE_N
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to DRAM_CS_N
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[0]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[1]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[2]

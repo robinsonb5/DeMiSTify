@@ -21,7 +21,7 @@ here, the number of units defaults to 4. */
 /* Speed up file operations by "bookmarking" the file.
    (Undef to disable, or set to the number of desired bookmarks - a reasonable
    range would be between 4 and 16 */
-#define CONFIG_FILEBOOKMARKS 6
+#undef CONFIG_FILEBOOKMARKS 6
 
 /* Keyboard-based Joystick emulation */
 #define CONFIG_JOYKEYS
@@ -29,6 +29,11 @@ here, the number of units defaults to 4. */
 /* Send key events via the mist_io block. If the core can support
    a PS/2 keyboard directly then that's probably a better option. */
 #undef CONFIG_SENDKEYS
+
+/* Send joystick events using the "new" extended joystick protocol.
+   This could support more buttons (if DeMiSTify itself supported them,
+   which it currently doesn't) - but some cores still use the older protocol. */
+#undef CONFIG_EXTJOYSTICK
 
 #endif
 

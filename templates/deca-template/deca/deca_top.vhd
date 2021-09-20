@@ -10,7 +10,8 @@ entity deca_top is
 		ADC_CLK_10		:	 IN STD_LOGIC;
 		MAX10_CLK1_50		:	 IN STD_LOGIC;
 		MAX10_CLK2_50		:	 IN STD_LOGIC;
-		KEY		:	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		KEY			:	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		LED			:	OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
                -- SDRAM
 		DRAM_CLK		:	 OUT STD_LOGIC;
 		DRAM_CKE		:	 OUT STD_LOGIC;
@@ -231,17 +232,17 @@ SD_CMD_DIR                      <= '1';  -- MOSI FPGA output
 SD_D0_DIR                       <= '0';  -- MISO FPGA input     
 SD_D123_DIR                     <= '1';  -- CS FPGA output  
 
+
 --process(clk_sys)
 --begin
 --	if rising_edge(clk_sys) then
-		VGA_R<=vga_red(7 downto 5);
-		VGA_G<=vga_green(7 downto 5);
-		VGA_B<=vga_blue(7 downto 5);
-		VGA_HS<=vga_hsync;
-		VGA_VS<=vga_vsync;
+VGA_R<=vga_red(7 downto 5);
+VGA_G<=vga_green(7 downto 5);
+VGA_B<=vga_blue(7 downto 5);
+VGA_HS<=vga_hsync;
+VGA_VS<=vga_vsync;
 --	end if;
 --end process;
-
 
 -- DECA AUDIO CODEC
 RESET_DELAY_n <= reset_n;

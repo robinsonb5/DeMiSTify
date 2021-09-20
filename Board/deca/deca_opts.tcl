@@ -23,6 +23,12 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 
 #set_global_assignment -name SEED 3
 
+# disable config pin so bank8 can use 1.2V 
+set_global_assignment -name AUTO_RESTART_CONFIGURATION OFF
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+
+
 if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
 	set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
 	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
