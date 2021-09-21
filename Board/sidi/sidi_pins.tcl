@@ -69,7 +69,8 @@ set_location_assignment PIN_D8 -to SDRAM_nWE
 set_location_assignment PIN_B11 -to SDRAM_nCS
 set_location_assignment PIN_C11 -to SDRAM_CKE
 set_location_assignment PIN_R4 -to SDRAM_CLK
-set_location_assignment PIN_P1 -to UART_RXD
+set_location_assignment PIN_P1 -to TAPE_IN
+set_location_assignment PIN_B1 -to UART_RXD
 set_location_assignment PIN_D1 -to UART_TXD
 set_location_assignment PLL_1 -to "pll:pll|altpll:altpll_component"
 
