@@ -62,18 +62,18 @@ space:= $(empty) $(empty)
 controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
 	$(LD) $(LDFLAGS) -o $@ -M controller.map $+
 
-%.o : $(DEMISTIFYPATH)/firmware/%.c
+%.o : $(DEMISTIFYPATH)/firmware/%.c config.h $(CC)
 	$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) -o=$*.asm $(DEMISTIFYPATH)/firmware/$*.c
 	$(AS) $(ASFLAGS) -o $*.o $*.asm
 
-%.o : %.c
+%.o : %.c config.h $(CC)
 	$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) -I$(DEMISTIFYPATH)/firmware -o=$*.asm $*.c
 	$(AS) $(ASFLAGS) -o $*.o $*.asm
 
 %.o : $(LIBDIR)/%.asm Makefile 
 	$(AS) $(ASFLAGS) -o $*.o $(LIBDIR)/$*.asm
 
-%.asm : $(DEMISTIFYPATH)/firmware/%.c
+%.asm : $(DEMISTIFYPATH)/firmware/%.c config.h $(CC)
 	$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) $*.c
 
 $(ROMGEN): $(ROMGENDIR)/romgen.c
