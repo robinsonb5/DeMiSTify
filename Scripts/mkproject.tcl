@@ -20,16 +20,16 @@ if {[string length $rootpath]==0} {return -code error "Must specify a root path"
 set corename "${project}_${board}"
 
 source ${rootpath}/project_defs.tcl
-source ${boardpath}${board}/${board}_defs.tcl
+source ${boardpath}/${board}/${board}_defs.tcl
 
 if { ${requires_sdram}==0 || ${have_sdram}==1 } {
 	project_new $corename -revision $corename -overwrite
 	set_global_assignment -name TOP_LEVEL_ENTITY ${board}_top
 	set_global_assignment -name AUTO_MERGE_PLLS OFF
 
-	source ${boardpath}${board}/${board}_opts.tcl
-	source ${boardpath}${board}/${board}_pins.tcl
-	source ${boardpath}${board}/${board}_support.tcl
+	source ${boardpath}/${board}/${board}_opts.tcl
+	source ${boardpath}/${board}/${board}_pins.tcl
+	source ${boardpath}/${board}/${board}_support.tcl
 	set_global_assignment -name QIP_FILE top.qip
 	source ${corename}_files.tcl
 } else {
