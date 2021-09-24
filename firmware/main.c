@@ -556,7 +556,6 @@ static void scrollmenu(int row)
 int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
 {
 	int c;
-	unsigned int page=0;
 	unsigned int maxpage=0;
 	unsigned int line=0;
 	char *title;
@@ -592,24 +591,76 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	while(c && line<limit)
 	{
 		int diskunit=0;
+		unsigned int parent=0;
+		unsigned int page=0;
 		c=configstring_next();
-		switch(c)
+
+		/* Page handling - P either declares a new page, or prefixes an option within a page */
+		while(c=='P')
 		{
-			case 'S': // Disk image select
-				diskunit='0';
-				c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
-				if(c!=',')
-					diskunit=c;
-				while(c!=',')
-					c=configstring_next();
-				// Fall through...
-			case 'F':
-				if(!selpage)
+			parent=page;
+			page=configstring_getdigit();
+
+			if(page>maxpage)
+				maxpage=page;
+			c=configstring_next();
+			if(c==',')	/* New page, create a menu item */
+			{
+				title=menu[line].label;
+				menu[line].u.menu.page=page;
+				menu[line].action=MENU_ACTION(&submenu);
+				c=configstring_next();
+				while(c && c!=';')
 				{
+					*title++=c;
+					c=configstring_next();
+				}
+				*title++=' ';
+				*title++=FONT_ARROW_RIGHT;
+				*title++=0;
+				/* Are we in the menu root? */
+				if(selpage==parent)
+				{
+					if(line>=skip)
+						++line;
+					else
+						--skip;
+				}
+				c=configstring_next();
+			}
+			if(c=='P')
+				++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
+		}
+
+		if(page==selpage)
+		{
+			unsigned int low,high=0;
+			unsigned int opt=0;
+			unsigned int val;
+
+			switch(c)
+			{
+				case ';':
+					break;
+				case 'S': // Disk image select
+					diskunit='0';
+					c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+					if(c!=',')
+						diskunit=c;
+					while(c!=',')
+						c=configstring_next();
+					// Fall through...
+				case 'F':
 					if(c!=',')
 						configstring_next();
-					configstring_copytocomma(menu[line].label,10,0);
-					configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
+					configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
+					low=-configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
+					if(low>0 && low<(LINELENGTH-3))
+					{
+						menu[line].label[low]=' ';
+						menu[line].label[low+1]=FONT_ARROW_RIGHT;
+						menu[line].label[low+2]=0;
+					}
 					menu[line].action=MENU_ACTION(&fileselector);
 					menu[line].u.file.index=fileindex;
 					menu[line].u.file.cfgidx=configidx;
@@ -619,52 +670,9 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						++line;
 					else
 						--skip;
-				}
-				else
-					c=configstring_nextfield();
-				break;
-			case 'P':
-				page=configstring_getdigit();
-
-				if(page>maxpage)
-					maxpage=page;
-				c=configstring_getdigit();
-				if(c==',')
-				{
-					/* Is this a submenu declaration? */
-					if(selpage==0)
-					{
-						title=menu[line].label;
-						menu[line].u.menu.page=page;
-						menu[line].action=MENU_ACTION(&submenu);
-						c=configstring_next();
-						while(c && c!=';')
-						{
-							*title++=c;
-							c=configstring_next();
-						}
-						*title++=' ';
-						*title++=FONT_ARROW_RIGHT;
-						*title++=0;
-						if(line>=skip)
-							++line;
-						else
-							--skip;
-					}
-					else
-						c=configstring_nextfield();
 					break;
-				}
-				// Fall through to O
-			case 'O':
-			case 'T':
-				if (page==selpage)
-				{
-					/* Must be a submenu entry */
-					unsigned int low,high=0;
-					unsigned int opt=0;
-					unsigned int val;
-
+				case 'O':
+				case 'T':
 					/* Parse option */
 					low=configstring_getdigit();
 					high=configstring_getdigit();
@@ -707,15 +715,14 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 						++line;
 					else
 						--skip;
-				}
-				else
+					break;
+				default:
 					c=configstring_nextfield();
-				page=0;
-				break;
-			default:
-				c=configstring_nextfield();
-				break;
+					break;
+			}
 		}
+		else
+			c=configstring_nextfield();
 		++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 	}
 	for(;line<7;++line)

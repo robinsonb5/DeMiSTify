@@ -6,14 +6,7 @@
 #include "spi.h"
 #include "minfat.h"
 
-struct diskimage
-{
-	fileTYPE file;
-	int valid;
-};
-
 struct diskimage diskimg[CONFIG_DISKIMG_UNITS];
-
 
 // read 8+32 bit sd card status word from FPGA
 int user_io_sd_get_status(uint32_t *lba, uint32_t *drive_index) {

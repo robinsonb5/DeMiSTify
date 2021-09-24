@@ -62,6 +62,7 @@ int HandlePS2RawCodes(int blockkeys)
 				if(keyup)
 					SPI(0xf0);
 				SPI(key);
+				EnableIO(); /* Ensure select doesn't release too soon. */
 				DisableIO();
 			}
 #endif
