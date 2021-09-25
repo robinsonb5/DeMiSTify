@@ -11,7 +11,7 @@ entity deca_top is
 		MAX10_CLK1_50		:	 IN STD_LOGIC;
 		MAX10_CLK2_50		:	 IN STD_LOGIC;
 		KEY			:	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-		LED			:	OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+		LED			:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0) := "1111";
                -- SDRAM
 		DRAM_CLK		:	 OUT STD_LOGIC;
 		DRAM_CKE		:	 OUT STD_LOGIC;
@@ -50,6 +50,19 @@ entity deca_top is
 		SD_CMD_DIR                     : out   std_logic := '1';  
 		SD_D0_DIR                      : out   std_logic := '0';  
 		SD_D123_DIR                    : out   std_logic;
+		-- HDMI-TX  DECA 
+		HDMI_I2C_SCL  : inout std_logic; 		          		
+		HDMI_I2C_SDA  : inout std_logic; 		          		
+		HDMI_I2S      : inout std_logic_vector(3 downto 0);		     	
+		HDMI_LRCLK    : inout std_logic; 		          		
+		HDMI_MCLK     : inout std_logic;		          		
+		HDMI_SCLK     : inout std_logic; 		          		
+		HDMI_TX_CLK   : out	std_logic;	          		
+		HDMI_TX_D     : out	std_logic_vector(23 downto 0);	    		
+		HDMI_TX_DE    : out std_logic;		          		 
+		HDMI_TX_HS    : out	std_logic;	          		
+		HDMI_TX_INT   : in  std_logic;		          		
+		HDMI_TX_VS    : out std_logic;         
                -- AUDIO CODEC  DECA 
 		AUDIO_GPIO_MFP5 : inout std_logic;
 		AUDIO_MISO_MFP4 : in std_logic;
@@ -123,6 +136,7 @@ COMPONENT  NES_mist
 		CLOCK_27 :	IN STD_LOGIC;
 --             CLOCK_27 :	IN STD_LOGIC_VECTOR(1 downto 0);
 --		RESET_N :   IN std_logic;
+               LED : out std_logic;
                -- SDRAM
 		SDRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
 		SDRAM_A		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
@@ -140,12 +154,12 @@ COMPONENT  NES_mist
 		UART_RX    :   IN STD_LOGIC;
 		-- SPI
 		SPI_DO		:	 OUT STD_LOGIC;
---		SPI_SD_DI	:	 IN STD_LOGIC;
+		SPI_SD_DI	:	 IN STD_LOGIC;
 		SPI_DI		:	 IN STD_LOGIC;
 		SPI_SCK		:	 IN STD_LOGIC;
 		SPI_SS2		:	 IN STD_LOGIC;
 		SPI_SS3		:	 IN STD_LOGIC;
---		SPI_SS4		:	 IN STD_LOGIC;
+		SPI_SS4		:	 IN STD_LOGIC;
 		CONF_DATA0		:	 IN STD_LOGIC;
                -- VGA
 		VGA_HS		:	 OUT STD_LOGIC;
@@ -153,11 +167,15 @@ COMPONENT  NES_mist
 		VGA_R		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
 		VGA_G		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
 		VGA_B		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
+	        VGA_BLANK : out std_logic; 
+	        VGA_CLK : out std_logic;
                -- AUDIO
 		AUDIO_L  : out std_logic;
 		AUDIO_R  : out std_logic;
-		DAC_L           : OUT SIGNED(9 DOWNTO 0);
-                DAC_R           : OUT SIGNED(9 DOWNTO 0)
+		DAC_L           : OUT SIGNED(15 DOWNTO 0);
+               DAC_R           : OUT SIGNED(15 DOWNTO 0);
+--		DAC_L           : OUT SIGNED(9 DOWNTO 0);
+--              DAC_R           : OUT SIGNED(9 DOWNTO 0)
 	);
 END COMPONENT;
 
@@ -192,12 +210,34 @@ component i2s_transmitter
 end component;
 
 
--- DAC
-signal dac_l: signed(9 downto 0);
-signal dac_r: signed(9 downto 0);
+-- DAC AUDIO
+signal dac_l: signed(15 downto 0);
+signal dac_r: signed(15 downto 0);
+--signal dac_l: signed(9 downto 0);
+--signal dac_r: signed(9 downto 0);
         
-signal dac_l_s: signed(15 downto 0);
-signal dac_r_s: signed(15 downto 0);
+--signal dac_l_s: signed(15 downto 0);
+--signal dac_r_s: signed(15 downto 0);
+
+
+-- HDMI
+signal i2s_Mck_o : std_logic;
+signal i2s_Sck_o : std_logic;
+signal i2s_Lr_o : std_logic;
+signal i2s_D_o : std_logic;
+
+component I2C_HDMI_Config
+    port (
+    iCLK : in std_logic;
+    iRST_N : in std_logic;
+    I2C_SCLK : out std_logic;
+    I2C_SDAT : inout std_logic;
+    HDMI_TX_INT : in std_logic
+  );
+end component;
+
+signal hdmi_clk :  std_logic;
+signal hdmi_blank  :  std_logic;
 
 begin
 
@@ -263,7 +303,6 @@ port map (
 );
 
 -- AUDIO CODEC
-
 i2s_transmitter_inst : i2s_transmitter
 	generic map (
 		sample_rate => 48000
@@ -271,16 +310,48 @@ i2s_transmitter_inst : i2s_transmitter
 	port map (
 		clock_i => MAX10_CLK1_50,
 		reset_i => '0',
-		pcm_l_i => std_logic_vector(dac_l_s),
-		pcm_r_i => std_logic_vector(dac_r_s),
-		i2s_mclk_o => i2sMck,
-		i2s_lrclk_o => i2sLr,
-		i2s_bclk_o => i2sSck,
-		i2s_d_o => i2sD
+		pcm_l_i => std_logic_vector(dac_l),
+		pcm_r_i => std_logic_vector(dac_r),		
+--		pcm_l_i => std_logic_vector(dac_l_s),
+--		pcm_r_i => std_logic_vector(dac_r_s),
+		i2s_mclk_o => i2s_Mck_o,
+		i2s_lrclk_o => i2s_Lr_o,
+		i2s_bclk_o => i2s_Sck_o,
+		i2s_d_o => i2s_D_o
 	);
 
-dac_l_s <= ('0' & dac_l & "00000");
-dac_r_s <= ('0' & dac_r & "00000");
+i2sMck <= i2s_Mck_o;
+i2sSck <= i2s_Sck_o;
+i2sLr <= i2s_Lr_o;
+i2sD <= i2s_D_o;
+
+--dac_l_s <= ('0' & dac_l & "00000");
+--dac_r_s <= ('0' & dac_r & "00000");
+
+
+-- HDMI CONFIG    
+I2C_HDMI_Config_inst : I2C_HDMI_Config
+port map (
+	iCLK => MAX10_CLK1_50,      
+	iRST_N =>  reset_n,       --reset_n, KEY(0)
+	I2C_SCLK => HDMI_I2C_SCL,
+	I2C_SDAT => HDMI_I2C_SDA,
+	HDMI_TX_INT => HDMI_TX_INT
+);
+
+--  HDMI VIDEO   
+HDMI_TX_CLK <= hdmi_clk;	
+HDMI_TX_DE <= not hdmi_blank;
+HDMI_TX_HS <= vga_hsync;
+HDMI_TX_VS <= vga_vsync;
+HDMI_TX_D <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
+
+--  HDMI AUDIO   
+HDMI_MCLK <= i2s_Mck_o;
+HDMI_SCLK <= i2s_Sck_o;    -- lr*2*16
+HDMI_LRCLK <= i2s_Lr_o;   
+HDMI_I2S(0) <= i2s_D_o;
+
 
 
 guest: COMPONENT  NES_mist
@@ -289,7 +360,8 @@ guest: COMPONENT  NES_mist
 		CLOCK_27 => MAX10_CLK1_50,
 --         	CLOCK_27 => MAX10_CLK2_50&MAX10_CLK1_50,
 --	        RESET_N => reset_n,
-		 
+                LED => LED(0),		 
+               --SDRAM
 		SDRAM_DQ => DRAM_DQ,
 		SDRAM_A => DRAM_ADDR,
 		SDRAM_DQML => DRAM_LDQM,
@@ -301,28 +373,31 @@ guest: COMPONENT  NES_mist
 		SDRAM_BA => DRAM_BA,
 		SDRAM_CLK => DRAM_CLK,
 		SDRAM_CKE => DRAM_CKE,
-		
+		--UART
 		UART_TX  => UART_TXD,
 		UART_RX  => UART_RXD,
-		
---		SPI_SD_DI => sd_miso,
+		--SPI
+		SPI_SD_DI => sd_miso,
 		SPI_DO => spi_fromguest,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
 		SPI_SS3 => spi_ss3,
---		SPI_SS4	=> spi_ss4,
+		SPI_SS4	=> spi_ss4,
 		CONF_DATA0 => conf_data0,
-
+               --VGA
 		VGA_HS => vga_hsync,
 		VGA_VS => vga_vsync,
 		VGA_R => vga_red(7 downto 2),
 		VGA_G => vga_green(7 downto 2),
 		VGA_B => vga_blue(7 downto 2),
+	             VGA_BLANK => hdmi_blank,
+	             VGA_CLK => hdmi_clk
+                --AUDIO
 		AUDIO_L => sigma_l,
 		AUDIO_R => sigma_r,
-		DAC_L   => dac_l,
-                DAC_R   => dac_r
+		     DAC_L   => dac_l,
+                     DAC_R   => dac_r
 
 );
 
