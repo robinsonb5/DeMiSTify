@@ -68,10 +68,10 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 
 #============================================================
-# Mouse (P8:3,4 GPIO0_D00/01) 
+# Mouse 
 #============================================================
-set_location_assignment PIN_W18 -to PS2_MOUSE_CLK
-set_location_assignment PIN_Y18 -to PS2_MOUSE_DAT
+set_location_assignment PIN_AA2 -to PS2_MOUSE_CLK
+set_location_assignment PIN_U6 -to PS2_MOUSE_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
@@ -112,7 +112,13 @@ set_location_assignment PIN_AA17 -to SIGMA_R
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 # EAR in mist is using UART_RXD
-set_location_assignment PIN_H4 -to UART_RXD
+set_location_assignment PIN_H4 -to EAR
+
+#============================================================
+# UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
+#============================================================
+set_location_assignment PIN_Y18 -to UART_RXD
+set_location_assignment PIN_W18 -to UART_TXD
 
 #============================================================
 # MicroSD Card
@@ -169,10 +175,10 @@ set_location_assignment PIN_W16 -to DRAM_DQ[12]
 set_location_assignment PIN_AB16 -to DRAM_DQ[13]
 set_location_assignment PIN_V15 -to DRAM_DQ[14]
 set_location_assignment PIN_W17 -to DRAM_DQ[15]
+set_location_assignment PIN_AA14 -to DRAM_CLK
+set_location_assignment PIN_W12 -to DRAM_CAS_N
 set_location_assignment PIN_W11 -to DRAM_RAS_N
 set_location_assignment PIN_AB10 -to DRAM_WE_N
-set_location_assignment PIN_W12 -to DRAM_CAS_N
-set_location_assignment PIN_AA14 -to DRAM_CLK
 set_location_assignment PIN_V12 -to DRAM_CS_N
 # CKE not connected on XS 2.2/2.4.
 set_location_assignment PIN_AA16 -to DRAM_CKE
