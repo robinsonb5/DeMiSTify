@@ -273,16 +273,12 @@ SD_D0_DIR                       <= '0';  -- MISO FPGA input
 SD_D123_DIR                     <= '1';  -- CS FPGA output  
 
 
---process(clk_sys)
---begin
---	if rising_edge(clk_sys) then
 VGA_R<=vga_red(7 downto 5);
 VGA_G<=vga_green(7 downto 5);
 VGA_B<=vga_blue(7 downto 5);
 VGA_HS<=vga_hsync;
 VGA_VS<=vga_vsync;
---	end if;
---end process;
+
 
 -- DECA AUDIO CODEC
 RESET_DELAY_n <= reset_n;
