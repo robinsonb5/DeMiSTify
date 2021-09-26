@@ -172,10 +172,10 @@ COMPONENT  NES_mist
                -- AUDIO
 		AUDIO_L  : out std_logic;
 		AUDIO_R  : out std_logic;
-		DAC_L           : OUT SIGNED(15 DOWNTO 0);
-               DAC_R           : OUT SIGNED(15 DOWNTO 0);
---		DAC_L           : OUT SIGNED(9 DOWNTO 0);
---              DAC_R           : OUT SIGNED(9 DOWNTO 0)
+		dac_l           : OUT SIGNED(15 DOWNTO 0);
+                dac_r           : OUT SIGNED(15 DOWNTO 0);
+--		dac_l           : OUT SIGNED(9 DOWNTO 0);
+--              dac_r           : OUT SIGNED(9 DOWNTO 0)
 	);
 END COMPONENT;
 

@@ -4,6 +4,7 @@ PROJECT=NES
 PROJECTPATH=./
 PROJECTTOROOT=../
 BOARD=deca
+#BOARD=deca neptuno sidi uareloaded mist
 ROMSIZE1=8192
 ROMSIZE2=8192
 
