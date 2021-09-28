@@ -344,12 +344,12 @@ void selectrom(int row)
 //	printf("File %s\n",p->Name);
 	if(p)
 	{
-		strncpy(filename,p->Name,11); // Make use of the long filename buffer to store a temporary copy of the filename,
-									// since loading it by name will overwrite the sector buffer which currently contains it!
+		strncpy(filename,p->Name,11);	// Store a temporary copy of the filename, since loading it by name
+										// will overwrite the sector buffer which currently contains it!
 		menu[row].label="Loading...";
 		Menu_Draw(row);
 		menu[row].label=romfilenames[row];
-		loadimage(filename,unit)
+		loadimage(filename,unit);
 	}
 	Menu_Draw(row);
 	Menu_ShowHide(0);

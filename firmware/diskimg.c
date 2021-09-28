@@ -5,6 +5,7 @@
 #include "user_io.h"
 #include "spi.h"
 #include "minfat.h"
+#include "uart.h"
 
 struct diskimage diskimg[CONFIG_DISKIMG_UNITS];
 
@@ -55,7 +56,6 @@ void diskimg_poll()
 			user_io_sd_set_config();
 		}
 
-
 		// Write to file/SD Card
 		if((c & 0x03) == 0x02) {
 			FileSeek(&diskimg[idx].file,lba<<9);
@@ -94,6 +94,7 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	if(idx>3)
 		return;
+	diskimg_unmount(idx);
 	if (name)
 	{
 		if(FileOpen(&diskimg[idx].file,name))
@@ -101,8 +102,6 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 			diskimg[idx].valid=1;
 			imgsize=diskimg[idx].file.size;
 		}
-	} else {
-		diskimg_unmount(idx);
 	}
 
 	// send mounted image size first then notify about mounting

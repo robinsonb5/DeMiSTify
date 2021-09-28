@@ -19,7 +19,8 @@ typedef struct
 	uint32_t cursor;	/* Offset within the current sector */
 #ifdef CONFIG_FILEBOOKMARKS
 	struct fileBookmark bookmarks[CONFIG_FILEBOOKMARKS];
-	int bookmark_index;
+	int bookmark_threshold;
+//	int bookmark_index;
 #endif
 } fileTYPE;
 
@@ -116,6 +117,7 @@ unsigned int GetFATLink(unsigned int cluster);
 void FileNextSector(fileTYPE *file, int count);
 unsigned int FileOpen(fileTYPE *file, const char *name);
 unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer);
+unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer);
 //unsigned char FileReadEx(fileTYPE *file, unsigned char *pBuffer, uint32_t nSize);
 void FileSeek(fileTYPE *file,unsigned int pos);
 #define FileTell(x) (x)->cursor
@@ -124,9 +126,14 @@ char FileGetCh(fileTYPE *file);
 
 int LoadFile(const char *fn, unsigned char *buf);
 
+uint32_t CurrentDirectory();
 void ChangeDirectory(DIRENTRY *p);
+void ChangeDirectoryByCluster(uint32_t cluster);
 DIRENTRY *NextDirEntry(int prev,int (*matchfunc)(const char *fn));
-extern unsigned int dir_entries;             // number of entry's in directory table
+int FindByCluster(uint32_t parent, uint32_t cluster);
+int ValidateDirectory(uint32_t directory);
+
+extern unsigned int dir_entries;             // number of entries in directory table
 extern char longfilename[261];
 
 #define FileFirstSector(x) { (x)->sector=0; (x)->cursor=0; (x)->cluster=(x)->firstcluster; }

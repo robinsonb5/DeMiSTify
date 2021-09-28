@@ -8,6 +8,8 @@
 //#include "utils.h"
 //#include "debug.h"
 
+#pragma dontwarn 153
+
 // CDD command
 #define PCECD_COMM_TESTUNIT			0x00
 #define PCECD_COMM_REQUESTSENSE		0x03
@@ -707,3 +709,6 @@ void pcecd_poll() {
 		}
 //	}
 }
+
+#pragma popwarn
+

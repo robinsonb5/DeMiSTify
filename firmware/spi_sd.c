@@ -20,6 +20,7 @@
 
 
 #include <stdio.h>
+#include "uart.h"
 #include "spi_sd.h"
 #include "spi.h"
 
