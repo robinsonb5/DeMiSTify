@@ -68,12 +68,70 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 
 #============================================================
-# Mouse 
+# Mouse - (P9:10,9)   (Atlas: pmod 10 mclk VT, 9 mdat GY / 1x14 right (6p) 3v3 p1, GND p4)
 #============================================================
 set_location_assignment PIN_AA2 -to PS2_MOUSE_CLK
 set_location_assignment PIN_U6 -to PS2_MOUSE_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
+#(10k resistor)set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
+
+#============================================================
+# Audio pwm output (P8:5,6 GPIO0_D02/03)   #(Atlas board: T12_left 1, 2 gnd, 3 R11_right)
+#============================================================
+set_location_assignment PIN_Y19  -to SIGMA_L
+set_location_assignment PIN_AA17 -to SIGMA_R
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
+# EAR (in some mist cores ear function is using UART_RXD)
+set_location_assignment PIN_H4 -to EAR
+
+#============================================================
+# UDA 1334A - #NOT USED W18 P8:3, BCLK Y18 P8:4,  WSEL Y19 P8:5, DIN AA17 P8:6
+#============================================================
+#set_location_assignment PIN_W18 -to i2sMck
+#set_location_assignment PIN_Y18 -to i2sSck
+#set_location_assignment PIN_Y19 -to i2sLr
+#set_location_assignment PIN_AA17 -to i2sD
+
+#============================================================
+# UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
+#============================================================
+set_location_assignment PIN_Y18 -to UART_RXD
+set_location_assignment PIN_W18 -to UART_TXD
+
+
+#============================================================
+# JOYSTICK 
+#============================================================
+set_location_assignment PIN_J4 -to joy1_p9_i
+set_location_assignment PIN_H3 -to joy1_p6_i
+set_location_assignment PIN_J8 -to joy1_up_i
+set_location_assignment PIN_J9 -to joy1_down_i
+set_location_assignment PIN_F4 -to joy1_left_i
+set_location_assignment PIN_F5 -to joy1_right_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_p9_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_p6_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_up_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_down_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_left_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_right_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_p9_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_p6_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_up_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_down_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_left_i
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_right_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_up_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_down_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_left_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_p6_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_p9_i
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_right_i
+# joystick select pin 
+set_location_assignment PIN_K5 -to joyX_p7_o
+set_instance_assignment -name IO_STANDARD "2.5 V" -to joyX_p7_o
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joyX_p7_o
+
 
 #============================================================
 # Audio CODEC TLV320AIC3254
@@ -101,24 +159,9 @@ set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SPI_SELECT
 set_location_assignment PIN_R15 -to i2sLr
 set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sLr
 #alternative ear
-set_location_assignment PIN_P18 -to AUDIO_DOUT_MFP2
-set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_DOUT_MFP2
+#set_location_assignment PIN_P18 -to AUDIO_DOUT_MFP2
+#set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_DOUT_MFP2
 
-#============================================================
-# Audio pwm output (P8:5,6 GPIO0_D02/03)   #(Atlas board: T12_left 1, 2 gnd, 3 R11_right)
-#============================================================
-set_location_assignment PIN_Y19  -to SIGMA_L
-set_location_assignment PIN_AA17 -to SIGMA_R
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
-# EAR in mist is using UART_RXD
-set_location_assignment PIN_H4 -to EAR
-
-#============================================================
-# UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
-#============================================================
-set_location_assignment PIN_Y18 -to UART_RXD
-set_location_assignment PIN_W18 -to UART_TXD
 
 #============================================================
 # MicroSD Card
@@ -140,6 +183,12 @@ set_location_assignment PIN_R20 -to sd_cs_n_o
 set_instance_assignment -name IO_STANDARD "1.5 V" -to sd_cs_n_o
 set_location_assignment PIN_P13 -to SD_SEL
 #set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_SEL
+#set_location_assignment PIN_T18 -to SD_DAT1		## NC	## SD_DAT[1]
+#set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_DAT1	
+#set_location_assignment PIN_T19 -to SD_DAT2		## NC	## SD_DAT[2]
+#set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_DAT2
+#set_location_assignment PIN_R22 -to SD_FB_CLK		## NOT USED
+#set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_FB_CLK
 
 #============================================================
 # HDMI-TX
