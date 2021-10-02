@@ -1,3 +1,4 @@
+MAKEFLAGS+=--no-print-directory
 PROJECTS=
 OVERRIDES=
 DEMISTIFYPATH=
@@ -22,7 +23,11 @@ $(EIGHTTHIRTYTWOPATH)/Makefile:
 
 .PHONY: firmware
 firmware:
-	make -f $(DEMISTIFYPATH)/firmware.mk DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2)
+	make -f $(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2)
+
+.PHONY: firmware_clean
+firmware_clean: $(SUBMODULES)
+	@make -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=$(ROMSIZE1) ROMSIZE2=$(ROMSIZE2) clean
 
 $(DEMISTIFYPATH)/site.mk:
 	$(info ************************************************)
