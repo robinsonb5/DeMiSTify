@@ -116,7 +116,7 @@
 #define KEY_NKMINUS 0x84
 
 #define KEY_TICK 0x0E
-#define KEY_DELETE 0x64
+#define KEY_DELETE 0xf1
 #define KEY_BACKSLASH 0x61  // Not present on US keyboards
 #define KEY_TAB 0x0D
 

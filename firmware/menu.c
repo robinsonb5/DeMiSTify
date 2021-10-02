@@ -80,6 +80,10 @@ void Menu_ShowHide(int visible)
 	OsdShowHide(menu_visible);
 }
 
+int Menu_Visible()
+{
+	return(menu_visible);
+}
 
 /* Analogue joystick support - left with weak linkage so it can be overriden */
 
@@ -157,7 +161,7 @@ int prevbuttons=0;
 unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
 #define SCANDOUBLE_TIMEOUT 1000
-#define LONGPRESS_TIMEOUT 1000
+#define LONGPRESS_TIMEOUT 750
 void Menu_Run()
 {
 	int i;
@@ -275,7 +279,8 @@ void Menu_Run()
 				menu_longpress=1;
 		}
 
-		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
+		if((m+currentrow)->action)
+			MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 	}
 
 	while(hk && hk->key)

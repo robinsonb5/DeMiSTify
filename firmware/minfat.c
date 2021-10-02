@@ -45,16 +45,16 @@ JB:
 //#include <ctype.h>
 
 #include "spi.h"
+#include "spi_sd.h"
 
-#include "minfat.h"
 #include "swap_le.h"
 #include "uart.h"
 #include "printf.h"
+#include "timer.h"
+
+#include "minfat.h"
 
 #define tolower(x) (x|32)
-
-unsigned int directory_cluster;       // first cluster of directory (0 if root)
-unsigned int entries_per_cluster;     // number of directory entries per cluster
 
 // internal global variables
 unsigned int fat32;                // volume format is FAT32
@@ -63,16 +63,14 @@ uint32_t data_start;               // start LBA of data field
 uint32_t root_directory_cluster;   // root directory cluster (used in FAT32)
 uint32_t root_directory_start;     // start LBA of directory table
 uint32_t root_directory_size;      // size of directory region in sectors
-unsigned int fat_number;               // number of FAT tables
 unsigned int cluster_size;             // size of a cluster in sectors
 uint32_t cluster_mask;             // binary mask of cluster number
 unsigned int dir_entries;             // number of entry's in directory table
-uint32_t fat_size;                 // size of fat
 
-unsigned int cachedsector=-1;
+uint32_t cachedsector=-1;
 
-unsigned int current_directory_cluster;
-unsigned int current_directory_start;
+uint32_t current_directory_cluster;
+uint32_t current_directory_start;
 
 unsigned char sector_buffer[512];       // sector buffer
 #ifndef DISABLE_LONG_FILENAMES
@@ -82,7 +80,6 @@ char longfilename[261];
 //unsigned char *sector_buffer=0x18000;
 
 //struct PartitionEntry partitions[4]; 	// [4];	// lbastart and sectors will be byteswapped as necessary
-int partitioncount;
 
 #define fat_buffer (*(FATBUFFER*)&sector_buffer) // Don't need a separate buffer for this.
 // uint32_t buffered_fat_index;       // index of buffered FAT sector
@@ -105,8 +102,11 @@ int partitioncount;
 // FindDrive() checks if a card is present and contains FAT formatted primary partition
 unsigned int FindDrive(void)
 {
-	uint32_t boot_sector;              // partition boot sector
-//    buffered_fat_index = -1;
+	uint32_t fat_number;
+	uint32_t fat_size;
+	uint32_t boot_sector;
+	int partitioncount;
+
 	fat32=0;
 
 	STATUS("Reading MBR\n");
@@ -116,7 +116,6 @@ unsigned int FindDrive(void)
 		STATUS("Read of MBR failed\n");
         return(0);
 	}
-//	hexdump(sector_buffer,512);
 
 	STATUS("MBR successfully read\n");
 
@@ -223,10 +222,10 @@ unsigned int FindDrive(void)
 }
 
 
-unsigned int GetCluster(unsigned int cluster)
+uint32_t GetCluster(uint32_t cluster)
 {
-	int i;
-	int sb;
+	uint32_t i;
+	uint32_t sb;
     if (fat32)
     {
         sb = cluster >> 7; // calculate sector number containing FAT-link
@@ -282,7 +281,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 			file->bookmarks[bm].sector=0;
 			file->bookmarks[bm].cluster=file->cluster;
 		}
-		file->bookmark_index=0;
+		file->bookmark_threshold=(file->size>>9)/(8*CONFIG_FILEBOOKMARKS);
 #endif
 
 		return(1);
@@ -297,7 +296,6 @@ void FileNextSector(fileTYPE *file,int count)
     uint32_t sb;
     uint16_t i;
 	count+=file->sector;
-
 	while((file->sector ^ count)&~cluster_mask)
 	{
 		file->cluster=GetCluster(file->cluster);
@@ -338,13 +336,64 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
 
 #ifdef CONFIG_FILEBOOKMARKS
 
-void FileSeek(fileTYPE *file, unsigned int pos)
+void DumpBookmarks(fileTYPE *file)
 {
-	int p=pos>>9;
-	int pm=p&~cluster_mask;
+	int idx;
+	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
+	{
+		printf("(Bookmark %d, %x, %x)\n",idx,file->bookmarks[idx].sector,file->bookmarks[idx].cluster);
+	}
+}
 
-	int currentsector=file->sector&~cluster_mask;
-	int cluster=file->cluster;
+
+int BestBookmark(fileTYPE *file, uint32_t pm)
+{
+	int idx,best;
+	int32_t bestd,d;
+	best=-1;
+	bestd=0x7fffffff;
+	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
+	{
+		d=pm-file->bookmarks[idx].sector;
+		if(d>=0 && d<bestd)
+		{
+			best=idx;
+			bestd=d;
+		}
+	}
+	return(best);
+}
+
+
+/* Find the least useful bookmark */
+int WorstBookmark(fileTYPE *file)
+{
+	int idx,idx2;
+	uint32_t worstd=0x7fffffff;
+	int worst=-1;
+	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
+	{
+		for(idx2=0;idx2<CONFIG_FILEBOOKMARKS;++idx2)
+		{
+			int d=file->bookmarks[idx2].sector-file->bookmarks[idx].sector;
+			if(idx!=idx2 && (d<worstd))
+			{
+				worst=idx2;
+				worstd=d;
+			}
+		}
+	}
+	return(worst);
+}
+
+
+void FileSeek(fileTYPE *file, uint32_t pos)
+{
+	uint32_t p=pos>>9;
+	uint32_t pm=p&~cluster_mask;
+
+	uint32_t currentsector=file->sector&~cluster_mask;
+	uint32_t cluster=file->cluster;
 
 	if(pm==currentsector)	// Is the new position within the same cluster?
 	{
@@ -352,23 +401,13 @@ void FileSeek(fileTYPE *file, unsigned int pos)
 	}
 	else	// Crossing a cluster boundary
 	{
-		int idx,bestd=0x7fffffff,d,best;
-		best=-1;
-		for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
+		int idx;
+		idx=BestBookmark(file,pm);
+		if(idx>=0)
 		{
-			d=pm-file->bookmarks[idx].sector;
-//			printf("Considering bookmark %d, difference %d\n",idx,d);
-			if(d>=0 && d<bestd)
-			{
-				best=idx;
-				bestd=d;
-			}
-		}
-		if(best>=0)
-		{
-//			printf("Found bookmark %d for %x (%x, %x)\n",best,pm,file->bookmarks[best].sector,file->bookmarks[best].cluster);
-			file->sector=file->bookmarks[best].sector;
-			file->cluster=file->bookmarks[best].cluster;
+//			printf("Found bookmark %d for %x (%x, %x)\n",idx,pm,file->bookmarks[idx].sector,file->bookmarks[idx].cluster);
+			file->sector=file->bookmarks[idx].sector;
+			file->cluster=file->bookmarks[idx].cluster;
 		}
 		else
 		{
@@ -377,15 +416,19 @@ void FileSeek(fileTYPE *file, unsigned int pos)
 			file->cluster=file->firstcluster;
 		}
 
-		// record bookmark
+		/* record bookmark */
 		p-=file->sector;
 
-		if((p>cluster_size*8) || (p<cluster_size*8))
+		idx=BestBookmark(file,currentsector);
+
+		/* We don't bother bookmarking at the start of the file, or if we're within bookmark_threshold of an existing bookmark */
+		if((currentsector>file->bookmark_threshold) && (idx>=0)
+			&& ((currentsector-file->bookmarks[idx].sector) > file->bookmark_threshold))
 		{
-//			printf("Creating bookmark entry %d, %x, %x\n",file->bookmark_index,currentsector,cluster);
-			file->bookmarks[file->bookmark_index].sector=currentsector;
-			file->bookmarks[file->bookmark_index].cluster=cluster;
-			file->bookmark_index=file->bookmark_index==CONFIG_FILEBOOKMARKS-1 ? 0 : file->bookmark_index+1;
+			idx=WorstBookmark(file);
+			file->bookmarks[idx].sector=currentsector;
+			file->bookmarks[idx].cluster=cluster;
+//			file->bookmark_index=file->bookmark_index==CONFIG_FILEBOOKMARKS-1 ? 0 : file->bookmark_index+1;
 		}
 
 		FileNextSector(file,p);
@@ -394,9 +437,9 @@ void FileSeek(fileTYPE *file, unsigned int pos)
 	file->cursor=pos;
 }
 #else
-void FileSeek(fileTYPE *file, unsigned int pos)
+void FileSeek(fileTYPE *file, uint32_t pos)
 {
-	int p=pos;
+	uint32_t p=pos;
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
 	if(p<(file->cursor&(~cluster_mask)))
 	{
@@ -415,7 +458,8 @@ void FileSeek(fileTYPE *file, unsigned int pos)
 unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 {
 	unsigned char *p;
-	int c,curs;
+	int c;
+	uint32_t curs;
 	if(count+file->cursor>file->size)
 		count=file->size-file->cursor;
 	if(count<=0)
@@ -475,7 +519,7 @@ int LoadFile(const char *fn, unsigned char *buf)
 	fileTYPE file;
 	if(FileOpen(&file,fn))
 	{
-		unsigned int c=0;
+		uint32_t c=0;
 		STATUS("Opened file, loading...\n");
 
 		while(c<file.size)
@@ -497,16 +541,11 @@ int LoadFile(const char *fn, unsigned char *buf)
 }
 
 
-void ChangeDirectory(DIRENTRY *p)
+void ChangeDirectoryByCluster(uint32_t cluster)
 {
-	current_directory_cluster=0;
-	if(p)
+	if(cluster)
 	{
-		current_directory_cluster = ConvBB_LE(p->StartCluster);
-		current_directory_cluster |= fat32 ? (ConvBB_LE(p->HighCluster) & 0x0FFF) << 16 : 0;
-	}
-	if(current_directory_cluster)
-	{	
+		current_directory_cluster=cluster;
 	    current_directory_start = data_start + cluster_size * (current_directory_cluster - 2);
 		dir_entries = cluster_size << 4;
 	}
@@ -516,6 +555,24 @@ void ChangeDirectory(DIRENTRY *p)
 		current_directory_start = root_directory_start;
 		dir_entries = fat32 ?  cluster_size << 4 : root_directory_size << 4; // 16 entries per sector
 	}
+}
+
+
+uint32_t CurrentDirectory()
+{
+	return(current_directory_cluster == root_directory_cluster ? 0 : current_directory_cluster);
+}
+
+
+void ChangeDirectory(DIRENTRY *p)
+{
+	uint32_t cluster=0;
+	if(p)
+	{
+		cluster = ConvBB_LE(p->StartCluster);
+		cluster |= fat32 ? (ConvBB_LE(p->HighCluster) & 0x0FFF) << 16 : 0;
+	}
+	ChangeDirectoryByCluster(cluster);
 }
 
 
@@ -619,5 +676,69 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 			break;
 	}
     return(0);
+}
+
+
+int FindByCluster(uint32_t parent, uint32_t cluster)
+{
+    DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
+
+	while(p=NextDirEntry(p==NULL,0))
+	{
+		uint32_t c;
+		c = ConvBB_LE(p->StartCluster);
+		c += (fat32 ? (ConvBB_LE(p->HighCluster) & 0x0FFF) << 16 : 0);
+		if(c==cluster)
+			return(1);
+	}
+	return(0);
+}
+
+
+// Verify that a directory cluster is valid by recursively tracing ".." entries back up to the root,
+// then verifying that each directory entry exists within its parent.
+// Returns 0 on failure
+int ValidateDirectory(uint32_t directory)
+{
+    DIRENTRY      *pEntry = NULL;        // pointer to current entry in sector buffer
+    unsigned long  iDirectorySector;     // current sector of directory entries table
+    unsigned long  iDirectoryCluster;    // start cluster of subdirectory or FAT32 root directory
+    unsigned long  iEntry;               // entry index in directory cluster or FAT16 root directory
+
+	if(!directory || (directory==root_directory_cluster))
+	{
+		return(1);
+	}
+    else // subdirectory
+    {
+        iDirectoryCluster = directory;
+        iDirectorySector = data_start + cluster_size * (iDirectoryCluster - 2);
+    }
+
+    if(!sd_read_sector(iDirectorySector++, sector_buffer)) // root directory is linear
+		return(0);
+    pEntry = (DIRENTRY*)sector_buffer;
+    for (iEntry = 0; iEntry < 16; iEntry++)	// 16 entries in a single sector.  Assume ".." will be in the first sector.
+    {
+        if (pEntry->Name[0] != SLOT_EMPTY && pEntry->Name[0] != SLOT_DELETED) // valid entry??
+        {
+            if (pEntry->Attributes & ATTR_DIRECTORY) // is this a directory
+            {
+                if (strncmp((const char*)pEntry->Name, "..         ", sizeof(pEntry->Name)) == 0)
+                {
+					unsigned long parent=ConvBB_LE(pEntry->StartCluster) + (fat32 ? (ConvBB_LE(pEntry->HighCluster) & 0x0FFF) << 16 : 0);
+//                    printf("Parent directory is %ld \r",parent);
+
+					/* Safer, but requires more resources */
+                    return(ValidateDirectory(parent) && FindByCluster(parent,directory));
+
+					/* Lighter-weight version, merely checks that a path can be traced to the root. */
+/*                    return(ValidateDirectory(parent)); */
+                }
+            }
+        }
+        pEntry++;
+    }
+	return(0);
 }
 

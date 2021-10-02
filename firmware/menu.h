@@ -61,6 +61,10 @@ void Menu_Draw();
 void Menu_Set(struct menu_entry *head);
 void Menu_SetHotKeys(struct hotkey *head);
 void Menu_Run();
+int Menu_Visible();
+
+extern int scandouble;
+void SetScandouble(int sd);
 
 extern int joya,joyb;
 

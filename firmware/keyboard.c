@@ -23,6 +23,7 @@
 #include "ps2.h"
 #include "user_io.h"
 #include "spi.h"
+#include "interrupts.h"
 
 // Only need 2 bits per key in the keytable,
 // so we'll use 32-bit ints to store the key statuses
@@ -62,6 +63,7 @@ int HandlePS2RawCodes(int blockkeys)
 				if(keyup)
 					SPI(0xf0);
 				SPI(key);
+				EnableIO(); /* Ensure select doesn't release too soon. */
 				DisableIO();
 			}
 #endif
