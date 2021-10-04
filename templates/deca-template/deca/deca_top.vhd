@@ -7,74 +7,82 @@ use ieee.numeric_std.all;
 entity deca_top is
 	port
 	(
-		ADC_CLK_10		:	 IN STD_LOGIC;
-		MAX10_CLK1_50		:	 IN STD_LOGIC;
-		MAX10_CLK2_50		:	 IN STD_LOGIC;
-		KEY			:	 IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-		LED			:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0) := "1111";
+		ADC_CLK_10		: IN STD_LOGIC;
+		MAX10_CLK1_50		: IN STD_LOGIC;
+		MAX10_CLK2_50		: IN STD_LOGIC;
+		KEY			: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		LED			: OUT STD_LOGIC_VECTOR(3 DOWNTO 0) := "1111";
                -- SDRAM
-		DRAM_CLK		:	 OUT STD_LOGIC;
-		DRAM_CKE		:	 OUT STD_LOGIC;
-		DRAM_ADDR		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-		DRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-		DRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-		DRAM_LDQM		:	 OUT STD_LOGIC;
-		DRAM_UDQM		:	 OUT STD_LOGIC;
-		DRAM_CS_N		:	 OUT STD_LOGIC;
-		DRAM_WE_N		:	 OUT STD_LOGIC;
-		DRAM_CAS_N		:	 OUT STD_LOGIC;
-		DRAM_RAS_N		:	 OUT STD_LOGIC;
+		DRAM_CLK		: OUT STD_LOGIC;
+		DRAM_CKE		: OUT STD_LOGIC;
+		DRAM_ADDR		: OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
+		DRAM_BA		: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+		DRAM_DQ		: INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+		DRAM_LDQM		: OUT STD_LOGIC;
+		DRAM_UDQM		: OUT STD_LOGIC;
+		DRAM_CS_N		: OUT STD_LOGIC;
+		DRAM_WE_N		: OUT STD_LOGIC;
+		DRAM_CAS_N		: OUT STD_LOGIC;
+		DRAM_RAS_N		: OUT STD_LOGIC;
                -- VGA
-		VGA_HS		:	 OUT STD_LOGIC;
-		VGA_VS		:	 OUT STD_LOGIC;
-		VGA_R		:	 OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-		VGA_G		:	 OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-		VGA_B		:	 OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+		VGA_HS			: OUT STD_LOGIC;
+		VGA_VS			: OUT STD_LOGIC;
+		VGA_R			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+		VGA_G			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+		VGA_B			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
 		-- AUDIO
-		SIGMA_R                     : OUT STD_LOGIC;
-		SIGMA_L                     : OUT STD_LOGIC;
+		SIGMA_R                : OUT STD_LOGIC;
+		SIGMA_L                : OUT STD_LOGIC;
 		-- PS2
-		PS2_KEYBOARD_CLK            :    INOUT STD_LOGIC;
-		PS2_KEYBOARD_DAT            :    INOUT STD_LOGIC;
-		PS2_MOUSE_CLK               :    INOUT STD_LOGIC;
-		PS2_MOUSE_DAT               :    INOUT STD_LOGIC;
+		PS2_KEYBOARD_CLK       : INOUT STD_LOGIC;
+		PS2_KEYBOARD_DAT       : INOUT STD_LOGIC;
+		PS2_MOUSE_CLK          : INOUT STD_LOGIC;
+		PS2_MOUSE_DAT          : INOUT STD_LOGIC;
 		-- UART
-		UART_RXD                    : IN STD_LOGIC;
-		UART_TXD                    : OUT STD_LOGIC;
+		UART_RXD               : IN  STD_LOGIC;
+		UART_TXD               : OUT STD_LOGIC;
+		-- JOYSTICK
+		JOY1_B2_P9		: IN    STD_LOGIC;
+		JOY1_B1_P6		: IN    STD_LOGIC;
+		JOY1_UP		: IN    STD_LOGIC;
+		JOY1_DOWN		: IN    STD_LOGIC;
+		JOY1_LEFT		: IN    STD_LOGIC;
+		JOY1_RIGHT		: IN    STD_LOGIC;
+		JOYX_SEL_O		: OUT   STD_LOGIC := '1';
 		-- SD Card
-		sd_cs_n_o                      : out   std_logic := '1';
-		sd_sclk_o                      : out   std_logic := '0';
-		sd_mosi_o                      : out   std_logic := '0';
-		sd_miso_i                      : in    std_logic;
-		SD_SEL                         : out   std_logic := '0';   
-		SD_CMD_DIR                     : out   std_logic := '1';  
-		SD_D0_DIR                      : out   std_logic := '0';  
-		SD_D123_DIR                    : out   std_logic;
+		SD_CS_N_O            	: OUT   STD_LOGIC := '1';
+		SD_SCLK_O            	: OUT   STD_LOGIC := '0';
+		SD_MOSI_O            	: OUT   STD_LOGIC := '0';
+		SD_MISO_I            	: IN    STD_LOGIC;
+		SD_SEL               	: OUT   STD_LOGIC := '0';   
+		SD_CMD_DIR           	: OUT   STD_LOGIC := '1';  
+		SD_D0_DIR            	: OUT   STD_LOGIC := '0';  
+		SD_D123_DIR            : OUT   STD_LOGIC;
 		-- HDMI-TX  DECA 
-		HDMI_I2C_SCL  : inout std_logic; 		          		
-		HDMI_I2C_SDA  : inout std_logic; 		          		
-		HDMI_I2S      : inout std_logic_vector(3 downto 0);		     	
-		HDMI_LRCLK    : inout std_logic; 		          		
-		HDMI_MCLK     : inout std_logic;		          		
-		HDMI_SCLK     : inout std_logic; 		          		
-		HDMI_TX_CLK   : out	std_logic;	          		
-		HDMI_TX_D     : out	std_logic_vector(23 downto 0);	    		
-		HDMI_TX_DE    : out std_logic;		          		 
-		HDMI_TX_HS    : out	std_logic;	          		
-		HDMI_TX_INT   : in  std_logic;		          		
-		HDMI_TX_VS    : out std_logic;         
+		HDMI_I2C_SCL  		: INOUT STD_LOGIC; 		          		
+		HDMI_I2C_SDA  		: INOUT STD_LOGIC; 		          		
+		HDMI_I2S      		: INOUT STD_LOGIC_VECTOR(3 downto 0);		     	
+		HDMI_LRCLK    		: INOUT STD_LOGIC; 		          		
+		HDMI_MCLK     		: INOUT STD_LOGIC;		          		
+		HDMI_SCLK     		: INOUT STD_LOGIC; 		          		
+		HDMI_TX_CLK   		: OUT	STD_LOGIC;	          		
+		HDMI_TX_D     		: OUT	STD_LOGIC_VECTOR(23 downto 0);	    		
+		HDMI_TX_DE    		: OUT   STD_LOGIC;		          		 
+		HDMI_TX_HS    		: OUT	STD_LOGIC;	          		
+		HDMI_TX_INT   		: IN    STD_LOGIC;		          		
+		HDMI_TX_VS    		: OUT   STD_LOGIC;         
                -- AUDIO CODEC  DECA 
-		AUDIO_GPIO_MFP5 : inout std_logic;
-		AUDIO_MISO_MFP4 : in std_logic;
-		AUDIO_RESET_n :  inout std_logic;
-		AUDIO_SCLK_MFP3 : out std_logic;
-		AUDIO_SCL_SS_n : out std_logic;
-		AUDIO_SDA_MOSI : inout std_logic;
-		AUDIO_SPI_SELECT : out std_logic;
-		i2sMck : out std_logic;
-		i2sSck : out std_logic;
-		i2sLr : out std_logic;
-		i2sD : out std_logic		
+		AUDIO_GPIO_MFP5  	: INOUT STD_LOGIC;
+		AUDIO_MISO_MFP4  	: IN    STD_LOGIC;
+		AUDIO_RESET_n    	: INOUT STD_LOGIC;
+		AUDIO_SCLK_MFP3  	: OUT   STD_LOGIC;
+		AUDIO_SCL_SS_n   	: OUT   STD_LOGIC;
+		AUDIO_SDA_MOSI   	: INOUT STD_LOGIC;
+		AUDIO_SPI_SELECT 	: OUT   STD_LOGIC;
+		I2S_MCK 		: OUT   STD_LOGIC;
+		I2S_SCK 		: OUT   STD_LOGIC;
+		I2S_LR  		: OUT   STD_LOGIC;
+		I2S_D   		: OUT   STD_LOGIC		
 	);
 END entity;
 
@@ -124,10 +132,10 @@ architecture RTL of deca_top is
 	signal rs232_txd : std_logic;
 
 -- IO
-	signal joya : std_logic_vector(6 downto 0);
-	signal joyb : std_logic_vector(6 downto 0);
-	signal joyc : std_logic_vector(6 downto 0);
-	signal joyd : std_logic_vector(6 downto 0);
+	signal joya : std_logic_vector(7 downto 0);
+	signal joyb : std_logic_vector(7 downto 0);
+	signal joyc : std_logic_vector(7 downto 0);
+	signal joyd : std_logic_vector(7 downto 0);
 
 
 COMPONENT  NES_mist
@@ -172,10 +180,10 @@ COMPONENT  NES_mist
                -- AUDIO
 		AUDIO_L  : out std_logic;
 		AUDIO_R  : out std_logic;
-		dac_l           : OUT SIGNED(15 DOWNTO 0);
-                dac_r           : OUT SIGNED(15 DOWNTO 0);
---		dac_l           : OUT SIGNED(9 DOWNTO 0);
---              dac_r           : OUT SIGNED(9 DOWNTO 0)
+		DAC_L           : OUT SIGNED(15 DOWNTO 0);
+                DAC_R           : OUT SIGNED(15 DOWNTO 0);
+--		DAC_L           : OUT SIGNED(9 DOWNTO 0);
+--              DAC_R           : OUT SIGNED(9 DOWNTO 0)
 	);
 END COMPONENT;
 
@@ -209,8 +217,7 @@ component i2s_transmitter
   );
 end component;
 
-
--- DAC AUDIO
+-- DAC AUDIO     
 signal dac_l: signed(15 downto 0);
 signal dac_r: signed(15 downto 0);
 --signal dac_l: signed(9 downto 0);
@@ -243,10 +250,10 @@ begin
 
 
 -- SPI
-sd_cs_n_o<=sd_cs;
-sd_mosi_o<=sd_mosi;
-sd_miso<=sd_miso_i;
-sd_sclk_o<=sd_clk;
+SD_CS_N_O<=sd_cs;
+SD_MOSI_O<=sd_mosi;
+sd_miso<=SD_MISO_I;
+SD_SCLK_O<=sd_clk;
 
 
 -- External devices tied to GPIOs
@@ -261,7 +268,10 @@ ps2_keyboard_clk_in<=ps2_keyboard_clk;
 ps2_keyboard_clk <= '0' when ps2_keyboard_clk_out='0' else 'Z';
 	
 
-joya<=(others=>'1');
+JOYX_SEL_O <= '1';
+
+joya<="11" & JOY1_B2_P9 & JOY1_B1_P6 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
+
 joyb<=(others=>'1');
 joyc<=(others=>'1');
 joyd<=(others=>'1');
@@ -316,10 +326,10 @@ i2s_transmitter_inst : i2s_transmitter
 		i2s_d_o => i2s_D_o
 	);
 
-i2sMck <= i2s_Mck_o;
-i2sSck <= i2s_Sck_o;
-i2sLr <= i2s_Lr_o;
-i2sD <= i2s_D_o;
+I2S_MCK <= i2s_Mck_o;
+I2S_SCK <= i2s_Sck_o;
+I2S_LR <= i2s_Lr_o;
+I2S_D <= i2s_D_o;
 
 --dac_l_s <= ('0' & dac_l & "00000");
 --dac_r_s <= ('0' & dac_r & "00000");
@@ -392,8 +402,8 @@ guest: COMPONENT  NES_mist
                 --AUDIO
 		AUDIO_L => sigma_l,
 		AUDIO_R => sigma_r,
-		     DAC_L   => dac_l,
-                     DAC_R   => dac_r
+		DAC_L   => dac_l,
+                DAC_R   => dac_r
 
 );
 
@@ -434,7 +444,12 @@ controller : entity work.substitute_mcu
 		ps2m_clk_out => ps2_mouse_clk_out,
 		ps2m_dat_out => ps2_mouse_dat_out,
 
+		-- Buttons
 		buttons => (0=>KEY(0),1=>KEY(1),others=>'1'),
+
+		-- Joysticks
+		joy1 => joya,
+		joy2 => joyb,
 
 		-- UART
 		rxd => rs232_rxd,

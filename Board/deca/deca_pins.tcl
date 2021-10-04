@@ -71,7 +71,7 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 # Mouse - (P9:10,9)   (Atlas: pmod 10 mclk VT, 9 mdat GY / 1x14 right (6p) 3v3 p1, GND p4)
 #============================================================
 set_location_assignment PIN_AA2 -to PS2_MOUSE_CLK
-set_location_assignment PIN_U6 -to PS2_MOUSE_DAT
+set_location_assignment PIN_U6  -to PS2_MOUSE_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 #(10k resistor)set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
@@ -88,10 +88,10 @@ set_location_assignment PIN_H4 -to EAR
 #============================================================
 # UDA 1334A - #NOT USED W18 P8:3, BCLK Y18 P8:4,  WSEL Y19 P8:5, DIN AA17 P8:6
 #============================================================
-#set_location_assignment PIN_W18 -to i2sMck
-#set_location_assignment PIN_Y18 -to i2sSck
-#set_location_assignment PIN_Y19 -to i2sLr
-#set_location_assignment PIN_AA17 -to i2sD
+#set_location_assignment PIN_W18 -to I2S_MCK
+#set_location_assignment PIN_Y18 -to I2S_SCK
+#set_location_assignment PIN_Y19 -to I2S_LR
+#set_location_assignment PIN_AA17 -to I2S_D
 
 #============================================================
 # UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
@@ -103,47 +103,47 @@ set_location_assignment PIN_W18 -to UART_TXD
 #============================================================
 # JOYSTICK 
 #============================================================
-set_location_assignment PIN_J4 -to joy1_p9_i
-set_location_assignment PIN_H3 -to joy1_p6_i
-set_location_assignment PIN_J8 -to joy1_up_i
-set_location_assignment PIN_J9 -to joy1_down_i
-set_location_assignment PIN_F4 -to joy1_left_i
-set_location_assignment PIN_F5 -to joy1_right_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_p9_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_p6_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_up_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_down_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_left_i
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joy1_right_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_p9_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_p6_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_up_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_down_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_left_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to joy1_right_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_up_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_down_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_left_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_p6_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_p9_i
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joy1_right_i
+set_location_assignment PIN_J4 -to JOY1_B2_P9
+set_location_assignment PIN_H3 -to JOY1_B1_P6
+set_location_assignment PIN_J8 -to JOY1_UP
+set_location_assignment PIN_J9 -to JOY1_DOWN
+set_location_assignment PIN_F4 -to JOY1_LEFT
+set_location_assignment PIN_F5 -to JOY1_RIGHT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B2_P9
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B1_P6
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_UP
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_DOWN
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_LEFT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_RIGHT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B2_P9
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B1_P6
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_UP
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_DOWN
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_LEFT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_RIGHT
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_UP
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_DOWN
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_LEFT
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_B1_P6
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_B2_P9
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_RIGHT
 # joystick select pin 
-set_location_assignment PIN_K5 -to joyX_p7_o
-set_instance_assignment -name IO_STANDARD "2.5 V" -to joyX_p7_o
-set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to joyX_p7_o
+set_location_assignment PIN_K5 -to JOYX_SEL_O
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOYX_SEL_O
+set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 
 
 #============================================================
 # Audio CODEC TLV320AIC3254
 #============================================================
-set_location_assignment PIN_R14 -to i2sSck
-set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sSck
-set_location_assignment PIN_P15 -to i2sD
-set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sD
+set_location_assignment PIN_R14 -to I2S_SCK
+set_instance_assignment -name IO_STANDARD "1.5 V" -to I2S_SCK
+set_location_assignment PIN_P15 -to I2S_D
+set_instance_assignment -name IO_STANDARD "1.5 V" -to I2S_D
 set_location_assignment PIN_M22 -to AUDIO_GPIO_MFP5
 set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_GPIO_MFP5
-set_location_assignment PIN_P14 -to i2sMck
-set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sMck
+set_location_assignment PIN_P14 -to I2S_MCK
+set_instance_assignment -name IO_STANDARD "1.5 V" -to I2S_MCK
 set_location_assignment PIN_N21 -to AUDIO_MISO_MFP4
 set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_MISO_MFP4
 set_location_assignment PIN_M21 -to AUDIO_RESET_n
@@ -156,8 +156,8 @@ set_location_assignment PIN_P21 -to AUDIO_SDA_MOSI
 set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SDA_MOSI
 set_location_assignment PIN_N22 -to AUDIO_SPI_SELECT
 set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_SPI_SELECT
-set_location_assignment PIN_R15 -to i2sLr
-set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sLr
+set_location_assignment PIN_R15 -to I2S_LR
+set_instance_assignment -name IO_STANDARD "1.5 V" -to I2S_LR
 #alternative ear
 #set_location_assignment PIN_P18 -to AUDIO_DOUT_MFP2
 #set_instance_assignment -name IO_STANDARD "1.5 V" -to AUDIO_DOUT_MFP2
@@ -166,21 +166,21 @@ set_instance_assignment -name IO_STANDARD "1.5 V" -to i2sLr
 #============================================================
 # MicroSD Card
 #============================================================
-set_location_assignment PIN_T20 -to sd_sclk_o
-set_instance_assignment -name IO_STANDARD "1.5 V" -to sd_sclk_o
-set_location_assignment PIN_T21 -to sd_mosi_o
-set_instance_assignment -name IO_STANDARD "1.5 V" -to sd_mosi_o
+set_location_assignment PIN_T20 -to SD_SCLK_O
+set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_SCLK_O
+set_location_assignment PIN_T21 -to SD_MOSI_O
+set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_MOSI_O
 set_location_assignment PIN_U22 -to SD_CMD_DIR
 set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_CMD_DIR
 set_location_assignment PIN_T22 -to SD_D0_DIR
 set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_D0_DIR
 set_location_assignment PIN_U21 -to SD_D123_DIR
 set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_D123_DIR
-set_location_assignment PIN_R18 -to sd_miso_i
-set_instance_assignment -name IO_STANDARD "1.5 V" -to sd_miso_i
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to sd_miso_i
-set_location_assignment PIN_R20 -to sd_cs_n_o
-set_instance_assignment -name IO_STANDARD "1.5 V" -to sd_cs_n_o
+set_location_assignment PIN_R18 -to SD_MISO_I
+set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_MISO_I
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to SD_MISO_I
+set_location_assignment PIN_R20 -to SD_CS_N_O
+set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_CS_N_O
 set_location_assignment PIN_P13 -to SD_SEL
 #set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_SEL
 #set_location_assignment PIN_T18 -to SD_DAT1		## NC	## SD_DAT[1]
