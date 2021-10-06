@@ -58,7 +58,6 @@ entity uareloaded_top is
 END entity;
 
 architecture RTL of uareloaded_top is
-   constant reset_cycles : integer := 131071;
 	
 -- System clocks
 

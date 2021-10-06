@@ -61,7 +61,6 @@ entity neptuno_top is
 END entity;
 
 architecture RTL of neptuno_top is
-   constant reset_cycles : integer := 131071;
 	
 -- System clocks
 

@@ -20,8 +20,8 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
-
 #set_global_assignment -name SEED 3
+set_global_assignment -name GENERATE_SVF_FILE ON
 
 # disable config pin so bank8 can use 1.2V 
 set_global_assignment -name AUTO_RESTART_CONFIGURATION OFF

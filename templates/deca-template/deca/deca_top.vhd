@@ -87,7 +87,6 @@ entity deca_top is
 END entity;
 
 architecture RTL of deca_top is
-   constant reset_cycles : integer := 131071;
 	
 -- System clocks
 	signal locked : std_logic;
