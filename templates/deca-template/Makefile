@@ -3,8 +3,7 @@ SUBMODULES=$(DEMISTIFYPATH)/EightThirtyTwo/Makefile
 PROJECT=NES
 PROJECTPATH=./
 PROJECTTOROOT=../
-BOARD=deca
-#BOARD=deca neptuno sidi uareloaded mist
+BOARD=
 ROMSIZE1=8192
 ROMSIZE2=8192
 

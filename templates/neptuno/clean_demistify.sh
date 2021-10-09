@@ -1,6 +1,6 @@
 #demistify
 find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
-rm -f gameboy_neptuno*
+rm -f gameboy_*
 #quartus
 find output_files/  -type f -not -name '*.rbf' -delete
 find software/spl_bsp/ -type f -not -name '*.bin' -delete

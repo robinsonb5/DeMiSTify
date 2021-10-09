@@ -1,6 +1,6 @@
 #demistify
 find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
-rm -f gameboy_deca*
+rm -f gameboy_*
 #quartus
 find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" \) -delete
 #find output_files/  -type f -not -name '*.sof' -delete
