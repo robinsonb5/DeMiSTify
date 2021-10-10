@@ -255,6 +255,10 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
     DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
 	int bm;
 
+	/* Reject null or empty filenames, since an empty filename will match a file with no long filename. */
+	if(!name || !name[0])
+		return(0);
+
 	file->size=0;
 	while(p=NextDirEntry(p==NULL,0))
 	{
