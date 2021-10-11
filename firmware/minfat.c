@@ -686,7 +686,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 int FindByCluster(uint32_t parent, uint32_t cluster)
 {
     DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
-
+	ChangeDirectoryByCluster(parent);
 	while(p=NextDirEntry(p==NULL,0))
 	{
 		uint32_t c;
@@ -731,7 +731,6 @@ int ValidateDirectory(uint32_t directory)
                 if (strncmp((const char*)pEntry->Name, "..         ", sizeof(pEntry->Name)) == 0)
                 {
 					unsigned long parent=ConvBB_LE(pEntry->StartCluster) + (fat32 ? (ConvBB_LE(pEntry->HighCluster) & 0x0FFF) << 16 : 0);
-//                    printf("Parent directory is %ld \r",parent);
 
 					/* Safer, but requires more resources */
                     return(ValidateDirectory(parent) && FindByCluster(parent,directory));
