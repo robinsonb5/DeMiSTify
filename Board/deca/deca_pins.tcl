@@ -47,17 +47,23 @@ set_instance_assignment -name IO_STANDARD "1.2 V" -to LED[7]
 #============================================================
 # VGA
 #============================================================
-set_location_assignment PIN_V10 -to VGA_B[0]
-set_location_assignment PIN_AA6 -to VGA_B[1]
-set_location_assignment PIN_AB6 -to VGA_B[2]
-set_location_assignment PIN_AB7 -to VGA_G[0]
-set_location_assignment PIN_R11 -to VGA_G[1]
-set_location_assignment PIN_V7  -to VGA_G[2]
-set_location_assignment PIN_U7  -to VGA_R[0]
-set_location_assignment PIN_Y7  -to VGA_R[1]
-set_location_assignment PIN_AA7 -to VGA_R[2]
+#Pins for 333 addon like Waveshare ps2 vga 
+#connect MSB from addon to MSB of location assign. (eg VGAR2 from waveshare to VGA_R[3])
+set_location_assignment PIN_AA7 -to VGA_R[3]
+set_location_assignment PIN_Y7  -to VGA_R[2]
+set_location_assignment PIN_U7  -to VGA_R[1]
+set_location_assignment PIN_V7  -to VGA_G[3]
+set_location_assignment PIN_R11 -to VGA_G[2]
+set_location_assignment PIN_AB7 -to VGA_G[1]
+set_location_assignment PIN_AB6 -to VGA_B[3]
+set_location_assignment PIN_AA6 -to VGA_B[2]
+set_location_assignment PIN_V10 -to VGA_B[1]
 set_location_assignment PIN_W7  -to VGA_HS
 set_location_assignment PIN_W6  -to VGA_VS
+#Additional pins for a 444 addon like Digilent Pmod vga 
+set_location_assignment PIN_V8  -to VGA_R[0]
+set_location_assignment PIN_AB8 -to VGA_G[0]
+set_location_assignment PIN_W8  -to VGA_B[0]
 
 #============================================================
 # Keyboard (P9:11,12 GPIO1_D0/1) 
@@ -136,6 +142,10 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 #============================================================
 # Audio CODEC TLV320AIC3254
 #============================================================
+# PIN_R14  AUDIO_BCLK      i2sSck
+# PIN_P15  AUDIO_DIN_MFP1  i2sD
+# PIN_P14  AUDIO_MCLK      i2sMck
+# PIN_R15  AUDIO_WCLK      i2sLr
 set_location_assignment PIN_R14 -to I2S_SCK
 set_instance_assignment -name IO_STANDARD "1.5 V" -to I2S_SCK
 set_location_assignment PIN_P15 -to I2S_D
@@ -310,9 +320,8 @@ set_location_assignment PIN_W12 -to DRAM_CAS_N
 set_location_assignment PIN_W11 -to DRAM_RAS_N
 set_location_assignment PIN_AB10 -to DRAM_WE_N
 set_location_assignment PIN_V12 -to DRAM_CS_N
-# CKE not connected on XS 2.2/2.4.
+#DQMH/L & CKE not connected in Mister new SDRAM modules
 set_location_assignment PIN_AA16 -to DRAM_CKE
-#DQMH/L not used in Mister 32 MB module
 set_location_assignment PIN_Y11 -to DRAM_LDQM
 set_location_assignment PIN_W13 -to DRAM_UDQM
 
