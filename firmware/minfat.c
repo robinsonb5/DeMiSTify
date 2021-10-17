@@ -98,6 +98,8 @@ char longfilename[261];
 #define PDBG(x,y)
 #endif
 
+const char* FAT32_ID="FAT32   ";
+const char* FAT16_ID="FAT16   ";
 
 // FindDrive() checks if a card is present and contains FAT formatted primary partition
 unsigned int FindDrive(void)
@@ -123,9 +125,9 @@ unsigned int FindDrive(void)
 	partitioncount=1;
 
 	// If we can identify a filesystem on block 0 we don't look for partitions
-    if (strncmp((const char*)&sector_buffer[0x36], "FAT16   ",8)==0) // check for FAT16
+    if (strncmp((const char*)&sector_buffer[0x36], FAT16_ID,8)==0) // check for FAT16
 		partitioncount=0;
-    if (strncmp((const char*)&sector_buffer[0x52], "FAT32   ",8)==0) // check for FAT32
+    if (strncmp((const char*)&sector_buffer[0x52], FAT32_ID,8)==0) // check for FAT32
 		partitioncount=0;
 
 	PDBG("Partitioncount %d\n",partitioncount);
@@ -153,9 +155,9 @@ unsigned int FindDrive(void)
 
 	STATUS("Seeking FS...");
 
-    if (strncmp(sector_buffer+0x52, "FAT32   ",8)==0) // check for FAT16
+    if (strncmp(sector_buffer+0x52, FAT32_ID,8)==0) // check for FAT16
 		fat32=1;
-	else if (strncmp(sector_buffer+0x36, "FAT16   ",8)!=0) // check for FAT32
+	else if (strncmp(sector_buffer+0x36, FAT16_ID,8)!=0) // check for FAT32
 	{
         STATUS("Unsupported partition type!\r");
 		return(0);
@@ -186,7 +188,7 @@ unsigned int FindDrive(void)
 
     if (fat32)
     {
-        if (strncmp((const char*)&sector_buffer[0x52], "FAT32   ",8) != 0) // check file system type
+        if (strncmp((const char*)&sector_buffer[0x52], FAT32_ID,8) != 0) // check file system type
             return(0);
 
         dir_entries = cluster_size << 4; // total number of dir entries (16 entries per sector)

@@ -761,7 +761,8 @@ __weak char *autoboot()
 {
 	char *result=0;
 	romtype=0;
-	LoadROM(bootrom_name);
+	if(!LoadROM(bootrom_name))
+		result="ROM loading failed";
 	return(result);
 }
 
@@ -776,10 +777,14 @@ __weak int main(int argc,char **argv)
 
 	filename[0]=0;
 
+	menu[7].label="Booting...";
+	Menu_Set(menu);
+	Menu_Draw(7);
+	Menu_ShowHide(1);
+
 	SPI(0xff);
-	puts("SD Init..");
 	if(havesd=sd_init() && FindDrive())
-		puts("OK");
+		puts("SD OK");
 
 	menuindex=0;
 	menupage=0;
@@ -790,8 +795,9 @@ __weak int main(int argc,char **argv)
 	{
 		menu[7].label=err;
 		Menu_Draw(7);
-		Menu_ShowHide(1);
 	}
+	else
+		Menu_ShowHide(0);
 
 	EnableInterrupts();
 

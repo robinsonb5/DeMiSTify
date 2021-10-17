@@ -30,6 +30,9 @@
 
 #include "gamepadkeys.h"
 
+/* Not currently using hotkeys */
+#undef MENU_HOTKEYS
+
 #define OSD_ROWS OSDNLINE
 #define OSD_COLS (OSDLINELEN/8)
 
@@ -40,7 +43,10 @@ static int menu_visible=0;
 char menu_longpress;
 
 static int currentrow;
+
+#ifdef MENU_HOTKEYS
 static struct hotkey *hotkeys;
+#endif
 
 void Menu_Draw(int currentrow)
 {
@@ -60,16 +66,18 @@ void Menu_Draw(int currentrow)
 void Menu_Set(struct menu_entry *head)
 {
 	menu=head;
-//	Menu_Draw(currentrow);
 	currentrow=menurows-1;
 	Menu_Draw(currentrow);
 }
 
 
+#ifdef MENU_HOTKEYS
 void Menu_SetHotKeys(struct hotkey *head)
 {
 	hotkeys=head;
 }
+#endif
+
 
 void Menu_ShowHide(int visible)
 {
@@ -87,20 +95,19 @@ int Menu_Visible()
 
 /* Analogue joystick support - left with weak linkage so it can be overriden */
 
-__weak int analoguesensitivity=0x10;
-__weak void Menu_JoystickToAnalogue(int *ana,int joy)
+__weak void Menu_JoystickToAnalogue(int *ana,int joy, int sensitivity)
 {
 	int a=*ana;
 	int min=-0x7f00,max=0x7f00;
 	if(joy&2)
 	{
-		max=-analoguesensitivity<<8;
-		a-=analoguesensitivity;
+		max=-sensitivity<<8;
+		a-=sensitivity;
 	}
 	else if(joy&1)
 	{
-		min=analoguesensitivity<<8;
-		a+=analoguesensitivity;
+		min=sensitivity<<8;
+		a+=sensitivity;
 	}
 	else
 		a=(a*15)>>4;
@@ -157,7 +164,7 @@ void SetScandouble(int sd)
 
 
 int scandouble=0;
-int prevbuttons=0;
+//int prevbuttons=0;
 unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
 #define SCANDOUBLE_TIMEOUT 1000
@@ -166,19 +173,24 @@ void Menu_Run()
 {
 	int i;
 	int upd=0;
+	int press=0;
 	int buttons=HW_JOY(REG_JOY_EXTRA);
 	int menu_timestamp;
 	struct menu_entry *m=menu;
+#ifdef MENU_HOTKEYS
 	struct hotkey *hk=hotkeys;
+#endif
 	int joy=HW_JOY(REG_JOY);
 
 	HandlePS2RawCodes(menu_visible);
 
-	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
-	{
+//	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
+//	if((TestKey(KEY_F12)&2) || (buttons & JOY_BUTTON_MENU))
+//	{
 		menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
 		while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
 		{
+			press=1;
 			buttons=HW_JOY(REG_JOY_EXTRA);
 			HandlePS2RawCodes(menu_visible);
 			if(CheckTimer(menu_timestamp))
@@ -187,13 +199,16 @@ void Menu_Run()
 				menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
 			}
 		}
-		menu_visible^=1;
-		OsdShowHide(menu_visible);
-		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
-		//		printf("Menu visible %d\n",menu_visible);
-		upd=1;
-	}
-	prevbuttons=buttons;
+		if(press)
+		{
+			menu_visible^=1;
+			OsdShowHide(menu_visible);
+			TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
+			//		printf("Menu visible %d\n",menu_visible);
+			upd=1;
+		}
+//	}
+//	prevbuttons=buttons;
 
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
@@ -220,11 +235,10 @@ void Menu_Run()
 
 	if(joy)
 	{
-		unsigned int ms=HW_TIMER(REG_MILLISECONDS);
-		if((ms-joy_timestamp)<JOY_REPEATDELAY)
+		if(!CheckTimer(joy_timestamp))
 			joy=0;
 		else
-			joy_timestamp=ms;
+			joy_timestamp=GetTimer(JOY_REPEATDELAY);
 	}
 	else
 		joy_timestamp=0;
@@ -266,29 +280,29 @@ void Menu_Run()
 	}
 
 	// Find the currently highlighted menu item
-	if((joy&0xf0) || (TestKey(KEY_ENTER)&2))
+	press=0;
+	menu_longpress=0;
+	menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
+	while(!menu_longpress && ((joy&0xf0) || TestKey(KEY_ENTER)))
 	{
-		menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-		menu_longpress=0;
-		while(!menu_longpress && ((joy&0xf0) || TestKey(KEY_ENTER)))
-		{
-			joy=HW_JOY(REG_JOY);
-			joy=(joy&0xff)|(joy>>8); // Merge ports;
-			HandlePS2RawCodes(menu_visible);
-			if(CheckTimer(menu_timestamp))
-				menu_longpress=1;
-		}
-
-		if((m+currentrow)->action)
-			MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
+		press=1;
+		joy=HW_JOY(REG_JOY);
+		joy=(joy&0xff)|(joy>>8); // Merge ports;
+		HandlePS2RawCodes(menu_visible);
+		if(CheckTimer(menu_timestamp))
+			menu_longpress=1;
 	}
+	if(press && (m+currentrow)->action)
+		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 
+#ifdef MENU_HOTKEYS
 	while(hk && hk->key)
 	{
 		if(TestKey(hk->key)&1)	// Currently pressed?
 			hk->callback(currentrow);
 		++hk;
 	}
+#endif
 
 	if(upd)
 		Menu_Draw(currentrow);
