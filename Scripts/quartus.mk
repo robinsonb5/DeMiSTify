@@ -8,16 +8,17 @@ SCRIPTSDIR=$(DEMISTIFYPATH)/Scripts
 
 SOF=$(PROJECT)_$(BOARD).sof
 QSF=$(PROJECT)_$(BOARD).qsf
+FILES=$(PROJECT)_$(BOARD)_files.tcl
 
 all: init compile
 
 .PHONY init:
 init: $(QSF)
 
-$(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST) $(PROJECTTOROOT)/project_defs.tcl
+$(FILES): $(MANIFEST) $(PROJECTTOROOT)/project_defs.tcl
 	@bash $(SCRIPTSDIR)/expandtemplate_quartus.sh $(PROJECTTOROOT) $+ >$@
 
-%.qsf: $(PROJECT)_$(BOARD)_files.tcl $(PROJECT)_$(BOARD)_files.tcl
+%.qsf: $(FILES)
 	@echo -n "Making project file for $(PROJECT) on $(BOARD)..."
 	@$(TOOLPATH)/quartus_sh >init.log -t $(SCRIPTSDIR)/mkproject.tcl -project $(PROJECT) -board $(BOARD) -rootpath $(PROJECTTOROOT) && echo "\033[32mSuccess\033[0m" || grep Error init.log
 
@@ -29,5 +30,7 @@ compile: $(QSF)
 clean:
 	-rm $(SOF)
 	-rm $(QSF)
+	-rm $(FILES)
+
 
 

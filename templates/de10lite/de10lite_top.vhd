@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.demistify_config_pkg.all;
+
 -- -----------------------------------------------------------------------
 
 entity de10lite_top is
@@ -173,22 +176,14 @@ joyb<=(others=>'1');
 joyc<=(others=>'1');
 joyd<=(others=>'1');
 
---process(clk_sys)
---begin
---	if rising_edge(clk_sys) then
-		VGA_R<=vga_red(7 downto 4);
-		VGA_G<=vga_green(7 downto 4);
-		VGA_B<=vga_blue(7 downto 4);
-		VGA_HS<=vga_hsync;
-		VGA_VS<=vga_vsync;
---	end if;
---end process;
+VGA_R<=vga_red(7 downto 4);
+VGA_G<=vga_green(7 downto 4);
+VGA_B<=vga_blue(7 downto 4);
+VGA_HS<=vga_hsync;
+VGA_VS<=vga_vsync;
 
 
 -- Generate clocks
-
---assign DRAM clock
---asign DRAM clock enable
 
 guest: COMPONENT guest_top
 	PORT map
@@ -275,18 +270,6 @@ controller : entity work.substitute_mcu
 		txd => rs232_txd,
 		intercept => intercept
 );
-
-
---pulseleds : COMPONENT throbber
---PORT map
---(
---	clk => MAX10_CLK1_50,
---	reset_n => KEY(0),
---	q => act_led
---);
---
---LEDR(0)<=act_led and not spi_ss4;
---LEDR(1)<=(not act_led) and not spi_ss4;
 
 end rtl;
 

@@ -4,6 +4,10 @@ project.qip
 # The controller module
 DeMiSTify/controller/controller.qip
 
+# VHDL definitions for the core, including
+# a component declaration for the guest core
+demistify_config_pkg.vhd
+
 # Either:  firmware with customisations
 firmware/controller_rom1_byte.vhd
 firmware/controller_rom2_byte.vhd
