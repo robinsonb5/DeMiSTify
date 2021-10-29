@@ -325,6 +325,12 @@ set_location_assignment PIN_AA16 -to DRAM_CKE
 set_location_assignment PIN_Y11 -to DRAM_LDQM
 set_location_assignment PIN_W13 -to DRAM_UDQM
 
+#for testing 3 pins sdram modules
+#set_location_assignment PIN_W18 -to DRAM_CKE
+#set_location_assignment PIN_Y19 -to DRAM_LDQM
+#set_location_assignment PIN_AA17 -to DRAM_UDQM
+
+
 # SDRAM set_instance_assignment
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to DRAM_ADDR[12]
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_ADDR[11]
