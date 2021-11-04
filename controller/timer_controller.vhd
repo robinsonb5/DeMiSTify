@@ -52,7 +52,7 @@ architecture rtl of timer_controller is
 begin
 
 	-- Prescaled tick
-	process(clk)
+	process(clk,reset)
 	begin
 		if reset='0' then
 			prescale_counter<=(others=>'0');
