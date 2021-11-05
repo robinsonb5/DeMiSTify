@@ -257,11 +257,15 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
     DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
 	int bm;
 
+	if(!file)
+		return(0);
+
+	file->size=0;
+
 	/* Reject null or empty filenames, since an empty filename will match a file with no long filename. */
 	if(!name || !name[0])
 		return(0);
 
-	file->size=0;
 	while(p=NextDirEntry(p==NULL,0))
 	{
 #ifndef DISABLE_LONG_FILENAMES
@@ -301,6 +305,8 @@ void FileNextSector(fileTYPE *file,int count)
 {
     uint32_t sb;
     uint16_t i;
+	if(!file || !file->size)
+		return;
 	count+=file->sector;
 	while((file->sector ^ count)&~cluster_mask)
 	{
@@ -314,6 +320,13 @@ void FileNextSector(fileTYPE *file,int count)
 unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer)
 {
     uint32_t sb;
+
+	putchar('r');
+
+	if(!file || !file->size)
+		return(0);
+
+	putchar('R');
 
     sb = data_start;                         // start of data in partition
     sb += cluster_size * (file->cluster-2);  // cluster offset
@@ -330,6 +343,9 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
 {
     uint32_t sb;
 
+	if(!file || !file->size)
+		return(0);
+
     sb = data_start;                         // start of data in partition
     sb += cluster_size * (file->cluster-2);  // cluster offset
     sb += file->sector & cluster_mask;      // sector offset in cluster
@@ -345,6 +361,8 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
 void DumpBookmarks(fileTYPE *file)
 {
 	int idx;
+	if(!file || !file->size)
+		return;
 	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
 	{
 		printf("(Bookmark %d, %x, %x)\n",idx,file->bookmarks[idx].sector,file->bookmarks[idx].cluster);
@@ -398,8 +416,16 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	uint32_t p=pos>>9;
 	uint32_t pm=p&~cluster_mask;
 
-	uint32_t currentsector=file->sector&~cluster_mask;
-	uint32_t cluster=file->cluster;
+	uint32_t currentsector;
+	uint32_t cluster;
+
+	if(!file || !file->size)
+		return;
+
+	putchar('S');
+
+	currentsector=file->sector&~cluster_mask;
+	cluster=file->cluster;
 
 	if(pm==currentsector)	// Is the new position within the same cluster?
 	{
@@ -446,6 +472,9 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 void FileSeek(fileTYPE *file, uint32_t pos)
 {
 	uint32_t p=pos;
+	if(!file || !file->size)
+		return;
+	putchar('S');
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
 	if(p<(file->cursor&(~cluster_mask)))
 	{
@@ -466,6 +495,8 @@ unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 	unsigned char *p;
 	int c;
 	uint32_t curs;
+	if(!file || !file->size)
+		return(0);
 	if(count+file->cursor>file->size)
 		count=file->size-file->cursor;
 	if(count<=0)
@@ -505,8 +536,10 @@ unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 }
 
 
-char FileGetCh(fileTYPE *file)
+int FileGetCh(fileTYPE *file)
 {
+	if(!file || !file->size)
+		return -1;
 	if (!(file->cursor&0x1ff)) {
 		// reload buffer
 		if(file->cursor)
@@ -514,7 +547,7 @@ char FileGetCh(fileTYPE *file)
 		FileReadSector(file, sector_buffer);
 	}
 	if (file->cursor >= file->size)
-		return 0;
+		return -1;
 	else
 		return (sector_buffer[(file->cursor++)&0x1ff]);
 }

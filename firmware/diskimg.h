@@ -11,7 +11,6 @@
 struct diskimage
 {
 	fileTYPE file;
-	int valid;
 };
 
 extern struct diskimage diskimg[CONFIG_DISKIMG_UNITS];
