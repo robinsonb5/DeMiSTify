@@ -321,12 +321,8 @@ unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer)
 {
     uint32_t sb;
 
-	putchar('r');
-
 	if(!file || !file->size)
 		return(0);
-
-	putchar('R');
 
     sb = data_start;                         // start of data in partition
     sb += cluster_size * (file->cluster-2);  // cluster offset
@@ -422,8 +418,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 
-	putchar('S');
-
 	currentsector=file->sector&~cluster_mask;
 	cluster=file->cluster;
 
@@ -474,7 +468,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	uint32_t p=pos;
 	if(!file || !file->size)
 		return;
-	putchar('S');
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
 	if(p<(file->cursor&(~cluster_mask)))
 	{

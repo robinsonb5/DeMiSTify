@@ -89,10 +89,6 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 		return;
 	FileOpen(&diskimg[idx].file,name);
 	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
-	if(imgsize)
-		putchar('Y');
-	else
-		putchar('Z');
 	// send mounted image size first then notify about mounting
 	EnableIO();
 	SPI(UIO_SET_SDINFO);
