@@ -12,8 +12,7 @@ Original module sound errors and signed/unsigned troubles have been arranged tha
 
 * HDMI video output (special resolution will not work on all LCD monitors)
 * VGA 444 video output is available through GPIO (see pinout below). 
-  * Tested with PS2 & R2R VGA adapter (333)  https://www.waveshare.com/vga-ps2-board.htm
-* Line out (3.5 jack green connector) and HDMI audio output
+* Audio Line out (3.5 jack green connector) and HDMI audio output
 * PWM audio is available through GPIO (see pinout below)
 * Joystick available through GPIO  (see pinout below).  **Joystick power pin must be 2.5 V**
   * **DANGER: Connecting power pin above 2.6 V may damage the FPGA**
