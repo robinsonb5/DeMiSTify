@@ -13,104 +13,104 @@ use work.demistify_config_pkg.all;
 -- -----------------------------------------------------------------------
 
 entity chameleon64v2_top is
-	port (
+port (
 -- Clocks
-		clk50m : in std_logic;
-		phi2_n : in std_logic;
-		dotclk_n : in std_logic;
+	clk50m : in std_logic;
+	phi2_n : in std_logic;
+	dotclk_n : in std_logic;
 
 -- Buttons
-		usart_cts : in std_logic;  -- Left button
-		freeze_btn : in std_logic; -- Middle button
-		reset_btn : in std_logic;  -- Right
+	usart_cts : in std_logic;  -- Left button
+	freeze_btn : in std_logic; -- Middle button
+	reset_btn : in std_logic;  -- Right
 
 -- PS/2, IEC, LEDs
-		iec_present : in std_logic;
+	iec_present : in std_logic;
 
-		ps2iec_sel : out std_logic;
-		ps2iec : in unsigned(3 downto 0);
+	ps2iec_sel : out std_logic;
+	ps2iec : in unsigned(3 downto 0);
 
-		ser_out_clk : out std_logic;
-		ser_out_dat : out std_logic;
-		ser_out_rclk : out std_logic;
+	ser_out_clk : out std_logic;
+	ser_out_dat : out std_logic;
+	ser_out_rclk : out std_logic;
 
-		iec_clk_out : out std_logic;
-		iec_srq_out : out std_logic;
-		iec_atn_out : out std_logic;
-		iec_dat_out : out std_logic;
+	iec_clk_out : out std_logic;
+	iec_srq_out : out std_logic;
+	iec_atn_out : out std_logic;
+	iec_dat_out : out std_logic;
 
 -- SPI, Flash and SD-Card
-		flash_cs : out std_logic;
-		rtc_cs : out std_logic;
-		mmc_cs : out std_logic;
-		mmc_cd : in std_logic;
-		mmc_wp : in std_logic;
-		spi_clk : out std_logic;
-		spi_miso : in std_logic;
-		spi_mosi : out std_logic;
+	flash_cs : out std_logic;
+	rtc_cs : out std_logic;
+	mmc_cs : out std_logic;
+	mmc_cd : in std_logic;
+	mmc_wp : in std_logic;
+	spi_clk : out std_logic;
+	spi_miso : in std_logic;
+	spi_mosi : out std_logic;
 
 -- Clock port
-		clock_ior : out std_logic;
-		clock_iow : out std_logic;
+	clock_ior : out std_logic;
+	clock_iow : out std_logic;
 
 -- C64 bus
-		reset_in : in std_logic;
+	reset_in : in std_logic;
 
-		ioef : in std_logic;
-		romlh : in std_logic;
+	ioef : in std_logic;
+	romlh : in std_logic;
 
-		dma_out : out std_logic;
-		game_out : out std_logic;
-		exrom_out : out std_logic;
+	dma_out : out std_logic;
+	game_out : out std_logic;
+	exrom_out : out std_logic;
 
-		irq_in : in std_logic;
-		irq_out : out std_logic;
-		nmi_in : in std_logic;
-		nmi_out : out std_logic;
-		ba_in : in std_logic;
-		rw_in : in std_logic;
-		rw_out : out std_logic;
+	irq_in : in std_logic;
+	irq_out : out std_logic;
+	nmi_in : in std_logic;
+	nmi_out : out std_logic;
+	ba_in : in std_logic;
+	rw_in : in std_logic;
+	rw_out : out std_logic;
 
-		sa_dir : out std_logic;
-		sa_oe : out std_logic;
-		sa15_out : out std_logic;
-		low_a : inout unsigned(15 downto 0);
+	sa_dir : out std_logic;
+	sa_oe : out std_logic;
+	sa15_out : out std_logic;
+	low_a : inout unsigned(15 downto 0);
 
-		sd_dir : out std_logic;
-		sd_oe : out std_logic;
-		low_d : inout unsigned(7 downto 0);
+	sd_dir : out std_logic;
+	sd_oe : out std_logic;
+	low_d : inout unsigned(7 downto 0);
 
 -- SDRAM
-		ram_clk : out std_logic;
-		ram_ldqm : out std_logic;
-		ram_udqm : out std_logic;
-		ram_ras : out std_logic;
-		ram_cas : out std_logic;
-		ram_we : out std_logic;
-		ram_ba : out std_logic_vector(1 downto 0);
-		ram_a : out std_logic_vector(12 downto 0);
-		ram_d : inout std_logic_vector(15 downto 0);
+	ram_clk : out std_logic;
+	ram_ldqm : out std_logic;
+	ram_udqm : out std_logic;
+	ram_ras : out std_logic;
+	ram_cas : out std_logic;
+	ram_we : out std_logic;
+	ram_ba : out std_logic_vector(1 downto 0);
+	ram_a : out std_logic_vector(12 downto 0);
+	ram_d : inout std_logic_vector(15 downto 0);
 
 -- IR eye
-		ir_data : in std_logic;
+	ir_data : in std_logic;
 
 -- USB micro
-		usart_clk : in std_logic;
-		usart_rts : in std_logic;
-		usart_rx : out std_logic;
-		usart_tx : in std_logic;
+	usart_clk : in std_logic;
+	usart_rts : in std_logic;
+	usart_rx : out std_logic;
+	usart_tx : in std_logic;
 
 -- Video output
-		red : out unsigned(4 downto 0);
-		grn : out unsigned(4 downto 0);
-		blu : out unsigned(4 downto 0);
-		hsync_n : out std_logic;
-		vsync_n : out std_logic;
+	red : out unsigned(4 downto 0);
+	grn : out unsigned(4 downto 0);
+	blu : out unsigned(4 downto 0);
+	hsync_n : out std_logic;
+	vsync_n : out std_logic;
 
 -- Audio output
-		sigma_l : out std_logic;
-		sigma_r : out std_logic
-	);
+	sigma_l : out std_logic;
+	sigma_r : out std_logic
+);
 end entity;
 
 
@@ -123,7 +123,6 @@ architecture rtl of chameleon64v2_top is
 	signal pll_locked : std_logic;
 
 	signal ena_1mhz : std_logic;
-	signal ena_1khz : std_logic;
 	signal phi2 : std_logic;
 	
 -- Global signals
@@ -189,7 +188,7 @@ architecture rtl of chameleon64v2_top is
 	signal audio_r : std_logic_vector(15 downto 0);
 
 -- IO	
-	signal c64_keys : unsigned(63 downto 0);
+	signal c64_keys : unsigned(64 downto 0);
 	signal c64_restore_key_n : std_logic;
 	signal c64_nmi_n : std_logic;
 	signal c64_joy1 : unsigned(6 downto 0);
@@ -200,8 +199,12 @@ architecture rtl of chameleon64v2_top is
 	signal joy2 : unsigned(7 downto 0);
 	signal joy3 : unsigned(7 downto 0);
 	signal joy4 : unsigned(7 downto 0);
-	signal menu_button_n : std_logic;
 
+-- Debounced buttons
+	signal menu_button_n : std_logic;
+	signal freeze_button_n : std_logic;
+
+-- Amiga keyboard on docking station
 	signal amiga_reset_n : std_logic;
 	signal amiga_key : unsigned(7 downto 0);
 	signal amiga_key_stb : std_logic;
@@ -218,6 +221,16 @@ architecture rtl of chameleon64v2_top is
 
 	signal act_led : std_logic;
 	
+	signal iec_clk_in : std_logic;
+	signal iec_srq_in : std_logic;
+	signal iec_atn_in : std_logic;
+	signal iec_dat_in : std_logic;
+
+	-- Internal copies of the IEC signals since they need inverting.
+	signal iec_clk_s : std_logic;
+	signal iec_atn_s : std_logic;
+	signal iec_dat_s : std_logic;
+
 begin
 
 -- -----------------------------------------------------------------------
@@ -252,21 +265,14 @@ begin
 -- 1 Mhz and 1 Khz clocks
 -- -----------------------------------------------------------------------
 	my1Mhz : entity work.chameleon_1mhz
-		generic map (
-			clk_ticks_per_usec => 100
-		)
-		port map (
-			clk => clk_100,
-			ena_1mhz => ena_1mhz,
-			ena_1mhz_2 => open
-		);
-
-	my1Khz : entity work.chameleon_1khz
-		port map (
-			clk => clk_100,
-			ena_1mhz => ena_1mhz,
-			ena_1khz => ena_1khz
-		);
+	generic map (
+		clk_ticks_per_usec => 100
+	)
+	port map (
+		clk => clk_100,
+		ena_1mhz => ena_1mhz,
+		ena_1mhz_2 => open
+	);
 	
 -- -----------------------------------------------------------------------
 -- PS2IEC multiplexer
@@ -283,10 +289,10 @@ begin
 			ps2_keyboard_clk => ps2_keyboard_clk_in,
 			ps2_keyboard_dat => ps2_keyboard_dat_in,
 
-			iec_clk => open, -- iec_clk_in,
-			iec_srq => open, -- iec_srq_in,
-			iec_atn => open, -- iec_atn_in,
-			iec_dat => open  -- iec_dat_in
+			iec_clk => iec_clk_in,
+			iec_srq => iec_srq_in,
+			iec_atn => iec_atn_in,
+			iec_dat => iec_dat_in
 		);
 
 -- -----------------------------------------------------------------------
@@ -317,100 +323,104 @@ begin
 	chameleon2_io_blk : block
 	begin
 		chameleon2_io_inst : entity work.chameleon2_io
-			generic map (
-				enable_docking_station => true,
-				enable_cdtv_remote => false,
-				enable_c64_joykeyb => true,
-				enable_c64_4player => true
-			)
-			port map (
-				clk => clk_100,
-				ena_1mhz => ena_1mhz,
-				phi2_n => phi2_n,
-				dotclock_n => dotclk_n,
+		generic map (
+			enable_docking_station => true,
+			enable_cdtv_remote => false,
+			enable_c64_joykeyb => true,
+			enable_c64_4player => true
+		)
+		port map (
+			clk => clk_100,
+			ena_1mhz => ena_1mhz,
+			phi2_n => phi2_n,
+			dotclock_n => dotclk_n,
 
-				reset => not reset_n,
+			reset => not reset_n,
 
-				ir_data => '1',
-				ioef => ioef,
-				romlh => romlh,
+			ir_data => '1',
+			ioef => ioef,
+			romlh => romlh,
 
-				dma_out => dma_out,
-				game_out => game_out,
-				exrom_out => exrom_out,
+			dma_out => dma_out,
+			game_out => game_out,
+			exrom_out => exrom_out,
 
-				ba_in => ba_in,
---				rw_in => rw_in,
-				rw_out => rw_out,
+			ba_in => ba_in,
+--			rw_in => rw_in,
+			rw_out => rw_out,
 
-				sa_dir => sa_dir,
-				sa_oe => sa_oe,
-				sa15_out => sa15_out,
-				low_a => low_a,
+			sa_dir => sa_dir,
+			sa_oe => sa_oe,
+			sa15_out => sa15_out,
+			low_a => low_a,
 
-				sd_dir => sd_dir,
-				sd_oe => sd_oe,
-				low_d => low_d,
+			sd_dir => sd_dir,
+			sd_oe => sd_oe,
+			low_d => low_d,
 
-				no_clock => no_clock,
-				docking_station => docking_station,
-				docking_irq => docking_irq,
+			no_clock => no_clock,
+			docking_station => docking_station,
+			docking_irq => docking_irq,
 
-				phi_cnt => phi_cnt,
-				phi_end_1 => phi_end_1,
+			phi_cnt => phi_cnt,
+			phi_end_1 => phi_end_1,
 
-				joystick1 => c64_joy1,
-				joystick2 => c64_joy2,
-				joystick3 => c64_joy3,
-				joystick4 => c64_joy4,
-				keys => c64_keys,
---				restore_key_n => restore_n
-				restore_key_n => open,
-				amiga_power_led => led_green,
-				amiga_drive_led => led_red,
-				amiga_reset_n => amiga_reset_n,
-				amiga_trigger => amiga_key_stb,
-				amiga_scancode => amiga_key,
-				midi_rxd => midi_rxd,
-				midi_txd => midi_txd
-			);
+			joystick1 => c64_joy1,
+			joystick2 => c64_joy2,
+			joystick3 => c64_joy3,
+			joystick4 => c64_joy4,
+			keys => c64_keys(63 downto 0),
+--			restore_key_n => restore_n
+			restore_key_n => open,
+			amiga_power_led => led_green,
+			amiga_drive_led => led_red,
+			amiga_reset_n => amiga_reset_n,
+			amiga_trigger => amiga_key_stb,
+			amiga_scancode => amiga_key,
+			midi_rxd => midi_rxd,
+			midi_txd => midi_txd
+		);
 	end block;
 
--- Input mapping
+	-- Input mapping
 
-mergeinputs : entity work.chameleon_mergeinputs
-generic map (
-	button1=>demistify_button1,
-	button2=>demistify_button2,
-	button3=>demistify_button3,
-	button4=>demistify_button4
-)
-port map (
-	clk => clk_100,
-	reset_n => reset_n,
-	ena_1mhz => ena_1mhz,
-	ir_data => ir_data,
-	button_menu_n => usart_cts,
-	button_freeze_n => freeze_btn,
-	button_reset_n => reset_btn,
-	c64_joy1 => c64_joy1,
-	c64_joy2 => c64_joy2,
-	c64_joy3 => c64_joy3,
-	c64_joy4 => c64_joy4,
-	c64_keys => c64_keys,
-	c64_joykey_ena => '1',
+	mergeinputs : entity work.chameleon_mergeinputs
+	generic map (
+		button1=>demistify_button1,
+		button2=>demistify_button2,
+		button3=>demistify_button3,
+		button4=>demistify_button4
+	)
+	port map (
+		clk => clk_100,
+		reset_n => reset_n,
+		ena_1mhz => ena_1mhz,
+		ir_data => ir_data,
+		button_menu_n => usart_cts,
+		button_freeze_n => freeze_btn,
+		button_reset_n => reset_btn,
+		c64_joy1 => c64_joy1,
+		c64_joy2 => c64_joy2,
+		c64_joy3 => c64_joy3,
+		c64_joy4 => c64_joy4,
+		c64_keys => c64_keys(63 downto 0),
+		c64_joykey_ena => '1', -- Set to 1 if you want the C64 keys to open the menu and emulate joypad buttons
 
-	joy1_out => joy1,
-	joy2_out => joy2,
-	joy3_out => joy3,
-	joy4_out => joy4,
-	menu_out_n => menu_button_n,
+		c64_restore_in => c64_restore_key_n and c64_nmi_n,
+		c64_restore_out => c64_keys(64),
 
-	usart_cts => usart_rts,
-	usart_rxd => usart_tx,
-	usart_txd => usart_rx,
-	usart_clk => usart_clk
-);
+		joy1_out => joy1,
+		joy2_out => joy2,
+		joy3_out => joy3,
+		joy4_out => joy4,
+		menu_out_n => menu_button_n,
+		freeze_out_n => freeze_button_n,
+
+		usart_cts => usart_rts,
+		usart_rxd => usart_tx,
+		usart_txd => usart_rx,
+		usart_clk => usart_clk
+	);
 
 	-- Guest core
 	
@@ -429,6 +439,7 @@ port map (
 		CLOCK_27 => clk50m&clk50m, -- Comment out one of these lines to match the guest core.
 		CLOCK_27 => clk50m,
 --		RESET_N => reset_n,
+		LED => led_red,
 		-- clocks
 		SDRAM_DQ => ram_d,
 		SDRAM_A => ram_a,
@@ -456,9 +467,28 @@ port map (
 		VGA_R => vga_red(7 downto 2),
 		VGA_G => vga_green(7 downto 2),
 		VGA_B => vga_blue(7 downto 2),
+--		C64_KEYS => std_logic_vector(c64_keys),
+--		PS2_CLK_IN => ps2_keyboard_clk_in,
+--		PS2_DAT_IN => ps2_keyboard_dat_in,
+--		TAPE_BUTTON_N => freeze_button_n and joy1(7) and joy2(7),
+--		IEC_ATN_I => iec_atn_in,
+--		IEC_DATA_I => iec_dat_in,
+--		IEC_CLK_I => iec_clk_in,
+--		IEC_ATN_O => iec_atn_out,
+--		IEC_DATA_O => iec_dat_out,
+--		IEC_CLK_O => iec_clk_out,
 		AUDIO_L => sigma_l,
 		AUDIO_R => sigma_r
 	);
+
+	-- Safe defaults if we haven't connected the IEC port...
+	iec_atn_s<='0';
+	iec_dat_s<='0';
+	iec_clk_s<='0';
+
+	iec_atn_out <= not iec_atn_s;
+	iec_dat_out <= not iec_dat_s;
+	iec_clk_out <= not iec_clk_s;
 
 	-- Pass internal signals to external SPI interface
 	spi_clk <= spi_clk_int;
@@ -467,6 +497,8 @@ port map (
 	generic map (
 		sysclk_frequency => 500,
 		debug => false,
+		-- SPI_FASTBIT => 2, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
+		-- SPI_INTERNALBIT => 0, -- This will make SPI comms faster, for cores which are clocked fast enough.
 		jtag_uart => true
 	)
 	port map (
@@ -512,7 +544,6 @@ port map (
 		intercept => intercept
 	);
 
-led_red<=act_led and not spi_ss4;
 led_green<=(not act_led) and not spi_ss4;
 	
 end architecture;
