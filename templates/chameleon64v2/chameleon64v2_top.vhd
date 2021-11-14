@@ -190,7 +190,6 @@ architecture rtl of chameleon64v2_top is
 -- IO	
 	signal c64_keys : unsigned(64 downto 0);
 	signal c64_restore_key_n : std_logic;
-	signal c64_nmi_n : std_logic;
 	signal c64_joy1 : unsigned(6 downto 0);
 	signal c64_joy2 : unsigned(6 downto 0);
 	signal c64_joy3 : unsigned(6 downto 0);
@@ -406,7 +405,7 @@ begin
 		c64_keys => c64_keys(63 downto 0),
 		c64_joykey_ena => '1', -- Set to 1 if you want the C64 keys to open the menu and emulate joypad buttons
 
-		c64_restore_in => c64_restore_key_n and c64_nmi_n,
+		c64_restore_in => c64_restore_key_n and nmi_in,
 		c64_restore_out => c64_keys(64),
 
 		joy1_out => joy1,

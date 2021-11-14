@@ -5,7 +5,7 @@ PROJECTPATH=./
 PROJECTTOROOT=../
 BOARD=
 ROMSIZE1=8192
-ROMSIZE2=8192
+ROMSIZE2=4096
 
 all: $(DEMISTIFYPATH)/site.template $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns mist
 # Use the file least likely to change within DeMiSTify to detect submodules!
@@ -57,5 +57,8 @@ tns:
 
 .PHONY: mist
 mist:
-	$(Q13)/quartus_sh --flow compile mist/$(project).qpf
+	@echo -n "Compiling $(PROJECT) for mist... "
+	@$(Q13)/quartus_sh >compile.log --flow compile vic20.qpf \
+		&& echo "\033[32mSuccess\033[0m" || grep Error compile.log
+	@grep -r Design-wide\ TNS output_files/*.rpt
 
