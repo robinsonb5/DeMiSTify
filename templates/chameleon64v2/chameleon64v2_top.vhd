@@ -498,7 +498,7 @@ begin
 		debug => false,
 		-- SPI_FASTBIT => 2, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
 		-- SPI_INTERNALBIT => 0, -- This will make SPI comms faster, for cores which are clocked fast enough.
-		jtag_uart => true
+		jtag_uart => false
 	)
 	port map (
 		clk => clk_50,
