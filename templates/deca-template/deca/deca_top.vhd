@@ -137,7 +137,7 @@ architecture RTL of deca_top is
 	signal joyd : std_logic_vector(7 downto 0);
 
 
-COMPONENT  NES_mist
+COMPONENT NES_mist
 	PORT
 	(
 		CLOCK_27 :	IN STD_LOGIC;
@@ -270,7 +270,7 @@ ps2_keyboard_clk <= '0' when ps2_keyboard_clk_out='0' else 'Z';
 
 JOYX_SEL_O <= '1';
 
-joya<="11" & JOY1_B2_P9 & JOY1_B1_P6 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
+joya<="11" & JOY1_B1_P6 & JOY1_B2_P9 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
 
 joyb<=(others=>'1');
 joyc<=(others=>'1');
@@ -327,8 +327,8 @@ port map(
 
 I2S_MCK <= i2s_Mck_o;
 I2S_SCK <= i2s_Sck_o;
-I2S_LR <= i2s_Lr_o;
-I2S_D <= i2s_D_o;
+I2S_LR  <= i2s_Lr_o;
+I2S_D   <= i2s_D_o;
 
 
 -- HDMI CONFIG    
@@ -343,15 +343,15 @@ port map (
 
 --  HDMI VIDEO   
 HDMI_TX_CLK <= hdmi_clk;	
-HDMI_TX_DE <= not hdmi_blank;
-HDMI_TX_HS <= vga_hsync;
-HDMI_TX_VS <= vga_vsync;
-HDMI_TX_D <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
+HDMI_TX_DE  <= not hdmi_blank;
+HDMI_TX_HS  <= vga_hsync;
+HDMI_TX_VS  <= vga_vsync;
+HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
 
 --  HDMI AUDIO   
-HDMI_MCLK <= i2s_Mck_o;
-HDMI_SCLK <= i2s_Sck_o;    -- lr*2*16
-HDMI_LRCLK <= i2s_Lr_o;   
+HDMI_MCLK   <= i2s_Mck_o;
+HDMI_SCLK   <= i2s_Sck_o;    -- lr*2*16
+HDMI_LRCLK  <= i2s_Lr_o;   
 HDMI_I2S(0) <= i2s_D_o;
 
 
@@ -403,19 +403,21 @@ guest: COMPONENT  NES_mist
 
 );
 
+
 -- Pass internal signals to external SPI interface
 sd_clk <= spi_clk_int;
 
 controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
+--		SPI_FASTBIT=>3,
 		debug => false,
 		jtag_uart => false
 		
 	)
 	port map (
 		clk => MAX10_CLK1_50,
-		reset_in =>  KEY(0),
+		reset_in  => KEY(0),
 		reset_out => reset_n,
 
 		-- SPI signals
