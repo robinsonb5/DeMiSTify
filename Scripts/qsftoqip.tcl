@@ -54,7 +54,7 @@ set outfile [open $qipfile w]
 set data [split $file_data "\n"]
 
 # Extract filenames of RTL files
-
+set preflowfound 0
 foreach line $data {
 	set parts [split $line]
 	if {[string equal [lindex $parts 2] VHDL_FILE] == 1 } { outputentry $outfile $adjpath [lindex $parts 2] [lindex $parts 3] }
@@ -62,5 +62,9 @@ foreach line $data {
 	if {[string equal [lindex $parts 2] SYSTEMVERILOG_FILE] == 1 } { outputentry $outfile $adjpath [lindex $parts 2] [lindex $parts 3] }
 	if {[string equal [lindex $parts 2] QIP_FILE] == 1 } { outputentry $outfile $adjpath [lindex $parts 2] [lindex $parts 3] }
 	if {[string equal [lindex $parts 2] SDC_FILE] == 1 } { outputentry $outfile $adjpath [lindex $parts 2] [lindex $parts 3] }
+	if {[string equal [lindex $parts 2] PRE_FLOW_SCRIPT_FILE] == 1 } {
+		if { $preflowfound == 0 } { puts "Pre-flow scripts found:" }
+		puts [lindex $parts 3]
+	}
 }
 

@@ -31,7 +31,7 @@ int user_io_sd_get_status(uint32_t *lba, uint32_t *drive_index) {
 
 void user_io_sd_set_config()
 {
-
+	/* FIXME - need to synthesize a fake card CSD structure here for the mounted image. */
 }
 
 
@@ -68,7 +68,6 @@ void diskimg_poll()
 		// Read from file/SD Card
 		if((c & 0x03) == 0x01)
 		{
-			putchar('.');
 			FileSeek(&diskimg[idx].file,lba<<9);
 
 			// FIXME - DirectIO?
@@ -81,12 +80,6 @@ void diskimg_poll()
 }
 
 
-void diskimg_unmount(unsigned char idx)
-{
-	if(idx<CONFIG_DISKIMG_UNITS)
-		diskimg[idx].valid=0;
-}
-
 #define spi32le(x) SPI(x&255); SPI((x>>8)&255); SPI((x>>16)&255); SPI(x>>24); 
 
 void diskimg_mount(const unsigned char *name, unsigned char idx) {
@@ -94,16 +87,8 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	if(idx>3)
 		return;
-	diskimg_unmount(idx);
-	if (name)
-	{
-		if(FileOpen(&diskimg[idx].file,name))
-		{
-			diskimg[idx].valid=1;
-			imgsize=diskimg[idx].file.size;
-		}
-	}
-
+	FileOpen(&diskimg[idx].file,name);
+	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
 	// send mounted image size first then notify about mounting
 	EnableIO();
 	SPI(UIO_SET_SDINFO);

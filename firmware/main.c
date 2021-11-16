@@ -755,14 +755,23 @@ void buildmenu(int offset)
 	Menu_Set(menu);
 }
 
-__weak const char *bootrom_name="BOOT    ROM";
+/* Allow the Boot ROM filename to set in config.h instead of requiring an override.
+   The override method will still work, however. */
+#ifndef ROM_FILENAME
+#define ROM_FILENAME "BOOT    ROM"
+#endif
+__weak const char *bootrom_name=ROM_FILENAME;
 
 __weak char *autoboot()
 {
 	char *result=0;
 	romtype=0;
+#ifdef ROM_REQUIRED
 	if(!LoadROM(bootrom_name))
 		result="ROM loading failed";
+#else
+	LoadROM(bootrom_name)
+#endif
 	return(result);
 }
 

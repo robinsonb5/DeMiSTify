@@ -35,6 +35,11 @@ here, the number of units defaults to 4. */
    which it currently doesn't) - but some cores still use the older protocol. */
 #define CONFIG_EXTJOYSTICK
 
+/* Do we require an autoboot ROM, and thus should we notify the user if it's not found? */
+#undef ROM_REQUIRED
+
+/* ROM name will default to "BOOT    ROM" if not defined here... */ 
+#undef ROM_FILENAME "CORE    ROM"
 
 #endif
 

@@ -7,9 +7,12 @@ BOARD=
 ROMSIZE1=8192
 ROMSIZE2=4096
 
-all: $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns mist
+all: $(DEMISTIFYPATH)/site.template $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns mist
+# Use the file least likely to change within DeMiSTify to detect submodules!
+$(DEMISTIFYPATH)/COPYING:
+	git submodule update --init --recursive
 
-$(DEMISTIFYPATH)/site.mk:
+$(DEMISTIFYPATH)/site.mk: $(DEMISTIFYPATH)/COPYING
 	$(info ******************************************************)
 	$(info Please copy the example DeMiSTify/site.template file to)
 	$(info DeMiSTify/site.mk and edit the paths for the version(s))
@@ -49,10 +52,13 @@ clean:
 tns:
 	@for BOARD in ${BOARDS}; do \
 		echo $$BOARD; \
-		grep -r Design-wide\ TNS Board/$$BOARD/*.rpt; \
+		grep -r Design-wide\ TNS $$BOARD/*.rpt; \
 	done
 
 .PHONY: mist
 mist:
-	$(Q13)/quartus_sh --flow compile Board/mist/$(PROJECT)_mist.qpf
+	@echo -n "Compiling $(PROJECT) for mist... "
+	@$(Q13)/quartus_sh >compile.log --flow compile vic20.qpf \
+		&& echo "\033[32mSuccess\033[0m" || grep Error compile.log
+	@grep -r Design-wide\ TNS output_files/*.rpt
 

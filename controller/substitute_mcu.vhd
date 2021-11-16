@@ -27,8 +27,8 @@ entity substitute_mcu is
 		jtag_uart : boolean := false;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
-		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
-		SPI_INTERNALBIT : integer := 0; -- Full speed when 0, half speed when 1
+		SPI_FASTBIT : integer := 3 ; -- ~5MHz when sysclk is 50MHz
+		SPI_INTERNALBIT : integer := 2; -- Full speed when 0, half speed when 1
 		SPI_EXTERNALCLK : boolean := false
 	);
 	port (
@@ -216,7 +216,7 @@ joy4_r(3 downto 0) <= not (joy4(0)&joy4(1)&joy4(2)&joy4(3));
 
 -- Reset counter.
 
-process(clk)
+process(clk, reset_in)
 begin
 	if reset_in='0' then -- or sdr_ready='0' then
 		reset_counter<=X"FFFF";
@@ -521,7 +521,7 @@ if debug=false generate
 	debug_req<='0';
 end generate;
 
-process(clk)
+process(clk, reset_n)
 begin
 	if reset_n='0' then
 		intercept<='0';

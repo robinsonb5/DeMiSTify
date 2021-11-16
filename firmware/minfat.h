@@ -122,7 +122,7 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer);
 void FileSeek(fileTYPE *file,unsigned int pos);
 #define FileTell(x) (x)->cursor
 unsigned int FileRead(fileTYPE *file, unsigned char *buffer,int count);
-char FileGetCh(fileTYPE *file);
+int FileGetCh(fileTYPE *file);
 
 int LoadFile(const char *fn, unsigned char *buf);
 

@@ -27,9 +27,12 @@ if { ${requires_sdram}==0 || ${have_sdram}==1 } {
 	set_global_assignment -name TOP_LEVEL_ENTITY ${board}_top
 	set_global_assignment -name AUTO_MERGE_PLLS OFF
 
+
 	source ${boardpath}/${board}/${board}_opts.tcl
 	source ${boardpath}/${board}/${board}_pins.tcl
 	source ${boardpath}/${board}/${board}_support.tcl
+	set_global_assignment -name VERILOG_MACRO "DEMISTIFY=1"
+
 	set_global_assignment -name QIP_FILE top.qip
 	source ${corename}_files.tcl
 } else {

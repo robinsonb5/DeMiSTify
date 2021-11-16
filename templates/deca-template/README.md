@@ -16,7 +16,7 @@ Original module sound errors and signed/unsigned troubles have been arranged tha
 * PWM audio is available through GPIO (see pinout below)
 * Joystick available through GPIO  (see pinout below).  **Joystick power pin must be 2.5 V**
   * **DANGER: Connecting power pin above 2.6 V may damage the FPGA**
-  * This core is prepared for Megadrive 6 button gamepads as it outputs a permanent high level on pin 7 of DB9
+  * This core was tested with a Megadrive 6 button gamepad. A permanent high level is applied on pin 7 of DB9, so only works buttons B and C.
 
 **Additional hardware required**:
 
@@ -76,6 +76,8 @@ For 444 video DAC use all VGA pins. For 333 video DAC connect MSB from addon to 
 
 * F12 show/hide OSD 
 * The reset button KEY0 resets the controller (so re-initialises the SD card if it's been changed, reloads any autoboot ROM.) The OSD Reset menu item resets the core itself.
+
+
 
 ### Follows original core README.md:
 

@@ -37,6 +37,7 @@
 #define CUE_EOT                 4
 #define CUE_NOWORD              3
 //// macros ////
+#define CHAR_IS_EOF(c)          ((c) < 0)
 #define CHAR_IS_NUM(c)          (((c) >= '0') && ((c) <= '9'))
 #define CHAR_IS_ALPHA_LOWER(c)  (((c) >= 'a') && ((c) <= 'z'))
 #define CHAR_IS_ALPHA_UPPER(c)  (((c) >= 'A') && ((c) <= 'Z'))
@@ -93,14 +94,14 @@ static char ParseMSF(const char *s, msf_t *msf) {
 
 static int cue_getword(char* word)
 {
-  char c;
+  int c;
   char literal=0;
   int i=0;
 
   while(1) {
     c = FileGetCh(&cue_file);
 //	putchar(c);
-    if ((!c) || CHAR_IS_LINEEND(c) || (CHAR_IS_WHITESPACE(c) && !literal)) break;
+    if (CHAR_IS_EOF(c) || CHAR_IS_LINEEND(c) || (CHAR_IS_WHITESPACE(c) && !literal)) break;
     else if (CHAR_IS_QUOTE(c)) literal ^= 1;
     else if ((literal || (CHAR_IS_VALID(c))) && i<(CUE_WORD_SIZE-1)) word[i++] = c;
   }
