@@ -1,9 +1,9 @@
 #demistify
 find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
-rm -f gameboy_*
+rm -f nes_*
 #quartus
-find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" \) -delete
-rm -f output_files/gameboy_deca_pof.svf
+find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" \) -delete
+rm -f output_files/nes_deca_pof.svf
 #find output_files/  -type f -not -name '*.sof' -delete
 find software/spl_bsp/ -type f -not -name '*.bin' -delete
 #rm -rf output_files
