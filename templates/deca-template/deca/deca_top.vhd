@@ -140,13 +140,13 @@ architecture RTL of deca_top is
 COMPONENT NES_mist
 	PORT
 	(
-		CLOCK_27 :	IN STD_LOGIC;
---             CLOCK_27 :	IN STD_LOGIC_VECTOR(1 downto 0);
+		CLOCK_27 :	IN STD_LOGIC;	-- Comment out one of these two lines
+        CLOCK_27 :	IN STD_LOGIC_VECTOR(1 downto 0);	-- to match the guest core
 --		RESET_N :   IN std_logic;
-               LED : out std_logic;
-               -- SDRAM
+        LED : out std_logic;
+        -- SDRAM
 		SDRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-		SDRAM_A		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
+		SDRAM_A			:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
 		SDRAM_DQML		:	 OUT STD_LOGIC;
 		SDRAM_DQMH		:	 OUT STD_LOGIC;
 		SDRAM_nWE		:	 OUT STD_LOGIC;
@@ -161,14 +161,16 @@ COMPONENT NES_mist
 		UART_RX    :   IN STD_LOGIC;
 		-- SPI
 		SPI_DO		:	 OUT STD_LOGIC;
-		SPI_SD_DI	:	 IN STD_LOGIC;
+-- 		We can't do bi-directional signals here, so we need separate in and out signals.
+--		If the guest core uses direct mode for ROM upload it will need to be adapted.
+--		SPI_SD_DI	:	 IN STD_LOGIC;
 		SPI_DI		:	 IN STD_LOGIC;
 		SPI_SCK		:	 IN STD_LOGIC;
 		SPI_SS2		:	 IN STD_LOGIC;
 		SPI_SS3		:	 IN STD_LOGIC;
 		SPI_SS4		:	 IN STD_LOGIC;
 		CONF_DATA0		:	 IN STD_LOGIC;
-               -- VGA
+        -- VGA
 		VGA_HS		:	 OUT STD_LOGIC;
 		VGA_VS		:	 OUT STD_LOGIC;
 		VGA_R		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
@@ -176,15 +178,15 @@ COMPONENT NES_mist
 		VGA_B		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
 	        VGA_BLANK : out std_logic; 
 	        VGA_CLK : out std_logic;
-               -- AUDIO
+        -- AUDIO
 		AUDIO_L  : out std_logic;
 		AUDIO_R  : out std_logic;
-		DAC_L           : OUT SIGNED(15 DOWNTO 0);
-                DAC_R           : OUT SIGNED(15 DOWNTO 0)
---		DAC_L           : OUT SIGNED(9 DOWNTO 0);
---              DAC_R           : OUT SIGNED(9 DOWNTO 0)
+			DAC_L           : OUT SIGNED(15 DOWNTO 0);
+            DAC_R           : OUT SIGNED(15 DOWNTO 0)
+--			DAC_L           : OUT SIGNED(9 DOWNTO 0);
+--          DAC_R           : OUT SIGNED(9 DOWNTO 0)
 --	        DAC_L           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
---              DAC_R           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+--          DAC_R           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
 	);
 END COMPONENT;
 

@@ -8,7 +8,7 @@ Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com
 
 Original module sound errors and signed/unsigned troubles have been arranged thanks to @rampa069.
 
-**Features:**
+**Features for Deca board:**
 
 * HDMI video output (special resolution will not work on all LCD monitors)
 * VGA 444 video output is available through GPIO (see pinout below). 

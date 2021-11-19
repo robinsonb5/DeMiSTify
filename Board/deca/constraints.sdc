@@ -17,6 +17,7 @@ set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS}
 # non timing-critical pins would be in the "FALSE_IN/OUT" collection (IN inputs, OUT outputs)
 set FALSE_OUT {LED[*] SIGMA_* PS2_* JOYX_SEL_O AUDIO* I2S_* HDMI_I2C* HDMI_LRCLK HDMI_MCLK HDMI_SCLK HDMI_I2S[*] UART_TXD}
 set FALSE_IN  {KEY[*] SW[*] PS2_* JOY1* AUDIO* HDMI_I2C* HDMI_LRCLK HDMI_MCLK HDMI_SCLK HDMI_I2S[*] EAR UART_RXD}
+#the HDMI signals are probably fast enough to worth constraining properly at some point
 
 # JTAG constraints for debug interface (if enabled)
 # create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
