@@ -94,10 +94,10 @@ set_location_assignment PIN_H4 -to EAR
 #============================================================
 # UDA 1334A - #NOT USED W18 P8:3, BCLK Y18 P8:4,  WSEL Y19 P8:5, DIN AA17 P8:6
 #============================================================
-#set_location_assignment PIN_W18 -to I2S_MCK
-#set_location_assignment PIN_Y18 -to I2S_SCK
-#set_location_assignment PIN_Y19 -to I2S_LR
-#set_location_assignment PIN_AA17 -to I2S_D
+#set_location_assignment PIN_W18 -to I2S_MCK2
+#set_location_assignment PIN_Y18 -to I2S_BCLK
+#set_location_assignment PIN_Y19 -to I2S_LRCLK
+#set_location_assignment PIN_AA17 -to I2S_DATA
 
 #============================================================
 # UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 

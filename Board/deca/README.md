@@ -8,7 +8,7 @@ Device: 10M50DAF484C6GES
 
 Total login elements (LEs): 49760
 
-Total memory (BRAM): 209.6 kB
+Total memory (BRAM): 209.6 kB  (1,677,312 bits)   [182 M9k]
 
 Embedded Multiplier 9-bit elements: 288
 
@@ -38,4 +38,8 @@ ADC block: 2
 | 2 push-buttons, 2 slide switches                  |
 | Eight blue user LEDs                              |
 | Beaglebone connectors (GPIO/Analog) (69/76 GPIOS) |
+| Arrow USB programmer2 on-board                    |
+| 50 MHz clock x 2 & 10 MHz clock                   |
+
+
 

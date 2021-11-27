@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.demistify_config_pkg.all;
+
 -- -----------------------------------------------------------------------
 
 entity deca_top is
@@ -245,8 +248,16 @@ component I2C_HDMI_Config
   );
 end component;
 
-signal hdmi_clk :  std_logic;
-signal hdmi_blank  :  std_logic;
+component pll2
+    port (
+    inclk0 : in STD_LOGIC;
+    c0 : out STD_LOGIC;
+    locked : out STD_LOGIC
+  );
+end component;
+
+signal vga_clk :  std_logic;
+signal vga_blank  :  std_logic;
 
 begin
 
@@ -277,7 +288,8 @@ joya<="11" & JOY1_B1_P6 & JOY1_B2_P9 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1
 joyb<=(others=>'1');
 joyc<=(others=>'1');
 joyd<=(others=>'1');
-
+library work;
+use work.demistify_config_pkg.all;
 
 SD_SEL                          <= '0';  -- 0 = 3.3V at sdcard   
 SD_CMD_DIR                      <= '1';  -- MOSI FPGA output
@@ -343,9 +355,17 @@ port map (
 	HDMI_TX_INT => HDMI_TX_INT
 );
 
+-- -- PLL2
+-- pll2_inst : pll2
+-- port map (
+--	inclk0		=> MAX10_CLK1_50,
+--	c0		=> vga_clk		
+--	locked		=> open
+-- );
+
 --  HDMI VIDEO   
-HDMI_TX_CLK <= hdmi_clk;	
-HDMI_TX_DE  <= not hdmi_blank;
+HDMI_TX_CLK <= vga_clk;	
+HDMI_TX_DE  <= not vga_blank;
 HDMI_TX_HS  <= vga_hsync;
 HDMI_TX_VS  <= vga_vsync;
 HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
@@ -395,8 +415,8 @@ guest: COMPONENT  NES_mist
 		VGA_R => vga_red(7 downto 2),
 		VGA_G => vga_green(7 downto 2),
 		VGA_B => vga_blue(7 downto 2),
-	             VGA_BLANK => hdmi_blank,
-	             VGA_CLK => hdmi_clk
+	             VGA_BLANK => vga_blank,
+	             VGA_CLK => vga_clk
                 --AUDIO
 		AUDIO_L => sigma_l,
 		AUDIO_R => sigma_r,

@@ -27,6 +27,12 @@ Original module sound errors and signed/unsigned troubles have been arranged tha
 
 v0.1 VGA version only. 
 
+### STATUS
+
+* Working fine
+
+* HDMI video outputs special resolution so will not work on all monitors. 
+
 ### Instructions to compile the project for a specific board:
 
 (Note that sof/svf files are already included in /deca/output_files/)
@@ -42,9 +48,9 @@ cd DeMiSTify
 cp site.template site.mk
 #Edit site.mk and add your own PATHs to Quartus (Q19)
 gedit site.mk
-#[OPTIONAL STEP only needed if main branch is outdated]
+#Checkout to the branch with latest updates
 git checkout somhic
-#Go back to root folder and do a make with board target (deca, neptuno, uareloaded). If not specified it will compile for all targets.
+#Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc). If not specified it will compile for all targets.
 cd ..
 make BOARD=deca
 ```
@@ -65,12 +71,6 @@ For 444 video DAC use all VGA pins. For 333 video DAC connect MSB from addon to 
 **Others:**
 
 * Button KEY0 is a reset button
-
-### STATUS
-
-* Working fine
-
-* HDMI video outputs special resolution so will not work on all monitors. 
 
 ### OSD Controls
 

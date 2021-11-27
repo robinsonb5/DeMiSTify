@@ -52,7 +52,7 @@ clean:
 tns:
 	@for BOARD in ${BOARDS}; do \
 		echo $$BOARD; \
-		grep -r Design-wide\ TNS $$BOARD/*.rpt; \
+		grep -r Design-wide\ TNS $$BOARD/output_files/*.rpt; \
 		echo -ne '\007'; \
 	done
 
