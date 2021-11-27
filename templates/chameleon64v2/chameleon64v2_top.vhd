@@ -226,6 +226,7 @@ architecture rtl of chameleon64v2_top is
 	signal iec_dat_in : std_logic;
 
 	-- Internal copies of the IEC signals since they need inverting.
+	signal iec_srq_s : std_logic;
 	signal iec_clk_s : std_logic;
 	signal iec_atn_s : std_logic;
 	signal iec_dat_s : std_logic;
@@ -369,8 +370,7 @@ begin
 			joystick3 => c64_joy3,
 			joystick4 => c64_joy4,
 			keys => c64_keys(63 downto 0),
---			restore_key_n => restore_n
-			restore_key_n => open,
+			restore_key_n => c64_restore_key_n,
 			amiga_power_led => led_green,
 			amiga_drive_led => led_red,
 			amiga_reset_n => amiga_reset_n,
@@ -481,13 +481,15 @@ begin
 	);
 
 	-- Safe defaults if we haven't connected the IEC port...
-	iec_atn_s<='0';
-	iec_dat_s<='0';
-	iec_clk_s<='0';
+	iec_atn_s<='1';
+	iec_dat_s<='1';
+	iec_clk_s<='1';
+	iec_srq_s<='1';
 
 	iec_atn_out <= not iec_atn_s;
 	iec_dat_out <= not iec_dat_s;
 	iec_clk_out <= not iec_clk_s;
+	iec_srq_out <= not iec_srq_s;
 
 	-- Pass internal signals to external SPI interface
 	spi_clk <= spi_clk_int;

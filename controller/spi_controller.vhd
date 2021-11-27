@@ -59,12 +59,13 @@ begin
 
 		IF reset ='0' THEN 
 			shiftcnt(5)<='0';
-			sck <= '0';
+			sck <= '1';
 		ELSIF rising_edge(sysclk) then			
 			IF trigger='1' then
 				shiftcnt <= "100111";  -- shift out 8 bits, underflow will clear bit 5, mapped to busy
 				sd_shift <= host_to_spi(7 downto 0); -- & X"FFFFFF";
 				sck <= '1';
+				spi_req_r <= not spi_ack;
 			ELSE
 				IF spi_req_r=spi_ack and busy='1' THEN
 					IF sck='1' THEN
