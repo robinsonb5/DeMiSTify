@@ -149,7 +149,7 @@ always @(posedge clk) begin
 
 	old_sync <= sync;
 	if(~old_sync & sync) stage <= 1;
-	
+
 	if(bios_addr!=bios_addr_d)
 		bios_oe<=1'b1;
 	else
@@ -178,8 +178,6 @@ always @(posedge clk) begin
 		active<=1'b0;
 		
 		bios_addr_d<=11'h7ff;
-//		bios_oe <= 1'b0;
-//		mode    <= 0;
 		sd_dqm  <= 2'b11;
 	end else begin
 
@@ -194,11 +192,11 @@ always @(posedge clk) begin
 				sd_cmd  <= CMD_ACTIVE;
 				sd_addr <= addr[19:8];
 				sd_ba   <= addr[21:20];
+
 				ds_r    <= ds;
 				din_r   <= din;
 				addr_r  <= { 4'b0100, addr[7:0] };  // auto precharge
 			end else if(bios_we || bios_oe) begin
-//			end else if(bios_we) begin
 				port<=1'b1;
 				active<=1'b1;
 				drive_dq<=bios_we;

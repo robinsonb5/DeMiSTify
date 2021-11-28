@@ -1,6 +1,5 @@
 # files inherited from the guest core:
-mistcore.qip
-#sys/sys.qip	#it's only needed for Sorgelig cores
+project.qip
 
 # The controller module
 DeMiSTify/controller/controller.qip

@@ -410,7 +410,6 @@ controller : entity work.substitute_mcu
 
 		-- JOYSTICKS
 		joy1 => joya,
-		joy2 => joyb,
 
 		-- UART
 		rxd => rs232_rxd,
