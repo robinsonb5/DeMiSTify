@@ -22,5 +22,6 @@ set_global_assignment -name VHDL_FILE ${boardpath}/atlas_cyc/hdmi2/altddio_out1.
 
 # VERILOG_MACRO
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_PARALLEL_AUDIO=1"
+set_global_assignment -name VERILOG_MACRO "DEMISTIFY_HDMI=1"
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_ATLAS_CYC=1"
 

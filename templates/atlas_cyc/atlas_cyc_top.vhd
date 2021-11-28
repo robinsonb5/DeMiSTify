@@ -148,8 +148,8 @@ signal tdms_p_s			: std_logic_vector( 3 downto 0);
 signal tdms_n_s			: std_logic_vector( 3 downto 0);
 
 -- VIDEO 
-signal hdmi_clk :  std_logic;
-signal hdmi_blank  :  std_logic;
+signal vga_clk :  std_logic;
+signal vga_blank  :  std_logic;
 -- signal vga_x_r :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
 -- signal vga_x_g :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
 -- signal vga_x_b :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
@@ -266,10 +266,10 @@ port map(
 pllvideo : pll2
 port map (
 	inclk0		=> CLK12M,
-	c0			=> clock_vga_s,		-- x 	33.000   (clk64 = 66 MHz instead of 67.11 ) (output is 59Hz instead of 60Hz)
-	c1			=> clock_dvi_s			-- x5	165.000
+	c0			=> clock_vga_s,		-- x 	   
+	c1			=> clock_dvi_s			-- x5	
 );
---clock_vga_s <= hdmi_clk;
+--clock_vga_s <= vga_clk;
 
 --  HDMI   
 sound_hdmi_l_s <= '0' & std_logic_vector(dac_l(15 downto 1));
@@ -277,17 +277,17 @@ sound_hdmi_r_s <= '0' & std_logic_vector(dac_r(15 downto 1));
 
 hdmi: entity work.hdmi
 generic map (
-	FREQ	=> 33600000,			-- pixel clock frequency 
+	FREQ	=> 33600000,			-- x pixel clock frequency 
 	FS		=> 48000,		-- audio sample rate - should be 32000, 41000 or 48000 = 48KHz
 	CTS		=> 33600,		-- CTS = Freq(pixclk) * N / (128 * Fs)
 	N		=> 6144		-- N = 128 * Fs /1000,  128 * Fs /1500 <= N <= 128 * Fs /300 (Check HDMI spec 7.2 for details)
 ) 
 port map (
-	I_CLK_PIXEL		=> clock_vga_s,
+	I_CLK_PIXEL			=> clock_vga_s,
 	I_R				=> vga_red(7 downto 2)&vga_red(7 downto 6),
 	I_G				=> vga_green(7 downto 2)&vga_green(7 downto 6),
 	I_B				=> vga_blue(7 downto 2)&vga_blue(7 downto 6),
-	I_BLANK			=> hdmi_blank,
+	I_BLANK			=> vga_blank,
 	I_HSYNC			=> vga_hsync,
 	I_VSYNC			=> vga_vsync,
 	-- PCM audio
@@ -296,7 +296,7 @@ port map (
 	I_AUDIO_PCM_R	=> sound_hdmi_r_s,
 	-- TMDS parallel pixel synchronous outputs (serialize LSB first)
 	O_RED			=> tdms_r_s,
-	O_GREEN			=> tdms_g_s,
+	O_GREEN		=> tdms_g_s,
 	O_BLUE			=> tdms_b_s
 );
 
@@ -305,7 +305,7 @@ port map (
 	clock_pixel_i		=> clock_vga_s,
 	clock_tdms_i		=> clock_dvi_s,
 	red_i				=> tdms_r_s,
-	green_i				=> tdms_g_s,
+	green_i			=> tdms_g_s,
 	blue_i				=> tdms_b_s,
 	tmds_out_p			=> tdms_p_s,
 	tmds_out_n			=> tdms_n_s
@@ -364,8 +364,8 @@ guest: COMPONENT  gb_mist
 	VGA_R => vga_red(7 downto 2),
 	VGA_G => vga_green(7 downto 2),
 	VGA_B => vga_blue(7 downto 2),
-		VGA_BLANK => hdmi_blank,
-		VGA_CLK   => hdmi_clk
+		VGA_BLANK => vga_blank,
+		VGA_CLK   => vga_clk
   );
 
 

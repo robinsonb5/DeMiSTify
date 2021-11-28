@@ -3,6 +3,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 package demistify_config_pkg is
 constant demistify_romspace : integer := 14; -- 16k address space to accommodate 12K of ROM

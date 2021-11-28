@@ -182,14 +182,14 @@ COMPONENT NES_mist
 	        VGA_BLANK : out std_logic; 
 	        VGA_CLK : out std_logic;
         -- AUDIO
-		AUDIO_L  : out std_logic;
-		AUDIO_R  : out std_logic;
 			DAC_L           : OUT SIGNED(15 DOWNTO 0);
-            DAC_R           : OUT SIGNED(15 DOWNTO 0)
+            		DAC_R           : OUT SIGNED(15 DOWNTO 0);
 --			DAC_L           : OUT SIGNED(9 DOWNTO 0);
---          DAC_R           : OUT SIGNED(9 DOWNTO 0)
---	        DAC_L           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
---          DAC_R           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
+--          		DAC_R           : OUT SIGNED(9 DOWNTO 0);
+--	        	DAC_L           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+--          		DAC_R           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+		AUDIO_L  : out std_logic;
+		AUDIO_R  : out std_logic
 	);
 END COMPONENT;
 
