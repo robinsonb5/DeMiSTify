@@ -26,10 +26,6 @@
 //
 //
 
-// TODO  OK, you've adjusted the row bits, but not the bank, or the column address.  
-// (though the repeated bit in the column address will be ignored on the smaller chip.)
-
-
 module sdram
 (
 
@@ -141,7 +137,7 @@ reg [15:0] din_r;
 reg  [2:0] stage;
 
 reg bios_oe;
-wire [21:0] bios_addr_ext = {11'b0,bios_addr};
+wire [21:0] bios_addr_ext = {11'b11111111111,bios_addr};
 reg [10:0] bios_addr_d;
 
 always @(posedge clk) begin
@@ -196,11 +192,11 @@ always @(posedge clk) begin
 
 				// RAS phase
 				sd_cmd  <= CMD_ACTIVE;
-				sd_addr <= { addr[19:8] };
-				sd_ba   <= {1'b0,addr[20]};
+				sd_addr <= addr[19:8];
+				sd_ba   <= addr[21:20];
 				ds_r    <= ds;
 				din_r   <= din;
-				addr_r  <= { 3'b010, addr[8:0] };  // auto precharge
+				addr_r  <= { 4'b0100, addr[7:0] };  // auto precharge
 			end else if(bios_we || bios_oe) begin
 //			end else if(bios_we) begin
 				port<=1'b1;
@@ -210,11 +206,11 @@ always @(posedge clk) begin
 				// RAS phase
 				sd_cmd  <= CMD_ACTIVE;
 				sd_addr <= bios_addr_ext[19:8];
-				sd_ba   <= {1'b1,bios_addr_ext[20]};
+				sd_ba   <= bios_addr_ext[21:20];
 
 				ds_r    <= 2'b11;
 				din_r   <= bios_din;
-				addr_r  <= { 3'b010, bios_addr_ext[8:0] };  // auto precharge
+				addr_r  <= { 4'b0100, bios_addr_ext[7:0] };  // auto precharge
 			end else begin
 				drive_dq<=1'b0;
 				active<=1'b0;

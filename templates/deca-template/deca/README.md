@@ -1,12 +1,10 @@
-# xxxxxxxxxxx DeMiSTified
+# xxxxxxxxxxx DeMiSTified - Deca port
 
 22/09/21 DECA port DeMiSTified by somhic from original MiST xxxxx core https://github.com/mist-devel/xxxxxxx.   
 
 Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com/robinsonb5/DeMiSTify) for helping me. 
 
 [Read this guide if you want to know how I DeMiSTified this core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
-
-Original module sound errors and signed/unsigned troubles have been arranged thanks to @rampa069.
 
 **Features for Deca board:**
 
@@ -40,25 +38,25 @@ v0.1 VGA version only.
 ```sh
 git clone https://github.com/DECAfpga/xxxx
 cd xxxx
-#Do a first make (will finish in error). It will download missing submodules 
+#Do a first make (will finish in error) but it will download missing submodules 
 make
-#when asked just accept default settings with Enter key
-#Create file site.mk in DeMiSTify folder 
+#Checkout to the DeMiSTify branch with the latest updates
 cd DeMiSTify
+git checkout somhic
+#Create file site.mk in DeMiSTify folder 
 cp site.template site.mk
 #Edit site.mk and add your own PATHs to Quartus (Q19)
 gedit site.mk
-#Checkout to the branch with latest updates
-git checkout somhic
 #Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc). If not specified it will compile for all targets.
 cd ..
 make BOARD=deca
+#when asked just accept default settings with Enter key
 ```
 
 After that you can:
 
 * Flash bitstream directly from [command line](https://github.com/DECAfpga/DECA_binaries#flash-bitstream-to-fgpa-with-quartus)
-* Load project in Quartus from /deca/gameboy_deca.qpf
+* Load project in Quartus from /deca/xxxxxxxx_deca.qpf
 
 ### Pinout connections:
 
@@ -77,7 +75,4 @@ For 444 video DAC use all VGA pins. For 333 video DAC connect MSB from addon to 
 * F12 show/hide OSD 
 * The reset button KEY0 resets the controller (so re-initialises the SD card if it's been changed, reloads any autoboot ROM.) The OSD Reset menu item resets the core itself.
 
-
-
-### Follows original core README.md:
 
