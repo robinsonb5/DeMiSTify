@@ -1,6 +1,8 @@
 # xxxxxxxxxxx DeMiSTified - Deca port
 
-22/09/21 DECA port DeMiSTified by somhic from original MiST xxxxx core https://github.com/mist-devel/xxxxxxx.   
+22/09/21 DECA port DeMiSTified by Somhic from original MiST xxxxx core https://github.com/mist-devel/xxxxxxx.   
+
+27/11/21 DECA port by Somhic from original Demistified MiST core https://github.com/robinsonb5/xxxxx by Alastair M. Robinson.
 
 Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com/robinsonb5/DeMiSTify) for helping me. 
 
@@ -74,5 +76,4 @@ For 444 video DAC use all VGA pins. For 333 video DAC connect MSB from addon to 
 
 * F12 show/hide OSD 
 * The reset button KEY0 resets the controller (so re-initialises the SD card if it's been changed, reloads any autoboot ROM.) The OSD Reset menu item resets the core itself.
-
 

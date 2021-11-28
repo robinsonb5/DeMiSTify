@@ -1,6 +1,8 @@
 # xxxxx DeMiSTified - Atlas CYC1000 port
 
-27/11/21 Atlas CYC1000 port DeMiSTified by somhic from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx
+27/11/21 Atlas CYC1000 port DeMiSTified by Somhic from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx
+
+27/11/21 DECA port by Somhic from original Demistified MiST core https://github.com/robinsonb5/xxxxx by Alastair M. Robinson.
 
 Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com/robinsonb5/DeMiSTify) for helping me. 
 
@@ -9,7 +11,7 @@ Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com
 **Features:**
 
 * HDMI video output
-* VGA 222 video output is available through HDMI to VGA adapter
+* VGA 222 video output is available through an HDMI to VGA adapter
 * HDMI audio output
 * Sigma-Delta audio
 * Joystick (tested with a Megadrive gamepad)

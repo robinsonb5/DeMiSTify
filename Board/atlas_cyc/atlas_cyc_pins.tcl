@@ -82,11 +82,6 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 #============================================================
-# Audio EAR
-#============================================================
-set_location_assignment PIN_P11 -to EAR
-
-#============================================================
 # UDA 1334A
 #============================================================
 set_location_assignment PIN_F15 -to I2S_BCLK
@@ -108,6 +103,19 @@ set_location_assignment PIN_J14 -to JOY1_UP
 set_location_assignment PIN_R1  -to JOY1_DOWN
 set_location_assignment PIN_T15 -to JOY1_LEFT
 set_location_assignment PIN_N16 -to JOY1_RIGHT
+
+if {[info exists atlas_cyc_ear] && ($atlas_cyc_ear==0)} {
+# joystick select pin 
+set_location_assignment PIN_P11 -to JOYX_SEL_O
+
+} else {
+
+#============================================================
+# Audio EAR
+#============================================================
+set_location_assignment PIN_P11 -to EAR
+
+}
 
 #============================================================
 # MicroSD Card
