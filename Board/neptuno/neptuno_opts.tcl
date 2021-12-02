@@ -1,7 +1,11 @@
-set_global_assignment -name ORIGINAL_QUARTUS_VERSION 5.1
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:49:11  JANUARY 31, 2006"
-set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
-
+# Project-Wide Assignments
+# ========================
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.2
+set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "01:53:30  APRIL 20, 2017"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name SMART_RECOMPILE ON
 
 # Pin & Location Assignments
 # ==========================
@@ -17,25 +21,32 @@ set_global_assignment -name FMAX_REQUIREMENT "101.58 MHz"
 
 # Analysis & Synthesis Assignments
 # ================================
-set_global_assignment -name DEVICE_FILTER_PIN_COUNT 144
-set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 8
-set_global_assignment -name FAMILY "Cyclone III"
+set_global_assignment -name DEVICE EP4CE55F23C8
+set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
 set_global_assignment -name AUTO_IMPLEMENT_IN_ROM ON
 set_global_assignment -name FLEX10K_OPTIMIZATION_TECHNIQUE AREA
 set_global_assignment -name AUTO_RESOURCE_SHARING ON
-
-# Fitter Assignments
-# ==================
-set_global_assignment -name DEVICE EP3C25E144C8
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
 set_global_assignment -name FLEX10K_DEVICE_IO_STANDARD LVTTL/LVCMOS
+set_global_assignment -name CYCLONEIII_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULAR IO"
+
 
 # Assembler Assignments
 # =====================
-set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION ON
+
+set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF
+
 set_global_assignment -name GENERATE_RBF_FILE ON
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name ENABLE_DRC_SETTINGS OFF
 set_global_assignment -name ENABLE_CLOCK_LATENCY ON

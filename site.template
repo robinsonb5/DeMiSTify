@@ -4,7 +4,7 @@
 # If you just want to build for a single board then supply BOARD=boardname
 # as part of the make command.
 
-BOARDS=chameleon64 chameleon64v2 de10lite
+BOARDS=chameleon64 chameleon64v2 de10lite deca neptuno sidi uareloaded mist atlas_cyc
 
 # If you're building for multiple boards you might need to have multiple versions
 # of Quartus installed.  Since you can't have more than one version in your
@@ -19,7 +19,7 @@ Q13 = /opt/altera/13.1/quartus/bin/
 # Q18 for newer devices - I believe anything from version 15 upwards
 # will support the boards of interest.
 
-Q18 = /opt/intelFPGA_lite/18.1/quartus/bin/
+Q19 = /opt/intelFPGA_lite/18.1/quartus/bin/
 
 
 # ISE for older Xilinx devices
@@ -31,10 +31,10 @@ ISE14 = /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/
 
 QUARTUS_CYCLONEII = $(Q13)
 QUARTUS_CYCLONEIII = $(Q13)
-QUARTUS_CYCLONEIV = $(Q18)
-QUARTUS_CYCLONEV = $(Q18)
-QUARTUS_CYCLONE10LP = $(Q18)
-QUARTUS_MAX10 = $(Q18)
+QUARTUS_CYCLONEIV = $(Q19)
+QUARTUS_CYCLONEV = $(Q19)
+QUARTUS_CYCLONE10LP = $(Q19)
+QUARTUS_MAX10 = $(Q19)
 
 ISE_SPARTAN6 = $(ISE14)
 ISE_SPARTAN3 = $(ISE14)
