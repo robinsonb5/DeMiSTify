@@ -33,4 +33,5 @@ if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
 }
 
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 

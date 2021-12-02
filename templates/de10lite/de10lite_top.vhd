@@ -271,5 +271,12 @@ controller : entity work.substitute_mcu
 		intercept => intercept
 );
 
+LEDR <= (others=>'0');
+CLK_I2C_SCL <= '1';
+CLK_I2C_SDA	<='Z';
+GSENSOR_SCLK <= '0';
+GSENSOR_CS_N <= '0';
+uart_txd<='1';
+
 end rtl;
 

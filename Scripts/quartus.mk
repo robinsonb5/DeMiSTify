@@ -26,6 +26,7 @@ $(FILES): $(MANIFEST) $(PROJECTTOROOT)/project_defs.tcl
 compile: $(QSF)
 	@echo -n "Compiling $(PROJECT) for $(BOARD)... "
 	@$(TOOLPATH)/quartus_sh >compile.log -t $(SCRIPTSDIR)/compile.tcl -project $(PROJECT) -board $(BOARD) && echo "\033[32mSuccess\033[0m" || grep Error compile.log
+	-@grep implicit compile.log
 
 clean:
 	-rm $(SOF)

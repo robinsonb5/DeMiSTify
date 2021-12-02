@@ -183,8 +183,6 @@ architecture rtl of chameleon64_top is
 	signal hsync_n_dithered : std_logic;
 	signal vsync_n_dithered : std_logic;
 	
-	signal act_led : std_logic;
-
 	signal iec_atn_in : std_logic;
 	signal iec_dat_in : std_logic;
 	signal iec_clk_in : std_logic;
@@ -346,6 +344,7 @@ rtc_cs<='0';
 --			iec_srq_in => iec_srq_in	
 	);
 
+	rs232_rxd <= '1';
 
 	-- Input mapping
 	
@@ -519,6 +518,6 @@ rtc_cs<='0';
 		intercept => intercept
 	);
 
-led_green<=(not act_led) and not spi_ss4;
+led_green<=not spi_ss4;
 
 end architecture;
