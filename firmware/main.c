@@ -108,6 +108,7 @@ static void sendsector(const char *buf,int sendsize)
 	SPI_DISABLE(HW_SPI_FPGA);
 }
 
+#ifndef CONFIG_WITHOUT_FILESYSTEM
 int LoadROM(const char *fn)
 {
 	if(FileOpen(&file,fn))
@@ -183,7 +184,7 @@ int LoadROM(const char *fn)
 	else
 		return(0);
 }
-
+#endif
 
 void spin()
 {
@@ -309,6 +310,15 @@ void setcuefile(const char *filename)
 	spi_uio_cmd8(UIO_SET_SDSTAT, 1);
 }
 #endif
+
+#ifdef CONFIG_WITHOUT_FILESYSTEM
+
+static void fileselector(int row){}
+void selectrom(int row) {}
+static void listroms() {}
+static void scrollroms(int row) {}
+
+#else
 
 __weak void loadimage(char *filename,int unit)
 {
@@ -461,6 +471,15 @@ static void fileselector(int row)
 	listroms(row);
 }
 
+static void showrommenu(int row)
+{
+	romindex=0;
+	listroms(row);
+	Menu_Set(menu);
+}
+
+#endif
+
 
 static void reset(int row)
 {
@@ -478,13 +497,6 @@ static void SaveSettings(int row)
 static void MenuHide(int row)
 {
 	Menu_ShowHide(0);
-}
-
-static void showrommenu(int row)
-{
-	romindex=0;
-	listroms(row);
-	Menu_Set(menu);
 }
 
 
@@ -762,6 +774,13 @@ void buildmenu(int offset)
 #endif
 __weak const char *bootrom_name=ROM_FILENAME;
 
+
+#ifdef CONFIG_WITHOUT_FILESYSTEM
+__weak char *autoboot()
+{
+	return(0);
+}
+#else
 __weak char *autoboot()
 {
 	char *result=0;
@@ -774,6 +793,7 @@ __weak char *autoboot()
 #endif
 	return(result);
 }
+#endif
 
 __weak int main(int argc,char **argv)
 {
@@ -784,16 +804,20 @@ __weak int main(int argc,char **argv)
 
 	PS2Init();
 
-	filename[0]=0;
-
 	menu[7].label="Booting...";
 	Menu_Set(menu);
 	Menu_Draw(7);
 	Menu_ShowHide(1);
 
 	SPI(0xff);
+
+#ifdef CONFIG_WITHOUT_FILESYSTEM
+	havesd=0;
+#else
+	filename[0]=0;
 	if(havesd=sd_init() && FindDrive())
 		puts("SD OK");
+#endif
 
 	menuindex=0;
 	menupage=0;

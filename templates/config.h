@@ -5,6 +5,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* Do we need access to the SD card filesystem? (Defined in the negative
+   so that filesystem support is built by default) */
+
+#undef CONFIG_WITHOUT_FILESYSTEM
+
 /* PS/2 Mouse support */
 #undef PS2_MOUSE
 #undef PS2_WRITE /* Needed to initialise the mouse and put it in wheel mode */
