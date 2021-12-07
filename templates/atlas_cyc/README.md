@@ -39,14 +39,14 @@ git clone https://github.com/DECAfpga/xxxxxx
 cd xxxxx
 #Do a first make (will finish in error) but it will download missing submodules 
 make
-#Checkout to the DeMiSTify branch with the latest updates
 cd DeMiSTify
+#Checkout to somhic branch for the latest updates (if using decafpga forked demistify)
 git checkout somhic
 #Create file site.mk in DeMiSTify folder 
 cp site.template site.mk
-#Edit site.mk and add your own PATHs to Quartus (Q19)
+#Edit site.mk and add your own PATHs to Quartus (Q18)
 gedit site.mk
-#Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc). If not specified it will compile for all targets.
+#Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc, ...). If not specified it will compile for all targets.
 cd ..
 make BOARD=atlas_cyc
 #when asked just accept default settings with Enter key
