@@ -120,7 +120,7 @@ architecture RTL of neptuno_top is
 	signal joyd : std_logic_vector(7 downto 0);
 
 
-component gb_mist
+component guest_mist
     port (
     CLOCK_27 : in std_logic_vector (1 downto 0);
     LED : out std_logic;
@@ -296,7 +296,7 @@ joy: joydecoder
 	);
 	
 
-guest: COMPONENT  gb_mist
+guest: COMPONENT  guest_mist
   port map (
     CLOCK_27 => clock_50_i&clock_50_i,
     LED => LED,

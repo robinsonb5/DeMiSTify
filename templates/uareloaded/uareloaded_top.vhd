@@ -125,7 +125,7 @@ architecture RTL of uareloaded_top is
 	
 	
 
-component gb_mist
+component guest_mist
     port (
     CLOCK_27 : in std_logic_vector (1 downto 0);
     LED : out std_logic;
@@ -237,7 +237,7 @@ port map(
 --dac_r_s <= (dac_r & dac_r(9 downto 4));
 
 
-guest: COMPONENT  gb_mist
+guest: COMPONENT  guest_mist
   port map (
     CLOCK_27 => CLOCK_50&CLOCK_50,
     LED => LED,
