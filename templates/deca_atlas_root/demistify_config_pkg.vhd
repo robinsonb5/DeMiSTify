@@ -31,6 +31,7 @@ constant demistify_serialdebug : std_logic := '0';
 
 
 	-- -- Declare the guest component
+	-- -- input ports defined as `ifdef DEMISTIFY  make sure that have default values
 	
 	-- COMPONENT guest_mist -- Rename to match the guest core
 	-- 	PORT

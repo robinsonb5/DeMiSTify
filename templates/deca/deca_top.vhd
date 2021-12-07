@@ -36,6 +36,8 @@ entity deca_top is
 		-- AUDIO
 		SIGMA_R                : OUT STD_LOGIC;
 		SIGMA_L                : OUT STD_LOGIC;
+		-- EAR
+		EAR                 	: IN STD_LOGIC;
 		-- PS2
 		PS2_KEYBOARD_CLK       : INOUT STD_LOGIC;
 		PS2_KEYBOARD_DAT       : INOUT STD_LOGIC;
@@ -121,6 +123,8 @@ architecture RTL of deca_top is
 	signal ps2_mouse_dat_in: std_logic;
 	signal ps2_mouse_clk_out: std_logic;
 	signal ps2_mouse_dat_out: std_logic;
+
+	signal intercept : std_logic;
 	
 -- Video
 	signal vga_red: std_logic_vector(7 downto 0);
@@ -140,7 +144,7 @@ architecture RTL of deca_top is
 	signal joyd : std_logic_vector(7 downto 0);
 
 
-COMPONENT NES_mist
+COMPONENT guest_mist
 	PORT
 	(
 		CLOCK_27 :	IN STD_LOGIC;	-- Comment out one of these two lines
@@ -256,6 +260,11 @@ component pll2
   );
 end component;
 
+signal vga_x_r :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
+signal vga_x_g :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
+signal vga_x_b :  STD_LOGIC_VECTOR(5 DOWNTO 0); 
+signal vga_x_hs :  std_logic; 
+signal vga_x_vs :  std_logic; 
 signal vga_clk :  std_logic;
 signal vga_blank  :  std_logic;
 
@@ -282,14 +291,10 @@ ps2_keyboard_clk <= '0' when ps2_keyboard_clk_out='0' else 'Z';
 	
 
 JOYX_SEL_O <= '1';
-
-joya<="11" & JOY1_B1_P6 & JOY1_B2_P9 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
-
+joya<="11" & JOY1_B2_P9 & JOY1_B1_P6 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
 joyb<=(others=>'1');
 joyc<=(others=>'1');
 joyd<=(others=>'1');
-library work;
-use work.demistify_config_pkg.all;
 
 SD_SEL                          <= '0';  -- 0 = 3.3V at sdcard   
 SD_CMD_DIR                      <= '1';  -- MOSI FPGA output
@@ -321,6 +326,7 @@ port map (
 	oDIN => AUDIO_SDA_MOSI,
 	iDOUT => AUDIO_MISO_MFP4
 );
+
 
 -- AUDIO CODEC
 audio_i2s: entity work.audio_top
@@ -355,6 +361,7 @@ port map (
 	HDMI_TX_INT => HDMI_TX_INT
 );
 
+
 -- -- PLL2
 -- pll2_inst : pll2
 -- port map (
@@ -366,9 +373,13 @@ port map (
 --  HDMI VIDEO   
 HDMI_TX_CLK <= vga_clk;	
 HDMI_TX_DE  <= not vga_blank;
-HDMI_TX_HS  <= vga_hsync;
-HDMI_TX_VS  <= vga_vsync;
-HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
+HDMI_TX_HS  <= vga_x_hs;
+HDMI_TX_VS  <= vga_x_vs;
+HDMI_TX_D   <= vga_x_r&vga_x_r(4 downto 3)&vga_x_g&vga_x_g(4 downto 3)&vga_x_b&vga_x_b(4 downto 3);
+
+--HDMI_TX_HS  <= vga_hsync;
+--HDMI_TX_VS  <= vga_vsync;
+--HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
 
 --  HDMI AUDIO   
 HDMI_MCLK   <= i2s_Mck_o;
@@ -378,7 +389,7 @@ HDMI_I2S(0) <= i2s_D_o;
 
 
 
-guest: COMPONENT  NES_mist
+guest: COMPONENT  guest_mist
 	PORT map
 	(
 		CLOCK_27 => MAX10_CLK1_50,
@@ -415,14 +426,18 @@ guest: COMPONENT  NES_mist
 		VGA_R => vga_red(7 downto 2),
 		VGA_G => vga_green(7 downto 2),
 		VGA_B => vga_blue(7 downto 2),
-	             VGA_BLANK => vga_blank,
-	             VGA_CLK => vga_clk
+	        	VGA_BLANK => vga_blank,
+	        	VGA_CLK   => vga_clk
+			vga_x_r   => vga_x_r,
+  			vga_x_g   => vga_x_g,
+  			vga_x_b   => vga_x_b,
+   			vga_x_hs  => vga_x_hs,
+   			vga_x_vs  => vga_x_vs,
                 --AUDIO
+			DAC_L   => dac_l,
+                	DAC_R   => dac_r,
 		AUDIO_L => sigma_l,
-		AUDIO_R => sigma_r,
-		DAC_L   => dac_l,
-                DAC_R   => dac_r
-
+		AUDIO_R => sigma_r
 );
 
 
@@ -433,9 +448,9 @@ controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
 --		SPI_FASTBIT=>3,
+--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
 		debug => false,
 		jtag_uart => false
-		
 	)
 	port map (
 		clk => MAX10_CLK1_50,
@@ -473,7 +488,8 @@ controller : entity work.substitute_mcu
 
 		-- UART
 		rxd => rs232_rxd,
-		txd => rs232_txd
+		txd => rs232_txd,
+		intercept => intercept
 );
 
 end rtl;
