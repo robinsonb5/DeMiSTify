@@ -34,8 +34,8 @@ set FALSE_IN  {KEY0 PS2_* EAR UART_RXD JOY* SD_MISO_I}
 
 # JTAG constraints for debug interface (if enabled)
 #create_clock -name {altera_reserved_tck} -period 100.000 -waveform { 0.000 50.000 } [get_ports {altera_reserved_tck}]
-set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
-set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
-set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
+#set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
+#set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
+#set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
 
 set topmodule guest|
