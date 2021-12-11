@@ -15,8 +15,8 @@ set RAM_IN {DRAM_D*}
 set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS}
 
 # non timing-critical pins would be in the "FALSE_IN/OUT" collection (IN inputs, OUT outputs)
-set FALSE_OUT {LED I2S_* JOY_CLK JOY_LOAD PS2* sd_cs_n_o sd_mosi_o sd_sclk_o}
-set FALSE_IN  {PS2* sd_miso_i JOY_DATA}
+set FALSE_OUT {LED I2S_* JOY_CLK JOY_LOAD PS2* sd_cs_n_o sd_mosi_o sd_sclk_o SIGMA_*}
+set FALSE_IN  {PS2* sd_miso_i JOY_DATA AUDIO_INPUT}
 
 # Create a clock for i2s
 create_clock -name i2sclk -period 20.000 {audio_top:audio_i2s|tcount[4]}
