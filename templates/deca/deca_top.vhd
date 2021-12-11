@@ -221,7 +221,6 @@ architecture RTL of deca_top is
 		);
 	end component;
 
-
 	-- DAC AUDIO     
 	signal dac_l : signed(15 downto 0);
 	signal dac_r : signed(15 downto 0);
@@ -230,12 +229,14 @@ architecture RTL of deca_top is
 	--signal dac_l_s: signed(15 downto 0);
 	--signal dac_r_s: signed(15 downto 0);
 
-
-	-- HDMI
+	-- I2S
 	signal i2s_Mck_o : std_logic;
 	signal i2s_Sck_o : std_logic;
 	signal i2s_Lr_o  : std_logic;
 	signal i2s_D_o   : std_logic;
+
+
+	-- HDMI
 
 	component I2C_HDMI_Config
 		port (
@@ -302,6 +303,7 @@ begin
 
 
 	-- DECA AUDIO CODEC
+	
 	RESET_DELAY_n <= reset_n;
 	-- Audio DAC DECA Output assignments
 	AUDIO_GPIO_MFP5  <= '1'; -- GPIO
@@ -340,6 +342,10 @@ begin
 	I2S_SCK <= i2s_Sck_o;
 	I2S_LR  <= i2s_Lr_o;
 	I2S_D   <= i2s_D_o;
+
+
+
+	-- DECA HDMI
 
 	-- HDMI CONFIG    
 	I2C_HDMI_Config_inst : I2C_HDMI_Config
@@ -399,7 +405,7 @@ begin
 			UART_TX => UART_TXD,
 			UART_RX => UART_RXD,
 --			UART_TX  => open,
---			UART_RX  => AUDIO_INPUT,
+--			UART_RX  => EAR,
 			--SPI
 --			SPI_SD_DI  => sd_miso,
 			SPI_DO     => spi_fromguest,

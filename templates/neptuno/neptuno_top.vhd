@@ -153,8 +153,8 @@ architecture RTL of neptuno_top is
 			-- AUDIO
 				DAC_L   : out SIGNED(15 downto 0);
 				DAC_R   : out SIGNED(15 downto 0);
---				DAC_L           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
---				DAC_R           : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+--				DAC_L   : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
+--				DAC_R   : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
 			AUDIO_L : out std_logic;
 			AUDIO_R : out std_logic
 		);
@@ -176,8 +176,11 @@ architecture RTL of neptuno_top is
 	-- DAC AUDIO     
 	signal dac_l : signed(15 downto 0);
 	signal dac_r : signed(15 downto 0);
-	--signal audio_l_s			: std_logic_vector(15 downto 0);
-	--signal audio_r_s			: std_logic_vector(15 downto 0);
+	--signal dac_l: std_logic_vector(9 downto 0);
+	--signal dac_r: std_logic_vector(9 downto 0);
+	--signal dac_l_s: std_logic_vector(15 downto 0);
+	--signal dac_r_s: std_logic_vector(15 downto 0);
+
 
 	component joydecoder is
 		port (
@@ -262,8 +265,9 @@ begin
 		--	R_data    => std_logic_vector(dac_r_s)
 		);
 
-	--audio_l_s <= '0' & DAC_L & "00000";
-	--audio_r_s <= '0' & DAC_R & "00000";
+	--dac_l_s <= ('0' & dac_l & "00000");
+	--dac_r_s <= ('0' & dac_r & "00000");
+
 
 	-- JOYSTICKS
 	joy : joydecoder
