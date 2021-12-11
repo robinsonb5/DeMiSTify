@@ -1,91 +1,9 @@
 # Pin & Location Assignments
 # ==========================
 
-set_location_assignment PIN_T2 -to clock_50_i
+set_location_assignment PIN_T2 -to CLOCK_50_I
 
-set_location_assignment PIN_V2 -to DRAM_ADDR[0]
-set_location_assignment PIN_V1 -to DRAM_ADDR[1]
-set_location_assignment PIN_U2 -to DRAM_ADDR[2]
-set_location_assignment PIN_U1 -to DRAM_ADDR[3]
-set_location_assignment PIN_V3 -to DRAM_ADDR[4]
-set_location_assignment PIN_V4 -to DRAM_ADDR[5]
-set_location_assignment PIN_Y2 -to DRAM_ADDR[6]
-set_location_assignment PIN_AA1 -to DRAM_ADDR[7]
-set_location_assignment PIN_Y3 -to DRAM_ADDR[8]
-set_location_assignment PIN_V5 -to DRAM_ADDR[9]
-set_location_assignment PIN_W1 -to DRAM_ADDR[10]
-set_location_assignment PIN_Y4 -to DRAM_ADDR[11]
-set_location_assignment PIN_V6 -to DRAM_ADDR[12]
-set_location_assignment PIN_W2 -to DRAM_BA[1]
-set_location_assignment PIN_Y1 -to DRAM_BA[0]
-set_location_assignment PIN_AA4 -to DRAM_CAS_N
-set_location_assignment PIN_W6 -to DRAM_CKE
-set_location_assignment PIN_Y6 -to DRAM_CLK
-set_location_assignment PIN_AA3 -to DRAM_CS_N
-set_location_assignment PIN_V11 -to DRAM_DQ[15]
-set_location_assignment PIN_W10 -to DRAM_DQ[14]
-set_location_assignment PIN_Y10 -to DRAM_DQ[13]
-set_location_assignment PIN_V10 -to DRAM_DQ[12]
-set_location_assignment PIN_V9 -to DRAM_DQ[11]
-set_location_assignment PIN_Y8 -to DRAM_DQ[10]
-set_location_assignment PIN_W8 -to DRAM_DQ[9]
-set_location_assignment PIN_Y7 -to DRAM_DQ[8]
-set_location_assignment PIN_AB5 -to DRAM_DQ[7]
-set_location_assignment PIN_AA7 -to DRAM_DQ[6]
-set_location_assignment PIN_AB7 -to DRAM_DQ[5]
-set_location_assignment PIN_AA8 -to DRAM_DQ[4]
-set_location_assignment PIN_AB8 -to DRAM_DQ[3]
-set_location_assignment PIN_AA9 -to DRAM_DQ[2]
-set_location_assignment PIN_AB9 -to DRAM_DQ[1]
-set_location_assignment PIN_AA10 -to DRAM_DQ[0]
-set_location_assignment PIN_AA5 -to DRAM_LDQM
-set_location_assignment PIN_AB3 -to DRAM_RAS_N
-set_location_assignment PIN_W7 -to DRAM_UDQM
-set_location_assignment PIN_AB4 -to DRAM_WE_N
-
-#NEPTUNO SRAM#
-set_location_assignment PIN_U21 -to SRAM_A[19]
-set_location_assignment PIN_A17 -to SRAM_A[18]
-set_location_assignment PIN_B18 -to SRAM_A[17]
-set_location_assignment PIN_A18 -to SRAM_A[16]
-set_location_assignment PIN_A19 -to SRAM_A[15]
-set_location_assignment PIN_A5 -to SRAM_A[14]
-set_location_assignment PIN_A15 -to SRAM_A[13]
-set_location_assignment PIN_B6 -to SRAM_A[12]
-set_location_assignment PIN_A14 -to SRAM_A[11]
-set_location_assignment PIN_A8 -to SRAM_A[10]
-set_location_assignment PIN_B13 -to SRAM_A[9]
-set_location_assignment PIN_B10 -to SRAM_A[8]
-set_location_assignment PIN_B14 -to SRAM_A[7]
-set_location_assignment PIN_B15 -to SRAM_A[6]
-set_location_assignment PIN_B9 -to SRAM_A[5]
-set_location_assignment PIN_A7 -to SRAM_A[4]
-set_location_assignment PIN_A6 -to SRAM_A[3]
-set_location_assignment PIN_B5 -to SRAM_A[2]
-set_location_assignment PIN_C3 -to SRAM_A[1]
-set_location_assignment PIN_A4 -to SRAM_A[0]
-
-set_location_assignment PIN_F21 -to SRAM_Q[15]
-set_location_assignment PIN_J22 -to SRAM_Q[14]
-set_location_assignment PIN_L21 -to SRAM_Q[13]
-set_location_assignment PIN_M22 -to SRAM_Q[12]
-set_location_assignment PIN_L22 -to SRAM_Q[11]
-set_location_assignment PIN_H22 -to SRAM_Q[10]
-set_location_assignment PIN_H21 -to SRAM_Q[9]
-set_location_assignment PIN_F22 -to SRAM_Q[8]
-set_location_assignment PIN_B17 -to SRAM_Q[7]
-set_location_assignment PIN_A16 -to SRAM_Q[6]
-set_location_assignment PIN_B16 -to SRAM_Q[5]
-set_location_assignment PIN_C4 -to SRAM_Q[4]
-set_location_assignment PIN_A9 -to SRAM_Q[3]
-set_location_assignment PIN_B8 -to SRAM_Q[2]
-set_location_assignment PIN_A13 -to SRAM_Q[1]
-set_location_assignment PIN_B7 -to SRAM_Q[0]
-
-set_location_assignment PIN_A10 -to SRAM_WE
-set_location_assignment PIN_AA20 -to SRAM_OE
-set_location_assignment PIN_R2 -to SRAM_UB
-set_location_assignment PIN_AA16 -to SRAM_LB
+set_location_assignment PIN_E4 -to LED
 
 #NEPTUNO VIDEO#
 set_location_assignment PIN_F1 -to VGA_R[5]
@@ -119,16 +37,14 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
-
-
 #NEPTUNO JOYSTICKS#
-set_location_assignment PIN_AA18 -to joyP7_o
+set_location_assignment PIN_AA18 -to JOYP7_O
 set_location_assignment PIN_A20 -to JOY_CLK
 set_location_assignment PIN_B19 -to JOY_DATA
 set_location_assignment PIN_B20 -to JOY_LOAD
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
 
-#NEPTUNO#
+#NEPTUNO AUDIO#
 set_location_assignment PIN_A3 -to SIGMA_L
 set_location_assignment PIN_B4 -to SIGMA_R
 #set_location_assignment PIN_N5 -to mic_o -- No asignado
@@ -142,17 +58,17 @@ set_location_assignment PIN_AB14 -to I2S_LRCLK
 set_location_assignment PIN_R22 -to I2C_SCL
 set_location_assignment PIN_V21 -to I2C_SDA 
 
-
 #NEPTUNO SD/MMC#
-set_location_assignment PIN_D22 -to sd_cs_n_o
-set_location_assignment PIN_E21 -to sd_miso_i
-set_location_assignment PIN_D21 -to sd_mosi_o
-set_location_assignment PIN_E22 -to sd_sclk_o
+set_location_assignment PIN_D22 -to SD_CS_N_O
+set_location_assignment PIN_E21 -to SD_MISO_I
+set_location_assignment PIN_D21 -to SD_MOSI_O
+set_location_assignment PIN_E22 -to SD_SCLK_O
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to SD_MISO_I
 
 #NEPTUNO CONEXION STM32#
-set_location_assignment PIN_Y21 -to stm_rst_o
-set_location_assignment PIN_J21 -to stm_tx_i
-set_location_assignment PIN_K21 -to stm_rx_o
+set_location_assignment PIN_Y21 -to STM_RST_O
+set_location_assignment PIN_J21 -to STM_TX_I
+set_location_assignment PIN_K21 -to STM_RX_O
 set_location_assignment PIN_N22 -to SPI_SS2
 set_location_assignment PIN_N21 -to SPI_SCK
 set_location_assignment PIN_M21 -to SPI_DO
@@ -164,6 +80,88 @@ set_location_assignment PIN_K22 -to SPI_DI
 #set_location_assignment PIN_AB14 -to LRCLK
 #set_location_assignment PIN_AA15 -to SDIN
 
-set_location_assignment PIN_E4 -to LED
 
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to sd_miso_i
+#NEPTUNO SDRAM#
+set_location_assignment PIN_V2 -to DRAM_ADDR[0]
+set_location_assignment PIN_V1 -to DRAM_ADDR[1]
+set_location_assignment PIN_U2 -to DRAM_ADDR[2]
+set_location_assignment PIN_U1 -to DRAM_ADDR[3]
+set_location_assignment PIN_V3 -to DRAM_ADDR[4]
+set_location_assignment PIN_V4 -to DRAM_ADDR[5]
+set_location_assignment PIN_Y2 -to DRAM_ADDR[6]
+set_location_assignment PIN_AA1 -to DRAM_ADDR[7]
+set_location_assignment PIN_Y3 -to DRAM_ADDR[8]
+set_location_assignment PIN_V5 -to DRAM_ADDR[9]
+set_location_assignment PIN_W1 -to DRAM_ADDR[10]
+set_location_assignment PIN_Y4 -to DRAM_ADDR[11]
+set_location_assignment PIN_V6 -to DRAM_ADDR[12]
+set_location_assignment PIN_W2 -to DRAM_BA[1]
+set_location_assignment PIN_Y1 -to DRAM_BA[0]
+set_location_assignment PIN_V11 -to DRAM_DQ[15]
+set_location_assignment PIN_W10 -to DRAM_DQ[14]
+set_location_assignment PIN_Y10 -to DRAM_DQ[13]
+set_location_assignment PIN_V10 -to DRAM_DQ[12]
+set_location_assignment PIN_V9 -to DRAM_DQ[11]
+set_location_assignment PIN_Y8 -to DRAM_DQ[10]
+set_location_assignment PIN_W8 -to DRAM_DQ[9]
+set_location_assignment PIN_Y7 -to DRAM_DQ[8]
+set_location_assignment PIN_AB5 -to DRAM_DQ[7]
+set_location_assignment PIN_AA7 -to DRAM_DQ[6]
+set_location_assignment PIN_AB7 -to DRAM_DQ[5]
+set_location_assignment PIN_AA8 -to DRAM_DQ[4]
+set_location_assignment PIN_AB8 -to DRAM_DQ[3]
+set_location_assignment PIN_AA9 -to DRAM_DQ[2]
+set_location_assignment PIN_AB9 -to DRAM_DQ[1]
+set_location_assignment PIN_AA10 -to DRAM_DQ[0]
+set_location_assignment PIN_AA5 -to DRAM_LDQM
+set_location_assignment PIN_W7 -to DRAM_UDQM
+set_location_assignment PIN_AB4 -to DRAM_WE_N
+set_location_assignment PIN_AB3 -to DRAM_RAS_N
+set_location_assignment PIN_AA4 -to DRAM_CAS_N
+set_location_assignment PIN_W6 -to DRAM_CKE
+set_location_assignment PIN_Y6 -to DRAM_CLK
+set_location_assignment PIN_AA3 -to DRAM_CS_N
+
+#NEPTUNO SRAM#
+set_location_assignment PIN_U21 -to SRAM_A[19]
+set_location_assignment PIN_A17 -to SRAM_A[18]
+set_location_assignment PIN_B18 -to SRAM_A[17]
+set_location_assignment PIN_A18 -to SRAM_A[16]
+set_location_assignment PIN_A19 -to SRAM_A[15]
+set_location_assignment PIN_A5 -to SRAM_A[14]
+set_location_assignment PIN_A15 -to SRAM_A[13]
+set_location_assignment PIN_B6 -to SRAM_A[12]
+set_location_assignment PIN_A14 -to SRAM_A[11]
+set_location_assignment PIN_A8 -to SRAM_A[10]
+set_location_assignment PIN_B13 -to SRAM_A[9]
+set_location_assignment PIN_B10 -to SRAM_A[8]
+set_location_assignment PIN_B14 -to SRAM_A[7]
+set_location_assignment PIN_B15 -to SRAM_A[6]
+set_location_assignment PIN_B9 -to SRAM_A[5]
+set_location_assignment PIN_A7 -to SRAM_A[4]
+set_location_assignment PIN_A6 -to SRAM_A[3]
+set_location_assignment PIN_B5 -to SRAM_A[2]
+set_location_assignment PIN_C3 -to SRAM_A[1]
+set_location_assignment PIN_A4 -to SRAM_A[0]
+set_location_assignment PIN_F21 -to SRAM_Q[15]
+set_location_assignment PIN_J22 -to SRAM_Q[14]
+set_location_assignment PIN_L21 -to SRAM_Q[13]
+set_location_assignment PIN_M22 -to SRAM_Q[12]
+set_location_assignment PIN_L22 -to SRAM_Q[11]
+set_location_assignment PIN_H22 -to SRAM_Q[10]
+set_location_assignment PIN_H21 -to SRAM_Q[9]
+set_location_assignment PIN_F22 -to SRAM_Q[8]
+set_location_assignment PIN_B17 -to SRAM_Q[7]
+set_location_assignment PIN_A16 -to SRAM_Q[6]
+set_location_assignment PIN_B16 -to SRAM_Q[5]
+set_location_assignment PIN_C4 -to SRAM_Q[4]
+set_location_assignment PIN_A9 -to SRAM_Q[3]
+set_location_assignment PIN_B8 -to SRAM_Q[2]
+set_location_assignment PIN_A13 -to SRAM_Q[1]
+set_location_assignment PIN_B7 -to SRAM_Q[0]
+set_location_assignment PIN_A10 -to SRAM_WE
+set_location_assignment PIN_AA20 -to SRAM_OE
+set_location_assignment PIN_R2 -to SRAM_UB
+set_location_assignment PIN_AA16 -to SRAM_LB
+
+
