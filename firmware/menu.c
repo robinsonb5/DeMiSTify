@@ -40,6 +40,7 @@
 
 static struct menu_entry *menu;
 static int menu_visible=0;
+static int menu_autohide=0;
 char menu_longpress;
 
 static int currentrow;
@@ -169,6 +170,14 @@ unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
 #define SCANDOUBLE_TIMEOUT 1000
 #define LONGPRESS_TIMEOUT 750
+
+#ifdef CONFIG_JOYKEYS_TOGGLE
+int joykeys_active=0;
+#else
+#define joykeys_active 1
+#endif
+
+
 void Menu_Run()
 {
 	int i;
@@ -183,6 +192,21 @@ void Menu_Run()
 	int joy=HW_JOY(REG_JOY);
 
 	HandlePS2RawCodes(menu_visible);
+
+#ifdef CONFIG_JOYKEYS_TOGGLE
+	while(TestKey(KEY_NUMLOCK))
+	{
+		HandlePS2RawCodes(menu_visible);
+		press=1;
+	}
+
+	if(press)
+	{
+		joykeys_active=!joykeys_active;
+		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",750);
+	}
+	press=0;
+#endif
 
 //	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
 //	if((TestKey(KEY_F12)&2) || (buttons & JOY_BUTTON_MENU))
@@ -210,7 +234,7 @@ void Menu_Run()
 //	}
 //	prevbuttons=buttons;
 
-	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
+	if(joykeys_active && !menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
 #ifdef CONFIG_JOYKEYS
 		int joybit=0x8000;
@@ -306,5 +330,20 @@ void Menu_Run()
 
 	if(upd)
 		Menu_Draw(currentrow);
+
+	if(menu_autohide && CheckTimer(menu_autohide))
+	{
+		Menu_ShowHide(0);
+		menu_autohide=0;
+	}
+}
+
+
+void Menu_Message(const char *msg,int autohide)
+{
+	(menu+7)->label=msg;
+	Menu_Draw(7);
+	Menu_ShowHide(1);
+	menu_autohide=GetTimer(autohide);
 }
 

@@ -404,6 +404,24 @@ static void scrollroms(int row)
 }
 
 
+static void SaveSettings(int row)
+{
+	Menu_ShowHide(0);
+	// FIXME reset here
+}
+
+static void MenuHide(int row)
+{
+	Menu_ShowHide(0);
+}
+
+static void submenu(int row)
+{
+	menupage=menu[row].u.menu.page;
+	putchar(row+'0');
+	buildmenu(0);
+}
+
 static void listroms(int row)
 {
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
@@ -452,8 +470,8 @@ static void listroms(int row)
 	for(;j<7;++j)
 	{
 		moremenu=0;
-		menu[j].action=MENU_ACTION(&selectrom);
-		romfilenames[j][0]=0;
+		menu[j].action=MENU_ACTION(0);
+		*menu[j].label=0;
 	}
 	menu[7].u.menu.page=0;
 	menu[7].action=MENU_ACTION(&submenu);
@@ -479,33 +497,6 @@ static void showrommenu(int row)
 }
 
 #endif
-
-
-static void reset(int row)
-{
-	Menu_ShowHide(0);
-	// FIXME reset here
-}
-
-
-static void SaveSettings(int row)
-{
-	Menu_ShowHide(0);
-	// FIXME reset here
-}
-
-static void MenuHide(int row)
-{
-	Menu_ShowHide(0);
-}
-
-
-static void submenu(int row)
-{
-	menupage=menu[row].u.menu.page;
-	putchar(row+'0');
-	buildmenu(0);
-}
 
 
 __weak void sendstatus(int statusword)
@@ -588,7 +579,6 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 			menu[line].action=MENU_ACTION(&fileselector);
 			menu[line].label[7]=c;
 			menu[line].u.file.index=fileindex;
-			++fileindex;
 			menu[line].u.file.cfgidx=0;
 			menu[line].u.file.unit=0;
 			configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
@@ -599,6 +589,7 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 		}
 		else
 			configstring_nextfield();
+		++fileindex; /* Need to bump the file index whichever page we're on. */
 	}
 	while(c && line<limit)
 	{
@@ -704,12 +695,12 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 					if((c=configstring_copytocomma(title,LINELENGTH,selpage==page))>0)
 					{
 						title+=c;
-						strncpy(title,": ",menu[line].label+LINELENGTH-title);
+						strncpy(title,": ",LINELENGTH-c);
 						title+=2;
 						do
 						{
 							++opt;
-						} while(configstring_copytocomma(title,menu[line].label+LINELENGTH-title,opt==(val+1))>0);
+						} while(configstring_copytocomma(title,LINELENGTH-(c+2),opt==(val+1))>0);
 					}
 
 					if(opt)
@@ -734,7 +725,11 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 			}
 		}
 		else
+		{
+			if(c=='F')
+				++fileindex;
 			c=configstring_nextfield();
+		}
 		++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 	}
 	for(;line<7;++line)
@@ -804,8 +799,9 @@ __weak int main(int argc,char **argv)
 
 	PS2Init();
 
-	menu[7].label="Booting...";
 	Menu_Set(menu);
+	Menu_Message("Booting...",0);
+	menu[7].label="Booting...";
 	Menu_Draw(7);
 	Menu_ShowHide(1);
 
@@ -826,8 +822,7 @@ __weak int main(int argc,char **argv)
 
 	if(err=autoboot())
 	{
-		menu[7].label=err;
-		Menu_Draw(7);
+		Menu_Message(err,0);
 	}
 	else
 		Menu_ShowHide(0);

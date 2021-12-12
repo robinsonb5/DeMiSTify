@@ -11,7 +11,7 @@ ROMSIZE1=8192
 ROMSIZE2=4096
 
 CDEFS =
-CFLAGS = -quiet -+ -c99 -O=1343 -speed -unsigned-char -I. $(CDEFS)
+CFLAGS = -quiet -+ -c99 -O=1343 -size -unsigned-char -I. $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=0x200
 

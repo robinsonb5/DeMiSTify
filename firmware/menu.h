@@ -55,7 +55,7 @@ struct hotkey
 	void (*callback)(int row);
 };
 
-
+void Menu_Message(const char *msg,int autohide);
 void Menu_ShowHide(int visible);
 void Menu_Draw();
 void Menu_Set(struct menu_entry *head);
