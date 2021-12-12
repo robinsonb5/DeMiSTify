@@ -40,8 +40,6 @@ cd xxxxx
 #Do a first make (will finish in error) but it will download missing submodules 
 make
 cd DeMiSTify
-#Checkout to somhic branch for the latest updates (if using decafpga forked demistify)
-git checkout somhic
 #Create file site.mk in DeMiSTify folder 
 cp site.template site.mk
 #Edit site.mk and add your own PATHs to Quartus (Q18)

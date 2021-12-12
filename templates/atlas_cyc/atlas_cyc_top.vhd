@@ -223,15 +223,19 @@ architecture RTL of atlas_top is
 	signal vga_x_hs  : std_logic;
 	signal vga_x_vs  : std_logic;
 
-	-- component pll2 for hdmi output
-	--     port (
-	-- --  areset : in std_logic;
-	--     inclk0 : in std_logic;
-	--     c0 : out std_logic;
-	--     c1 : out std_logic;
-	--     locked : out std_logic
-	--   );
-	-- end component;
+
+	signal clock_50M : std_logic;
+
+	component pll2 is			-- for hdmi output & 50 MHz clock
+	    port (
+	--  areset : in std_logic;
+	    inclk0 : in std_logic;
+	    c0 : out std_logic;
+	    c1 : out std_logic;
+		c2 : out std_logic;
+	    locked : out std_logic
+	  );
+	end component;
 
 	-- SHARE PIN P11 EAR IN / JOY SEL OUT  
 	signal EAR        : std_logic;
@@ -305,17 +309,19 @@ begin
 	-- END VGA ATLAS -------------------  
 
 
+	-- PLL VIDEO / 50 MHz
+	pllvideo : pll2
+	port map (
+		inclk0		=> CLK12M,				--      PAL       NTSC
+		c0			=> clock_dvi_s,			-- x5	177.5     143.2
+		c1			=> clock_vga_s,			-- x 	35.5      28.63
+		c2			=> clock_50M,			-- 50 MHz
+		locked		=> locked
+	);
+
+
 	-- BEGIN HDMI ATLAS -------------------   
 	PINS_HDMI_VGA_2 : if ATLAS_CYC_VGA = 0 generate -- HDMI TDMS
-
-		-- PLL VIDEO
-		-- pllvideo : pll2
-		-- port map (
-		-- 	inclk0		=> CLK12M,				--      PAL       NTSC
-		-- 	c0			=> clock_dvi_s,			-- x5	177.5     143.2
-		-- 	c1			=> clock_vga_s,			-- x 	35.5      28.63
-		-- 	locked		=> locked
-		-- );
 
 		clock_vga_s <= vga_clk;
 		clock_dvi_s <= hdmi_clk;
@@ -512,7 +518,7 @@ begin
 				jtag_uart => false
 			)
 			port map(
-				clk       => CLK12M,	-- Next time use a pll 50 MHz clock
+				clk       => clock_50M,	
 				reset_in  => KEY0,
 				reset_out => reset_n,
 
