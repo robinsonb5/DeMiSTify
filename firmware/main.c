@@ -799,13 +799,10 @@ __weak int main(int argc,char **argv)
 
 	PS2Init();
 
-	Menu_Set(menu);
 	Menu_Message("Booting...",0);
-	menu[7].label="Booting...";
-	Menu_Draw(7);
-	Menu_ShowHide(1);
+	Menu_Set(menu);
 
-	SPI(0xff);
+//	SPI(0xff);
 
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 	havesd=0;
@@ -820,12 +817,7 @@ __weak int main(int argc,char **argv)
 
 	buildmenu(0);
 
-	if(err=autoboot())
-	{
-		Menu_Message(err,0);
-	}
-	else
-		Menu_ShowHide(0);
+	Menu_Message(autoboot(),0);
 
 	EnableInterrupts();
 

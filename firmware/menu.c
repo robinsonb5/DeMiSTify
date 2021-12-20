@@ -49,6 +49,12 @@ static int currentrow;
 static struct hotkey *hotkeys;
 #endif
 
+#ifdef CONFIG_JOYKEYS_TOGGLE
+int joykeys_active=0;
+#else
+#define joykeys_active 1
+#endif
+
 void Menu_Draw(int currentrow)
 {
 	int i;
@@ -87,6 +93,7 @@ void Menu_ShowHide(int visible)
 	else
 		menu_visible=visible;
 	OsdShowHide(menu_visible);
+	HW_INTERCEPT(0)=menu_visible|joykeys_active;
 }
 
 int Menu_Visible()
@@ -171,12 +178,6 @@ unsigned int joy_timestamp=0;
 #define SCANDOUBLE_TIMEOUT 1000
 #define LONGPRESS_TIMEOUT 750
 
-#ifdef CONFIG_JOYKEYS_TOGGLE
-int joykeys_active=0;
-#else
-#define joykeys_active 1
-#endif
-
 
 void Menu_Run()
 {
@@ -203,38 +204,32 @@ void Menu_Run()
 	if(press)
 	{
 		joykeys_active=!joykeys_active;
-		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",750);
+		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",500);
 	}
 	press=0;
 #endif
 
-//	if((TestKey(KEY_F12)&2) || ((buttons & ~prevbuttons) & JOY_BUTTON_MENU))
-//	if((TestKey(KEY_F12)&2) || (buttons & JOY_BUTTON_MENU))
-//	{
-		menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-		while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
+	menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
+	while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
+	{
+		press=1;
+		buttons=HW_JOY(REG_JOY_EXTRA);
+		HandlePS2RawCodes(menu_visible);
+		if(CheckTimer(menu_timestamp))
 		{
-			press=1;
-			buttons=HW_JOY(REG_JOY_EXTRA);
-			HandlePS2RawCodes(menu_visible);
-			if(CheckTimer(menu_timestamp))
-			{
-				SetScandouble(scandouble^=1);
-				menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-			}
+			SetScandouble(scandouble^=1);
+			menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
 		}
-		if(press)
-		{
-			menu_visible^=1;
-			OsdShowHide(menu_visible);
-			TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
-			//		printf("Menu visible %d\n",menu_visible);
-			upd=1;
-		}
-//	}
-//	prevbuttons=buttons;
+	}
+	if(press)
+	{
+		Menu_ShowHide(-1);
+		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
+		//		printf("Menu visible %d\n",menu_visible);
+		upd=1;
+	}
 
-	if(joykeys_active && !menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
+	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
 #ifdef CONFIG_JOYKEYS
 		int joybit=0x8000;
@@ -246,12 +241,13 @@ void Menu_Run()
 			joybit>>=1;
 		}
 #endif
-		Menu_Joystick(0,joy&0xff);
-		Menu_Joystick(1,joy>>8);
-
 		TestKey(KEY_PAGEUP);
 		TestKey(KEY_PAGEDOWN);
-
+		if(joykeys_active)
+		{
+			Menu_Joystick(0,joy&0xff);
+			Menu_Joystick(1,joy>>8);
+		}
 		return;
 	}
 
@@ -339,11 +335,12 @@ void Menu_Run()
 }
 
 
-void Menu_Message(const char *msg,int autohide)
+void Menu_Message(char *msg,int autohide)
 {
-	(menu+7)->label=msg;
-	Menu_Draw(7);
-	Menu_ShowHide(1);
-	menu_autohide=GetTimer(autohide);
+	if(msg)
+		(menu+7)->label=msg;
+	Menu_Set(menu); /* Draw menu, with side effect of selecting and highlighting the last row */
+	Menu_ShowHide(msg!=0);
+	menu_autohide=autohide ? GetTimer(autohide) : 0;
 }
 

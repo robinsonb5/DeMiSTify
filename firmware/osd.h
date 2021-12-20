@@ -42,7 +42,7 @@ void spi_osd_cmd(unsigned char cmd);
 void spi_osd_cmd8_cont(unsigned char cmd, unsigned char parm);
 void spi_osd_cmd8(unsigned char cmd, unsigned char parm);
 
-#define OsdShowHide(ena) {HW_INTERCEPT(0)=ena; spi_osd_cmd(MM1_OSDCMDDISABLE+(ena&1));}
+#define OsdShowHide(ena) {spi_osd_cmd(MM1_OSDCMDDISABLE+(ena&1));}
 
 /*functions*/
 void OsdSetTitle(char *s,int arrow);	// arrow > 0 = display right arrow in bottom right, < 0 = display left arrow
