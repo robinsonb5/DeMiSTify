@@ -5,6 +5,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* Do we need access to the SD card filesystem? (Defined in the negative
+   so that filesystem support is built by default) */
+
+#undef CONFIG_WITHOUT_FILESYSTEM
+
 /* PS/2 Mouse support */
 #undef PS2_MOUSE
 #undef PS2_WRITE /* Needed to initialise the mouse and put it in wheel mode */
@@ -28,7 +33,7 @@ here, the number of units defaults to 4. */
 
 /* Send key events via the mist_io block. If the core can support
    a PS/2 keyboard directly then that's probably a better option. */
-#undef CONFIG_SENDKEYS
+#define CONFIG_SENDKEYS
 
 /* Send joystick events using the "new" extended joystick protocol.
    This could support more buttons (if DeMiSTify itself supported them,

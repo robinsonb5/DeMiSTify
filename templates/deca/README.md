@@ -20,7 +20,9 @@ Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com
 
 **Additional hardware required**:
 
-- SDRAM module. Tested with 32 MB SDRAM board for MiSTer (extra slim) XS_2.2 ([see connections](https://github.com/SoCFPGA-learning/DECA/tree/main/Projects/sdram_mister_deca))
+- SDRAM module
+  - Tested with 32 MB SDRAM board for MiSTer (extra slim) XS_2.2 ([see connections](https://github.com/SoCFPGA-learning/DECA/tree/main/Projects/sdram_mister_deca))
+  - Tested with a dual memory module v1.3 with 3 pins ([see connections](https://github.com/SoCFPGA-learning/DECA/tree/main/Projects/sdram_mister_deca) + [3pins](https://github.com/DECAfpga/DECA_board/blob/main/Sdram_mister_deca/README_3pins.md))
 - PS/2 Keyboard connected to GPIO  (see pinout below)
 
 ##### Versions:
@@ -42,13 +44,16 @@ git clone https://github.com/DECAfpga/xxxx
 cd xxxx
 #Do a first make (will finish in error) but it will download missing submodules 
 make
-#Checkout to the DeMiSTify branch with the latest updates
 cd DeMiSTify
-git checkout somhic
 #Create file site.mk in DeMiSTify folder 
 cp site.template site.mk
-#Edit site.mk and add your own PATHs to Quartus (Q19)
+#Edit site.mk and add your own PATHs to Quartus (Q18)
 gedit site.mk
+
+#[DECA ONLY]Copy mofified deca_pins.tcl file to Demistify folder (MODIFICATION FOR 3 PINS SDRAM. THIS IS A TEMPORARY FIX)
+cd ../deca
+cp deca_pins.tcl_copy_to_demistify_board_deca ../DeMiSTify/Board/deca/deca_pins.tcl 
+
 #Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc). If not specified it will compile for all targets.
 cd ..
 make BOARD=deca

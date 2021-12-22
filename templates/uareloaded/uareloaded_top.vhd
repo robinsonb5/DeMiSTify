@@ -38,8 +38,8 @@ entity uareloaded_top is
 		-- UART
 		AUDIO_IN                    : IN STD_LOGIC;
 		--STM32
-      STM_RST                     : out std_logic     := 'Z'; -- '0' to hold the microcontroller reset line, to free the SD card
-      -- I2S
+        STM_RST                     : out std_logic     := 'Z'; -- '0' to hold the microcontroller reset line, to free the SD card
+        -- I2S
 		SCLK                        : out std_logic;
 		SDIN                        : out std_logic;
 		MCLK                        : out std_logic := 'Z';
@@ -60,21 +60,16 @@ END entity;
 architecture RTL of uareloaded_top is
 	
 -- System clocks
-
 	signal locked : std_logic;
 	signal reset_n : std_logic;
 
-
-
 -- SPI signals
-
 --	signal sd_clk : std_logic;
 --	signal sd_cs : std_logic;
 --	signal sd_mosi : std_logic;
 --	signal sd_miso : std_logic;
 	
 -- internal SPI signals
-	
 	signal spi_toguest : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2 : std_logic;
@@ -94,8 +89,9 @@ architecture RTL of uareloaded_top is
 	signal ps2_mouse_dat_in: std_logic;
 	signal ps2_mouse_clk_out: std_logic;
 	signal ps2_mouse_dat_out: std_logic;
-
 	
+	signal intercept : std_logic;
+
 -- Video
 	signal vga_red: std_logic_vector(7 downto 0);
 	signal vga_green: std_logic_vector(7 downto 0);
@@ -106,11 +102,8 @@ architecture RTL of uareloaded_top is
 -- RS232 serial
 	signal rs232_rxd : std_logic;
 	signal rs232_txd : std_logic;
-
-
 	
 -- IO
-
 	signal joya : std_logic_vector(7 downto 0);
 	signal joyb : std_logic_vector(7 downto 0);
 	signal joyc : std_logic_vector(7 downto 0);
@@ -119,13 +112,12 @@ architecture RTL of uareloaded_top is
 -- DAC
    signal dac_l: signed(15 downto 0);
    signal dac_r: signed(15 downto 0);
-	
    --signal dac_l_s: signed(15 downto 0);
    --signal dac_r_s: signed(15 downto 0);
 	
 	
 
-component gb_mist
+component guest_mist
     port (
     CLOCK_27 : in std_logic_vector (1 downto 0);
     LED : out std_logic;
@@ -152,16 +144,16 @@ component gb_mist
 	-- AUDIO
     AUDIO_L : out std_logic;
     AUDIO_R : out std_logic;
-	DAC_L           : OUT SIGNED(15 DOWNTO 0);
-    DAC_R           : OUT SIGNED(15 DOWNTO 0);
+		DAC_L   : OUT SIGNED(15 DOWNTO 0);
+    	DAC_R   : OUT SIGNED(15 DOWNTO 0);
 	-- VGA
     VGA_HS : out std_logic;
     VGA_VS : out std_logic;
     VGA_R : out std_logic_vector (5 downto 0);
     VGA_G : out std_logic_vector (5 downto 0);
     VGA_B : out std_logic_vector (5 downto 0);
-	VGA_BLANK : out std_logic; 
-	VGA_CLK : out std_logic
+		VGA_BLANK : out std_logic; 
+		VGA_CLK : out std_logic
   );
 end component;
 
@@ -177,7 +169,6 @@ begin
 --sd_mosi_o<=sd_mosi;
 --sd_miso<=sd_miso_i;
 --sd_sclk_o<=sd_clk;
-
 
 
 -- External devices tied to GPIOs
@@ -212,17 +203,18 @@ port map (
 );
 
 
-		VGA_R<=vga_red;
-		VGA_G<=vga_green;
-		VGA_B<=vga_blue;
-		VGA_HS<=vga_hsync;
-		VGA_VS<=vga_vsync;
-		VGA_BLANK<='1';    -- not vga_blank_o
---		VGA_CLOCK<=CLOCK_50;
+VGA_R  <=vga_red;
+VGA_G  <=vga_green;
+VGA_B  <=vga_blue;
+VGA_HS <=vga_hsync;
+VGA_VS <=vga_vsync;
+VGA_BLANK<='1';    -- not vga_blank_o
+--VGA_CLOCK<=CLOCK_50;
+
 
 ---- I2S out
 
-i2s : entity work.audio_top
+audio_i2s : entity work.audio_top
 port map(
      clk_50MHz => clock_50,
 	  dac_MCLK  => MCLK,
@@ -237,9 +229,11 @@ port map(
 --dac_r_s <= (dac_r & dac_r(9 downto 4));
 
 
-guest: COMPONENT  gb_mist
-  port map (
+guest: COMPONENT  guest_mist
+  port map (			
+--	CLOCK_27 => CLOCK_50,
     CLOCK_27 => CLOCK_50&CLOCK_50,
+--	RESET_N => reset_n,
     LED => LED,
 	--SPI
 	SPI_DO => spi_fromguest,
@@ -247,8 +241,11 @@ guest: COMPONENT  gb_mist
 	SPI_SCK => spi_clk_int,
 	SPI_SS2 => spi_ss2,
 	SPI_SS3 => spi_ss3,
-	SPI_SS4 => spi_ss4,
+--	SPI_SS4 => spi_ss4,
 	CONF_DATA0 => conf_data0,
+	--UART
+--	UART_TX  => open,
+--	UART_RX  => AUDIO_IN,
 	--SDRAM
 	SDRAM_DQ => DRAM_DQ,
 	SDRAM_A => DRAM_ADDR,
@@ -264,8 +261,8 @@ guest: COMPONENT  gb_mist
 	--AUDIO
     AUDIO_L => SIGMA_L,
     AUDIO_R => SIGMA_R,
-	DAC_L   => dac_l,
-	DAC_R   => dac_r,
+		DAC_L   => dac_l,
+		DAC_R   => dac_r,
 	--VGA
 	VGA_HS => vga_hsync,
 	VGA_VS => vga_vsync,
@@ -279,16 +276,16 @@ guest: COMPONENT  gb_mist
 
 
 
-
 -- Pass internal signals to external SPI interface
 sd_sck <= spi_clk_int;
 
 controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
+		--		SPI_FASTBIT=>3,
+		--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
 		debug => false,
 		jtag_uart => false
-		
 	)
 	port map (
 		clk => CLOCK_50,
@@ -317,13 +314,17 @@ controller : entity work.substitute_mcu
 		ps2m_clk_out => ps2_mouse_clk_out,
 		ps2m_dat_out => ps2_mouse_dat_out,
 
+		-- Buttons
 		buttons => (others=>'1'),
-      -- joy
+		
+        -- joy
 		joy1 => joya,
 		joy2 => joyb,
+		
 		-- UART
 		rxd => rs232_rxd,
-		txd => rs232_txd
+		txd => rs232_txd,
+		intercept => intercept
 );
 
 end rtl;

@@ -2,7 +2,7 @@
 # CLOCK
 #============================================================
 set_location_assignment PIN_M2  -to CLK12M
-set_location_assignment PIN_E15 -to CLK50M
+set_location_assignment PIN_E15 -to CLK_X
 
 #============================================================
 # KEY
@@ -22,43 +22,25 @@ set_location_assignment PIN_N5 -to LED[6]
 set_location_assignment PIN_N3 -to LED[7]
 
 
-if {[info exists atlas_cyc_vga] && ($atlas_cyc_vga==1)} {
-
-#============================================================
-# VGA
-#============================================================
-set_location_assignment PIN_N2  -to VGA_R[1]
-set_location_assignment PIN_N1  -to VGA_R[0]
-set_location_assignment PIN_J2  -to VGA_G[1]
-set_location_assignment PIN_J1  -to VGA_G[0]
-set_location_assignment PIN_P2  -to VGA_B[1]
-set_location_assignment PIN_P1  -to VGA_B[0]
-set_location_assignment PIN_L16 -to VGA_HS
-set_location_assignment PIN_L15 -to VGA_VS
-
-} else {
-
 #============================================================
 # HDMI TDMS    ### VGA222 adapter
 #============================================================              
 set_location_assignment PIN_L16 -to TMDS[0]
-  # CLK-                        ### HS
+  # CLK-                        ### VGA_HS
 set_location_assignment PIN_L15 -to TMDS[1]
-  # CLK+ # clock channel        ### VS
+  # CLK+ # clock channel        ### VGA_VS
 set_location_assignment PIN_P1  -to TMDS[2]
-  # 0-                          ### BLUE[0]
+  # 0-                          ### VGA_B[0]
 set_location_assignment PIN_P2  -to TMDS[3] 
- # 0+   # blue channel         ### BLUE[1]
+ # 0+   # blue channel         ### VGA_B[1]
 set_location_assignment PIN_J1  -to TMDS[4]
-  # 1-                          ### GREEN[0]
+  # 1-                          ### VGA_G[0]
 set_location_assignment PIN_J2  -to TMDS[5]
-  # 1+   # green channel        ### GREEN[1]
+  # 1+   # green channel        ### VGA_G[1]
 set_location_assignment PIN_N1  -to TMDS[6]
-  # 2-                          ### RED[0]
+  # 2-                          ### VGA_R[0]
 set_location_assignment PIN_N2  -to TMDS[7]
-  # 2+   # red channel          ### RED[1]
-
-}
+  # 2+   # red channel          ### VGA_R[1]
 
 
 #============================================================
@@ -104,18 +86,10 @@ set_location_assignment PIN_R1  -to JOY1_DOWN
 set_location_assignment PIN_T15 -to JOY1_LEFT
 set_location_assignment PIN_N16 -to JOY1_RIGHT
 
-if {[info exists atlas_cyc_ear] && ($atlas_cyc_ear==0)} {
-# joystick select pin 
-set_location_assignment PIN_P11 -to JOYX_SEL_O
-
-} else {
-
 #============================================================
-# Audio EAR
+# Shared PIN_P11:   Audio EAR / Joystick select
 #============================================================
-set_location_assignment PIN_P11 -to EAR
-
-}
+set_location_assignment PIN_P11 -to JOYX_SEL_EAR
 
 #============================================================
 # MicroSD Card
