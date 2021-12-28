@@ -37,109 +37,50 @@
 #include "pcecd.h"
 #include "spi_sd.h"
 #include "diskimg.h"
+#include "statusword.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
 #define DIRECTUPLOAD 0x10
 
-unsigned int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
 #define LINELENGTH 32
 unsigned char menupage;
-unsigned char coretype;
 unsigned char romtype=0;
 unsigned char unit=0;
 
-
-/* Upload data to FPGA */
-
 fileTYPE file;
-
-void VerifyROM()
-{
-	unsigned int imgsize=file.size;
-	unsigned int sendsize;
-	SPI_ENABLE(HW_SPI_FPGA)
-	SPI(SPI_FPGA_FILE_TX);
-	SPI(0x03);	/* Verify */
-	SPI_DISABLE(HW_SPI_FPGA);
-
-	SPI_ENABLE_FAST_INT(HW_SPI_SNIFF);
-	while(imgsize)
-	{
-		if(imgsize>=512)
-		{
-			sendsize=512;
-			imgsize-=512;
-		}
-		else
-		{
-			sendsize=imgsize;
-			imgsize=0;
-		}
-		while(sendsize--)
-		{
-			SPI(0x00);
-		}
-		SPI(0x00); /* CRC bytes */
-		SPI(0x00);
-	}
-	SPI_DISABLE(HW_SPI_SNIFF);
-
-	SPI_ENABLE(HW_SPI_FPGA);
-	SPI(SPI_FPGA_FILE_TX);
-	SPI(0x00);
-	SPI_DISABLE(HW_SPI_FPGA);
-}
-
 
 __weak int rom_minsize=1;
 
-
-static void sendsector(const char *buf,int sendsize)
-{
-	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
-	int s=sendsize;
-	SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
-	SPI(SPI_FPGA_FILE_TX_DAT);
-	do
-	{
-		*spiptr=*buf++;
-	} while(--s);
-	SPI_DISABLE(HW_SPI_FPGA);
-}
-
 #ifndef CONFIG_WITHOUT_FILESYSTEM
+#define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
 int LoadROM(const char *fn)
 {
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 	if(FileOpen(&file,fn))
 	{
 		int minsize=rom_minsize;
 		int sendsize;
-		int extindex=configstring_matchextension(fn); /* Figure out which extension configstring_matches, and thus which index we need to use */
-//		printf("Coretype %d, ROM filename %s, Romtype %d, configstring_index %d, extidx %d\n",coretype,fn,romtype,configstring_index,extindex);
-//		printf("Got extind");
+		/* Figure out which extension configstring_matches, and thus which index we need to use */
+		int extindex=configstring_matchextension(fn);
+
 		if(!extindex)
 			extindex=1;
-		SPI_ENABLE(HW_SPI_FPGA);
-		SPI(SPI_FPGA_FILE_INDEX);
-		SPI(romtype|((extindex-1)<<6)); /* Set ROM index */
-		SPI_DISABLE(HW_SPI_FPGA);
 
-		if(coretype&DIRECTUPLOAD)	/* Send a dummy file info */
+		SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|((extindex-1)<<6));
+
+		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 		{
 			unsigned int i;
 			SPI_ENABLE(HW_SPI_FPGA);
-			SPI(SPI_FPGA_FILE_INFO);
+			*spiptr=SPI_FPGA_FILE_INFO;
 			for(i=0;i<32;++i)
-				SPI(0xff);
+				*spiptr=0xff;
 			SPI_DISABLE(HW_SPI_FPGA);
 		}
-		SPI(0xFF);
+		*spiptr=0xFF;
 
-		SPI_ENABLE(HW_SPI_FPGA);
-		SPI(SPI_FPGA_FILE_TX);
-		SPI(0x01); /* Upload */
-		SPI_DISABLE(HW_SPI_FPGA);
+		SPIFPGA(SPI_FPGA_FILE_TX,1);
 
 		while(minsize>0)
 		{
@@ -159,12 +100,18 @@ int LoadROM(const char *fn)
 					imgsize=0;
 				}
 
-				if(coretype&DIRECTUPLOAD)
+				if(configstring_coretype&DIRECTUPLOAD)
 					result=FileReadSector(&file,0);
 				else
 				{
 					result=FileReadSector(&file,sector_buffer);
-					sendsector(buf,sendsize);
+					SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+					*spiptr=SPI_FPGA_FILE_TX_DAT;
+					do
+					{
+						*spiptr=*buf++;
+					} while(--sendsize);
+					SPI_DISABLE(HW_SPI_FPGA);
 				}
 				if(!result)
 					return(0);
@@ -175,10 +122,7 @@ int LoadROM(const char *fn)
 				FileFirstSector(&file); // Start from the beginning again.
 		}
 
-		SPI_ENABLE(HW_SPI_FPGA);
-		SPI(SPI_FPGA_FILE_TX);
-		SPI(0x00);
-		SPI_DISABLE(HW_SPI_FPGA);
+		SPIFPGA(SPI_FPGA_FILE_TX,0);
 		return(1);
 	}
 	else
@@ -186,12 +130,6 @@ int LoadROM(const char *fn)
 }
 #endif
 
-void spin()
-{
-	unsigned int i,t;
-	for(i=0;i<1024;++i)
-		t=HW_SPI(HW_SPI_CS);
-}
 
 int menuindex;
 int moremenu;
@@ -236,7 +174,7 @@ static DIRENTRY *nthfile(unsigned int n)
 extern char cd_buffer[2352];
 
 static char string[18];
-
+#if 0
 void hexdump(unsigned char *p,unsigned int l)
 {
 	int i=0;
@@ -276,6 +214,7 @@ void hexdump(unsigned char *p,unsigned int l)
 		putchar('\n');
 	}
 }
+#endif
 
 void spi32le(int x)
 {
@@ -418,7 +357,7 @@ static void MenuHide(int row)
 static void submenu(int row)
 {
 	menupage=menu[row].u.menu.page;
-	putchar(row+'0');
+//	putchar(row+'0');
 	buildmenu(0);
 }
 
@@ -499,19 +438,6 @@ static void showrommenu(int row)
 #endif
 
 
-__weak void sendstatus(int statusword)
-{
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	SPI(UIO_SET_STATUS2); // Read conf string command
-	SPI(statusword);
-	SPI(statusword>>8);
-	SPI(statusword>>16);
-	SPI(statusword>>24);
-	SPI_DISABLE(HW_SPI_CONF);
-}
-
-
 void cycle(int row)
 {
 	int v;
@@ -524,7 +450,7 @@ void cycle(int row)
 	statusword&=~(m->u.opt.val<<m->u.opt.shift); // Mask off old bits from status word
 	statusword|=v<<m->u.opt.shift;		// and insert new value
 
-	sendstatus(statusword);
+	sendstatus();
 
 	parseconf(menupage,menu,menuindex,7);
 	Menu_Draw(row);
@@ -799,24 +725,26 @@ __weak int main(int argc,char **argv)
 
 	PS2Init();
 
-	Menu_Message("Booting...",0);
-	Menu_Set(menu);
-
 //	SPI(0xff);
+
+	buildmenu(0);
 
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 	havesd=0;
 #else
 	filename[0]=0;
-	if(havesd=sd_init() && FindDrive())
-		puts("SD OK");
+	if(!(havesd=sd_init() && FindDrive()))
+	{
+		Menu_Message("SD failed.",0);
+		while(1)
+			;
+	}
 #endif
 
 	menuindex=0;
 	menupage=0;
 
-	buildmenu(0);
-
+	Menu_Message("Booting...",0);
 	Menu_Message(autoboot(),0);
 
 	EnableInterrupts();

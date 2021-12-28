@@ -204,7 +204,7 @@ void Menu_Run()
 	if(press)
 	{
 		joykeys_active=!joykeys_active;
-		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",500);
+		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",700);
 	}
 	press=0;
 #endif
@@ -232,22 +232,22 @@ void Menu_Run()
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
 #ifdef CONFIG_JOYKEYS
-		int joybit=0x8000;
-		unsigned char *key=joy_keymap;
-		while(joybit)
+		if(joykeys_active)
 		{
-			if(TestKey(*key++))
-				joy|=joybit;
-			joybit>>=1;
+			int joybit=0x8000;
+			unsigned char *key=joy_keymap;
+			while(joybit)
+			{
+				if(TestKey(*key++))
+					joy|=joybit;
+				joybit>>=1;
+			}
 		}
 #endif
 		TestKey(KEY_PAGEUP);
 		TestKey(KEY_PAGEDOWN);
-		if(joykeys_active)
-		{
-			Menu_Joystick(0,joy&0xff);
-			Menu_Joystick(1,joy>>8);
-		}
+		Menu_Joystick(0,joy&0xff);
+		Menu_Joystick(1,joy>>8);
 		return;
 	}
 
@@ -329,6 +329,7 @@ void Menu_Run()
 
 	if(menu_autohide && CheckTimer(menu_autohide))
 	{
+		Menu_Draw(currentrow);
 		Menu_ShowHide(0);
 		menu_autohide=0;
 	}
@@ -337,9 +338,14 @@ void Menu_Run()
 
 void Menu_Message(char *msg,int autohide)
 {
+	struct menu_entry *m=menu+7;	
+	char *tmp=m->label;
 	if(msg)
-		(menu+7)->label=msg;
-	Menu_Set(menu); /* Draw menu, with side effect of selecting and highlighting the last row */
+	{
+		m->label=msg;
+		Menu_Set(menu); /* Draw menu, with side effect of selecting and highlighting the last row */
+		m->label=tmp;
+	}
 	Menu_ShowHide(msg!=0);
 	menu_autohide=autohide ? GetTimer(autohide) : 0;
 }

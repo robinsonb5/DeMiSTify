@@ -170,7 +170,7 @@ int wait_init()
 	int i=20;
 	int r;
 	SPI(0xff);
-	puts("CMD");
+//	puts("CMD");
 	while(--i)
 	{
 		if((r=cmd_init())==0)
@@ -251,7 +251,7 @@ int is_sdhc()
 		}
 		if(i==2)
 		{
-			puts("SDHC fail!\n");
+//			puts("SDHC fail!\n");
 			return(0);
 		}
 	}
@@ -264,7 +264,7 @@ int sd_init()
 	int i;
 	int r;
 	sd_is_sdhc=1;
-	puts("SPI");
+//	puts("SPI");
 	i=8;
 	while(--i)
 	{
@@ -277,7 +277,7 @@ int sd_init()
 		DBG("Sent reset command\n");
 		if(i==2)
 		{
-			puts("IERR");
+//			puts("IERR");
 			DBG("SD card initialization error!\n");
 			return(0);
 		}
@@ -316,7 +316,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 	t=cmd_writesector(lba);
 	if(t!=0)
 	{
-		puts("Write failed\n");
+//		puts("Write failed\n");
 //		printf("Read command failed at %d (%d)\n",lba,r);
 		return(1);
 	}

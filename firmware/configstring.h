@@ -2,6 +2,7 @@
 #define CONFIGSTRING_H
 
 extern unsigned char configstring_index;
+extern unsigned char configstring_coretype;
 
 void configstring_begin();
 void configstring_end();

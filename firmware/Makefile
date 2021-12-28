@@ -19,7 +19,7 @@ START = $(LIBDIR)/crt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
 PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o ps2.o keyboard.o user_io.o \
-	osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o overrides.o
+	statusword.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
@@ -42,6 +42,12 @@ clean :
 	@sed 's/eightthirtytwo_rom/$*_rom/' >$*_rom_word.vhd <$(ROMGENDIR)/rom_prologue_word.vhd
 	@$(ROMGEN) -b -w $*.bin >>$*_rom_word.vhd
 	@cat >>$*_rom_word.vhd $(ROMGENDIR)/rom_epilogue_word.vhd
+	@sed 's/eightthirtytwo_rom/$*_rom1/' >$*_rom1_word.vhd <$(ROMGENDIR)/rom_prologue_word.vhd
+	@$(ROMGEN) -b -w -l$(ROMSIZE1) $*.bin >>$*_rom1_word.vhd
+	@cat >>$*_rom1_word.vhd $(ROMGENDIR)/rom_epilogue_word.vhd
+	@sed 's/eightthirtytwo_rom/$*_rom2/' >$*_rom2_word.vhd <$(ROMGENDIR)/rom_prologue_word.vhd
+	@$(ROMGEN) -b -w -o$(ROMSIZE1) -l$(ROMSIZE2) $*.bin >>$*_rom2_word.vhd
+	@cat >>$*_rom2_word.vhd $(ROMGENDIR)/rom_epilogue_word.vhd
 
 # Create both full-size and split versions of the ROM to help minimise BRAM usage:
 %_rom_byte.vhd: %.bin $(ROMGEN)

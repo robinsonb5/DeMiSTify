@@ -3,6 +3,7 @@
 
 #include "configstring.h"
 
+unsigned char configstring_coretype;
 // #define configstring_next() SPI(0xff)
 
 __weak unsigned char configstring_index=0;
@@ -16,7 +17,7 @@ __weak void configstring_begin()
 {
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
-	SPI(SPI_CONF_READ); /* Read conf string command */
+	configstring_coretype=SPI(SPI_CONF_READ); /* Read conf string command */
 }
 
 
