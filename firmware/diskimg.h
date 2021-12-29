@@ -16,6 +16,6 @@ struct diskimage
 extern struct diskimage diskimg[CONFIG_DISKIMG_UNITS];
 
 void diskimg_poll();
-void diskimg_mount(const unsigned char *name, unsigned char idx);
+int diskimg_mount(const unsigned char *name, unsigned char idx);
 
 #endif

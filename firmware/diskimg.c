@@ -82,12 +82,13 @@ void diskimg_poll()
 
 #define spi32le(x) SPI(x&255); SPI((x>>8)&255); SPI((x>>16)&255); SPI(x>>24); 
 
-void diskimg_mount(const unsigned char *name, unsigned char idx) {
+int diskimg_mount(const unsigned char *name, unsigned char idx) {
 	int imgsize=0;
 
 	if(idx>3)
-		return;
-	FileOpen(&diskimg[idx].file,name);
+		return(0);
+	if(!FileOpen(&diskimg[idx].file,name))
+		return(0);
 	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
 	// send mounted image size first then notify about mounting
 	EnableIO();
@@ -101,5 +102,6 @@ void diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	// notify core of possible sd image change
 	spi_uio_cmd8(UIO_SET_SDSTAT, idx);
+	return(1);
 }
 

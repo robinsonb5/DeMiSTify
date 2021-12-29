@@ -225,7 +225,7 @@ void spi32le(int x)
 } 
 
 #ifdef CONFIG_CD
-void setcuefile(const char *filename)
+int setcuefile(const char *filename)
 {
 	int cue_valid=0;
 	if(!cue_open(filename))
@@ -247,6 +247,7 @@ void setcuefile(const char *filename)
 	// notify core of possible sd image change
 	DisableIO();
 	spi_uio_cmd8(UIO_SET_SDSTAT, 1);
+	return(cue_valid);
 }
 #endif
 
@@ -259,12 +260,12 @@ static void scrollroms(int row) {}
 
 #else
 
-__weak void loadimage(char *filename,int unit)
+__weak int loadimage(char *filename,int unit)
 {
 	switch(unit)
 	{
 		case 0:
-			LoadROM(filename);
+			return(LoadROM(filename));
 			break;
 #ifdef CONFIG_DISKIMG
 		case '0':
@@ -272,13 +273,13 @@ __weak void loadimage(char *filename,int unit)
 		case '2':
 		case '3':
 			diskimg_mount(0,unit-'0');				
-			diskimg_mount(filename,unit-'0');				
+			return(diskimg_mount(filename,unit-'0'));				
 			break;
 #endif
 #ifdef CONFIG_CD
 		case 'C':
 //				printf("Opening %s\n",filename);
-			setcuefile(filename);
+			return(setcuefile(filename));
 			break;
 #endif
 	}
