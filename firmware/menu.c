@@ -93,7 +93,11 @@ void Menu_ShowHide(int visible)
 	else
 		menu_visible=visible;
 	OsdShowHide(menu_visible);
+#ifdef CONFIG_JOYKEYS_TOGGLE
 	HW_INTERCEPT(0)=menu_visible|joykeys_active;
+#else
+	HW_INTERCEPT(0)=menu_visible;
+#endif
 }
 
 int Menu_Visible()
