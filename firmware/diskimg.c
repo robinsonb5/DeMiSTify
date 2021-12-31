@@ -87,7 +87,7 @@ int diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	if(idx>3)
 		return(0);
-	FileOpen(&diskimg[idx].file,name)
+	FileOpen(&diskimg[idx].file,name);
 	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
 	// send mounted image size first then notify about mounting
 	EnableIO();
