@@ -87,8 +87,7 @@ int diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	if(idx>3)
 		return(0);
-	if(!FileOpen(&diskimg[idx].file,name))
-		return(0);
+	FileOpen(&diskimg[idx].file,name)
 	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
 	// send mounted image size first then notify about mounting
 	EnableIO();
@@ -102,6 +101,6 @@ int diskimg_mount(const unsigned char *name, unsigned char idx) {
 
 	// notify core of possible sd image change
 	spi_uio_cmd8(UIO_SET_SDSTAT, idx);
-	return(1);
+	return(imgsize);
 }
 
