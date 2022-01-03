@@ -9,17 +9,19 @@ LIBDIR=$(832DIR)/lib832
 # Sizes of the two ROM parts - 8k + 4k = 12k by default
 ROMSIZE1=8192
 ROMSIZE2=4096
+# Default to a 512 byte stack - can be overriden in the project makefile.
+STACKSIZE=0x200
 
 CDEFS =
 CFLAGS = -quiet -+ -c99 -O=1343 -size -unsigned-char -I. $(CDEFS)
 ASFLAGS = -el
-LDFLAGS  = -el -s_STACKSIZE=0x200
+LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
 
-START = $(LIBDIR)/crt0.a
+START = $(LIBDIR)/tinycrt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
 PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o ps2.o keyboard.o user_io.o \
-	statusword.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o overrides.o
+	statusword.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o settings.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen

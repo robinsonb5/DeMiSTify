@@ -16,11 +16,14 @@
 #define ROW_LINEDOWN -2
 #define ROW_PAGEUP -3
 #define ROW_PAGEDOWN -4
+#define ROW_LEFT -5
+#define ROW_RIGHT -6
 
 typedef long menu_action;
 #define MENU_ACTION(x) ((long)(x))
 #define MENU_ACTION_CALLBACK(x) ((void (*)(int row))x)
 
+extern int scandouble;
 extern char menu_longpress;
 
 struct menu_entry

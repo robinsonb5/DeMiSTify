@@ -571,7 +571,7 @@ begin
 
 				when X"C" =>	-- Timer controller at 0xFFFFFC00
 					timer_reg_req<='1';
-					mem_busy<='0';	-- Audio controller never blocks the CPU
+					mem_busy<='0';	-- Timer controller never blocks the CPU
 
 				when X"F" =>	-- Peripherals
 					case cpu_addr(7 downto 0) is

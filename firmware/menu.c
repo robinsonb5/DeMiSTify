@@ -267,6 +267,18 @@ void Menu_Run()
 	else
 		joy_timestamp=0;
 
+	if((joy&0x02)||(TestKey(KEY_LEFTARROW)&2))
+	{
+		if((m+menurows)->action)
+			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LEFT);
+	}
+
+	if((joy&0x01)||(TestKey(KEY_RIGHTARROW)&2))
+	{
+		if((m+menurows)->action)
+			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_RIGHT);
+	}
+
 	if((joy&0x08)||(TestKey(KEY_UPARROW)&2))
 	{
 		if(currentrow)

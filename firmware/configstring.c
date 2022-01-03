@@ -1,6 +1,5 @@
-
+#include "config.h"
 #include "spi.h"
-
 #include "configstring.h"
 
 unsigned char configstring_coretype;
@@ -76,6 +75,16 @@ __weak int configstring_matchextension(const char *ext)
 	unsigned int i=0;
 	int c=1;
 	int c1,c2,c3;
+
+#ifdef CONFIG_SETTINGS
+	if(configstring_index==CONFIGSTRING_INDEX_CFG)
+	{
+		if(ext[8]=='C' && ext[9]=='F' && ext[10]=='G')
+			return(1);
+		return(0);
+	}
+
+#endif
 
 	configstring_begin();
 

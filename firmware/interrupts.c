@@ -19,11 +19,12 @@
 #include <stdio.h>
 #include "interrupts.h"
 
+#if 0
 static void dummy_handler()
 {
 	GetInterrupts();
 }
-
+#endif
 
 void SetIntHandler(void(*handler)())
 {
@@ -32,12 +33,13 @@ void SetIntHandler(void(*handler)())
 //	puts("Set handler\n");
 }
 
+#if 0
 __constructor(100.interrupts) void intconstructor()
 {
 //	puts("In interrupt constructor\n");
 	SetIntHandler(dummy_handler);
 }
-
+#endif
 
 volatile int GetInterrupts()
 {

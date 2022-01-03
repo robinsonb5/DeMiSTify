@@ -38,19 +38,31 @@
 #include "spi_sd.h"
 #include "diskimg.h"
 #include "statusword.h"
+#include "settings.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
 #define DIRECTUPLOAD 0x10
 
 #define LINELENGTH 32
-unsigned char menupage;
+
+#define MENUPAGE_SETTINGS 31
+#define MENUPAGE_FILE 30
+int menupage;
 unsigned char romtype=0;
 unsigned char unit=0;
 
 fileTYPE file;
 
 __weak int rom_minsize=1;
+
+#ifdef CONFIG_SETTINGS
+char std_label_exit[]="             Exit            \x81";
+char std_label_back[]="\x80            Back";
+#else
+char std_label_exit[]="\x80 Exit";
+char std_label_back[]="\x80 Back";
+#endif
 
 #ifndef CONFIG_WITHOUT_FILESYSTEM
 #define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
@@ -134,12 +146,13 @@ int LoadROM(const char *fn)
 int menuindex;
 int moremenu;
 int romindex; /* First file to be displayed */
-static void listroms();
+static int listroms();
 void selectrom(int row);
-static void scrollroms(int row);
-void buildmenu(int offset);
+// static void scrollroms(int row);
+static void scrollmenu(int row);
+void buildmenu(int set);
 static void submenu(int row);
-int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit);
+void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit);
 
 static char romfilenames[7][30];
 
@@ -153,7 +166,7 @@ struct menu_entry menu[]=
 	{MENU_ACTION(&selectrom),romfilenames[5],0,0,0},
 	{MENU_ACTION(&selectrom),romfilenames[6],0,0,0},
 	{MENU_ACTION(&submenu),0,0,0,0},
-	{MENU_ACTION(scrollroms),0,0,0,0}
+	{MENU_ACTION(scrollmenu),0,0,0,0}
 };
 
 
@@ -172,49 +185,6 @@ static DIRENTRY *nthfile(unsigned int n)
 }
 
 extern char cd_buffer[2352];
-
-static char string[18];
-#if 0
-void hexdump(unsigned char *p,unsigned int l)
-{
-	int i=0;
-	unsigned char *p2=p;
-	char *sp;
-	string[16]=0;
-	sp=string;
-	while(l--)
-	{
-		unsigned int t,t2;
-		t=*p2++;
-		t2=t>>4;
-		t2+='0'; if(t2>'9') t2+='@'-'9';
-		putchar(t2);
-		t2=t&0xf;
-		t2+='0'; if(t2>'9') t2+='@'-'9';
-		putchar(t2);
-
-		if(t<32 || (t>127 && t<160))
-			*sp++='.';
-		else
-			*sp++=t;
-		++i;
-		if((i&3)==0)
-			putchar(' ');
-		if((i&15)==0)
-		{
-			puts(string);
-			putchar('\n');
-			sp=string;
-		}
-	}
-	if(i&15)
-	{
-		*sp++=0;
-		puts(string);
-		putchar('\n');
-	}
-}
-#endif
 
 void spi32le(int x)
 {
@@ -282,6 +252,14 @@ __weak int loadimage(char *filename,int unit)
 			return(setcuefile(filename));
 			break;
 #endif
+#ifdef CONFIG_SETTINGS
+		case 'S':
+			return(loadsettings(filename));
+			break;
+		case 'T':
+			return(savesettings(filename));
+			break;
+#endif
 	}
 }
 
@@ -290,7 +268,7 @@ void selectrom(int row)
 {
 	if(!romfilenames[row][0])	// Did the user select an empty row?
 		return;
-	DIRENTRY *p=nthfile(romindex+row);
+	DIRENTRY *p=nthfile(menuindex+row);
 //	printf("File %s\n",p->Name);
 	if(p)
 	{
@@ -304,50 +282,17 @@ void selectrom(int row)
 	Menu_Draw(row);
 	Menu_ShowHide(0);
 	menupage=0;
-	buildmenu(0);
+	buildmenu(1);
 }
 
 
 static void selectdir(int row)
 {
-	DIRENTRY *p=nthfile(romindex+row);
+	DIRENTRY *p=nthfile(menuindex+row);
 	if(p)
 		ChangeDirectory(p);
-	romindex=0;
-	listroms(row);
-}
-
-
-static void scrollroms(int row)
-{
-	switch(row)
-	{
-		case ROW_LINEUP:
-			if(romindex)
-				--romindex;
-			break;
-		case ROW_PAGEUP:
-			romindex-=6;
-			if(romindex<0)
-				romindex=0;
-			break;
-		case ROW_LINEDOWN:
-			if(moremenu)
-				++romindex;
-			break;
-		case ROW_PAGEDOWN:
-			if(moremenu)
-				romindex+=6;
-			break;
-	}
-	listroms(row);
-}
-
-
-static void SaveSettings(int row)
-{
-	Menu_ShowHide(0);
-	// FIXME reset here
+	menuindex=0;
+	buildmenu(1);
 }
 
 static void MenuHide(int row)
@@ -358,17 +303,32 @@ static void MenuHide(int row)
 static void submenu(int row)
 {
 	menupage=menu[row].u.menu.page;
+	menuindex=0;
 //	putchar(row+'0');
-	buildmenu(0);
+	buildmenu(1);
 }
 
-static void listroms(int row)
+static void menufoot(int sub)
+{
+	if(sub)
+	{
+		menu[7].u.menu.page=0;
+		menu[7].action=MENU_ACTION(&submenu);
+		menu[7].label=std_label_back;
+	}
+	else
+	{
+		menu[7].label=std_label_exit;
+		menu[7].action=MENU_ACTION(&MenuHide);
+	}
+}
+
+static int listroms()
 {
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
 	unsigned int i,j;
 	j=0;
-	moremenu=1;
-	for(i=0;(j<romindex) && p;++i)
+	for(i=0;(j<menuindex) && p;++i)
 	{
 		p=NextDirEntry(i==0,configstring_matchextension);
 		++j;
@@ -407,17 +367,7 @@ static void listroms(int row)
 			}
 		}
 	}
-	for(;j<7;++j)
-	{
-		moremenu=0;
-		menu[j].action=MENU_ACTION(0);
-		*menu[j].label=0;
-	}
-	menu[7].u.menu.page=0;
-	menu[7].action=MENU_ACTION(&submenu);
-	menu[7].label="\x80 Back";
-	menu[8].action=MENU_ACTION(&scrollroms);
-	Menu_Draw(row);
+	return(j);
 }
 
 static void fileselector(int row)
@@ -426,14 +376,8 @@ static void fileselector(int row)
 	configstring_index=menu[row].u.file.cfgidx;
 	unit=menu[row].u.file.unit;
 	loadimage(NULL,unit); /* Dismount existing disk when entering the menu */
-	listroms(row);
-}
-
-static void showrommenu(int row)
-{
-	romindex=0;
-	listroms(row);
-	Menu_Set(menu);
+	menupage=MENUPAGE_FILE;
+	buildmenu(1);
 }
 
 #endif
@@ -453,7 +397,7 @@ void cycle(int row)
 
 	sendstatus();
 
-	parseconf(menupage,menu,menuindex,7);
+	buildmenu(0);
 	Menu_Draw(row);
 }
 
@@ -469,6 +413,17 @@ static void scrollmenu(int row)
 {
 	switch(row)
 	{
+		case ROW_LEFT:
+			submenu(7);
+			return;
+			break;
+
+		case ROW_RIGHT:
+			menupage=MENUPAGE_SETTINGS;
+			buildmenu(1);
+			return;
+			break;
+
 		case ROW_LINEUP:
 			if(menuindex)
 				--menuindex;
@@ -477,13 +432,22 @@ static void scrollmenu(int row)
 			if(moremenu)
 				++menuindex;
 			break;
+		case ROW_PAGEUP:
+			menuindex-=6;
+			if(menuindex<0)
+				menuindex=0;
+			break;
+		case ROW_PAGEDOWN:
+			if(moremenu)
+				menuindex+=6;
+			break;
 	}
-	parseconf(menupage,menu,menuindex,7);
+	buildmenu(0);
 	Menu_Draw(row);
 }
 
 
-int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
+void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
 {
 	int c;
 	unsigned int maxpage=0;
@@ -494,170 +458,191 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 	unsigned int configidx=1;
 	moremenu=1;
 
-	configstring_begin();
-
-	configstring_nextfield(); /* Skip over core name */
-	c=configstring_next();
-	if(c!=';')
+	if(menupage==MENUPAGE_FILE)
 	{
-		if(!selpage) /* Add the load item only for the first menu page */
-		{
-			strcpy(menu[line].label,"Load *. ");
-			menu[line].action=MENU_ACTION(&fileselector);
-			menu[line].label[7]=c;
-			menu[line].u.file.index=fileindex;
-			menu[line].u.file.cfgidx=0;
-			menu[line].u.file.unit=0;
-			configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
-			if(line>=skip)
-				++line;
-			else
-				--skip;
-		}
-		else
-			configstring_nextfield();
-		++fileindex; /* Need to bump the file index whichever page we're on. */
+		line=listroms();
 	}
-	while(c && line<limit)
+#ifdef CONFIG_SETTINGS
+	else if(menupage==MENUPAGE_SETTINGS)
 	{
-		int diskunit=0;
-		unsigned int parent=0;
-		unsigned int page=0;
+		strcpy(menu[line].label,"Load Settings \x81");
+		menu[line].action=MENU_ACTION(&fileselector);
+		menu[line].u.file.cfgidx=CONFIGSTRING_INDEX_CFG;
+		menu[line].u.file.unit='S';
+		++line;
+		strcpy(menu[line].label,"Save Settings \x81");
+		menu[line].action=MENU_ACTION(&fileselector);
+		menu[line].u.file.cfgidx=CONFIGSTRING_INDEX_CFG;
+		menu[line].u.file.unit='T';
+		++line;
+	}
+#endif
+	else
+	{
+		configstring_begin();
+
+		configstring_nextfield(); /* Skip over core name */
 		c=configstring_next();
-
-		/* Page handling - P either declares a new page, or prefixes an option within a page */
-		while(c=='P')
+		if(c!=';')
 		{
-			parent=page;
-			page=configstring_getdigit();
-
-			if(page>maxpage)
-				maxpage=page;
-			c=configstring_next();
-			if(c==',')	/* New page, create a menu item */
+			if(!selpage) /* Add the load item only for the first menu page */
 			{
-				title=menu[line].label;
-				menu[line].u.menu.page=page;
-				menu[line].action=MENU_ACTION(&submenu);
+				strcpy(menu[line].label,"Load *. ");
+				menu[line].action=MENU_ACTION(&fileselector);
+				menu[line].label[7]=c;
+				menu[line].u.file.index=fileindex;
+				menu[line].u.file.cfgidx=0;
+				menu[line].u.file.unit=0;
+				configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
+				if(line>=skip)
+					++line;
+				else
+					--skip;
+			}
+			else
+				configstring_nextfield();
+			++fileindex; /* Need to bump the file index whichever page we're on. */
+		}
+		while(c && line<limit)
+		{
+			int diskunit=0;
+			unsigned int parent=0;
+			unsigned int page=0;
+			c=configstring_next();
+
+			/* Page handling - P either declares a new page, or prefixes an option within a page */
+			while(c=='P')
+			{
+				parent=page;
+				page=configstring_getdigit();
+
 				c=configstring_next();
-				while(c && c!=';')
+				if(c==',')	/* New page, create a menu item */
 				{
-					*title++=c;
+					title=menu[line].label;
+					menu[line].u.menu.page=page;
+					menu[line].action=MENU_ACTION(&submenu);
+					c=configstring_next();
+					while(c && c!=';')
+					{
+						*title++=c;
+						c=configstring_next();
+					}
+					*title++=' ';
+					*title++=FONT_ARROW_RIGHT;
+					*title++=0;
+					/* Are we in the menu root? */
+					if(selpage==parent)
+					{
+						if(line>=skip)
+							++line;
+						else
+							--skip;
+					}
 					c=configstring_next();
 				}
-				*title++=' ';
-				*title++=FONT_ARROW_RIGHT;
-				*title++=0;
-				/* Are we in the menu root? */
-				if(selpage==parent)
-				{
-					if(line>=skip)
-						++line;
-					else
-						--skip;
-				}
-				c=configstring_next();
+				if(c=='P')
+					++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 			}
-			if(c=='P')
-				++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
-		}
 
-		if(page==selpage)
-		{
-			unsigned int low,high=0;
-			unsigned int opt=0;
-			unsigned int val;
-
-			switch(c)
+			if(page==selpage)
 			{
-				case ';':
-					break;
-				case 'S': // Disk image select
-					diskunit='0';
-					c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
-					if(c!=',')
-						diskunit=c;
-					while(c!=',')
-						c=configstring_next();
-					// Fall through...
-				case 'F':
-					if(c!=',')
-						configstring_next();
-					configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
-					low=-configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
-					if(low>0 && low<(LINELENGTH-3))
-					{
-						menu[line].label[low]=' ';
-						menu[line].label[low+1]=FONT_ARROW_RIGHT;
-						menu[line].label[low+2]=0;
-					}
-					menu[line].action=MENU_ACTION(&fileselector);
-					menu[line].u.file.index=fileindex;
-					menu[line].u.file.cfgidx=configidx;
-					menu[line].u.file.unit=diskunit;
-					++fileindex;
-					if(line>=skip)
-						++line;
-					else
-						--skip;
-					break;
-				case 'O':
-				case 'T':
-					/* Parse option */
-					low=configstring_getdigit();
-					high=configstring_getdigit();
+				unsigned int low,high=0;
+				unsigned int opt=0;
+				unsigned int val;
 
-					if(high==',')
-						high=low;
-					else
-						configstring_next();
-
-					menu[line].u.opt.shift=low;
-					menu[line].u.opt.val=(1<<(1+high-low))-1;
-					val=(statusword>>low)&menu[line].u.opt.val;
-//					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].u.opt.val);
-
-					title=menu[line].label;
-//					printf("selpage %d, page %d\n",selpage,page);
-					if((c=configstring_copytocomma(title,LINELENGTH,selpage==page))>0)
-					{
-						title+=c;
-						strncpy(title,": ",LINELENGTH-c);
-						title+=2;
-						do
+				switch(c)
+				{
+					case ';':
+						break;
+					case 'S': // Disk image select
+						diskunit='0';
+						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+						if(c!=',')
+							diskunit=c;
+						while(c!=',')
+							c=configstring_next();
+						// Fall through...
+					case 'F':
+						if(c!=',')
+							configstring_next();
+						configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
+						low=-configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
+						if(low>0 && low<(LINELENGTH-3))
 						{
-							++opt;
-						} while(configstring_copytocomma(title,LINELENGTH-(c+2),opt==(val+1))>0);
-					}
+							menu[line].label[low]=' ';
+							menu[line].label[low+1]=FONT_ARROW_RIGHT;
+							menu[line].label[low+2]=0;
+						}
+						menu[line].action=MENU_ACTION(&fileselector);
+						menu[line].u.file.index=fileindex;
+						menu[line].u.file.cfgidx=configidx;
+						menu[line].u.file.unit=diskunit;
+						++fileindex;
+						if(line>=skip)
+							++line;
+						else
+							--skip;
+						break;
+					case 'O':
+					case 'T':
+						/* Parse option */
+						low=configstring_getdigit();
+						high=configstring_getdigit();
 
-					if(opt)
-					{
-						menu[line].u.opt.limit=opt;
-						menu[line].action=MENU_ACTION(&cycle);
-					}
-					else
-					{
-						menu[line].u.opt.limit=2;
-						menu[line].action=MENU_ACTION(&toggle);
-					}
+						if(high==',')
+							high=low;
+						else
+							configstring_next();
 
-					if(line>=skip)
-						++line;
-					else
-						--skip;
-					break;
-				default:
-					c=configstring_nextfield();
-					break;
+						menu[line].u.opt.shift=low;
+						menu[line].u.opt.val=(1<<(1+high-low))-1;
+						val=(statusword>>low)&menu[line].u.opt.val;
+	//					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].u.opt.val);
+
+						title=menu[line].label;
+	//					printf("selpage %d, page %d\n",selpage,page);
+						if((c=configstring_copytocomma(title,LINELENGTH,selpage==page))>0)
+						{
+							title+=c;
+							strncpy(title,": ",LINELENGTH-c);
+							title+=2;
+							do
+							{
+								++opt;
+							} while(configstring_copytocomma(title,LINELENGTH-(c+2),opt==(val+1))>0);
+						}
+
+						if(opt)
+						{
+							menu[line].u.opt.limit=opt;
+							menu[line].action=MENU_ACTION(&cycle);
+						}
+						else
+						{
+							menu[line].u.opt.limit=2;
+							menu[line].action=MENU_ACTION(&toggle);
+						}
+
+						if(line>=skip)
+							++line;
+						else
+							--skip;
+						break;
+					default:
+						c=configstring_nextfield();
+						break;
+				}
 			}
+			else
+			{
+				if(c=='F')
+					++fileindex;
+				c=configstring_nextfield();
+			}
+			++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 		}
-		else
-		{
-			if(c=='F')
-				++fileindex;
-			c=configstring_nextfield();
-		}
-		++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
+		configstring_end();
 	}
 	for(;line<7;++line)
 	{
@@ -665,28 +650,16 @@ int parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned in
 		*menu[line].label=0;
 		menu[line].action=0;
 	}
-	if(selpage)
-	{
-		menu[7].u.menu.page=0;
-		menu[7].action=MENU_ACTION(&submenu);
-		menu[7].label="\x80 Back";
-	}
-	else
-	{
-		menu[7].label="\x80 Exit";
-		menu[7].action=MENU_ACTION(&MenuHide);
-	}
-	menu[8].action=MENU_ACTION(&scrollmenu);
-
-	configstring_end();
-	return(maxpage);
 }
 
-
-void buildmenu(int offset)
+void buildmenu(int set)
 {
+	if(set)
+		menuindex=0;
 	parseconf(menupage,menu,menuindex,7);
-	Menu_Set(menu);
+	menufoot(menupage);
+	if(set)
+		Menu_Set(menu);
 }
 
 /* Allow the Boot ROM filename to set in config.h instead of requiring an override.
@@ -728,7 +701,7 @@ __weak int main(int argc,char **argv)
 
 //	SPI(0xff);
 
-	buildmenu(0);
+	buildmenu(1);
 
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 	havesd=0;
@@ -740,6 +713,10 @@ __weak int main(int argc,char **argv)
 		while(1)
 			;
 	}
+#endif
+
+#ifdef CONFIG_SETTINGS
+	loadsettings(CONFIG_SETTINGS_FILENAME);
 #endif
 
 	menuindex=0;

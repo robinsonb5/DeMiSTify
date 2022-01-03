@@ -1,6 +1,8 @@
 #ifndef CONFIGSTRING_H
 #define CONFIGSTRING_H
 
+#define CONFIGSTRING_INDEX_CFG 0x1f
+
 extern unsigned char configstring_index;
 extern unsigned char configstring_coretype;
 
