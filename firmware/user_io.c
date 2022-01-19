@@ -71,3 +71,12 @@ void user_io_analogue_joystick(unsigned char joystick, int *map) {
 	DisableIO();
 }
 
+
+void user_io_send_rtc(char *buf){
+	int i=8;
+	spi_uio_cmd_cont(UIO_SET_RTC);
+	while(i--)
+		SPI(*buf++);
+	DisableIO();
+}
+

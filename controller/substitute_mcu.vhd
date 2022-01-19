@@ -25,6 +25,7 @@ entity substitute_mcu is
 	generic (
 		debug : boolean := false;
 		jtag_uart : boolean := false;
+		spirtc : boolean := false;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
 		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
@@ -46,6 +47,7 @@ entity substitute_mcu is
 		spi_ss2 : out std_logic;
 		spi_ss3 : out std_logic;
 		spi_ss4 : out std_logic;
+		spi_srtc : out std_logic;
 		conf_data0 : out std_logic;
 		spi_req : out std_logic;
 		spi_ack : in std_logic := '1';
@@ -84,6 +86,8 @@ constant sysclk_hz : integer := sysclk_frequency*1000;
 constant uart_divisor : integer := sysclk_hz/1152;
 constant maxAddrBit : integer := 31;
 
+signal platform : std_logic_vector(7 downto 0);
+
 -- Define speeds for fast and slow SPI clocks.
 -- Effective speed is sysclk / (2*(1+2^triggerbit))
 
@@ -104,6 +108,7 @@ signal spi_tick : std_logic;
 signal spi_fast_sd : std_logic;
 signal spi_fast_int : std_logic;
 signal spi_cs_int : std_logic;
+signal spi_srtc_int : std_logic;
 
 -- SPI signals
 signal host_to_spi : std_logic_vector(7 downto 0);
@@ -204,6 +209,9 @@ signal joy3_r : std_logic_vector(7 downto 0);
 signal joy4_r : std_logic_vector(7 downto 0);
 
 begin
+
+platform(7 downto 1) <= (others=>'0');
+platform(0) <= '1' when spirtc=true else '0';
 
 -- Remap joystick data;
 joy1_r(7 downto 4) <= not joy1(7 downto 4);
@@ -387,9 +395,10 @@ spi : entity work.spi_controller
 	);
 
 -- SPI input will be SD card MISO when SPI_CD is low, otherwise the MISO signal from the guest
+spi_srtc <= spi_srtc_int;
 spi_cs <= spi_cs_int;
 spi_mosi <= spi_mosi_int;
-spi_fromguest_sd <= spi_miso when spi_cs_int='0' else spi_fromguest;
+spi_fromguest_sd <= spi_miso when (spi_cs_int='0' or spi_srtc_int='0') else spi_fromguest;
 spi_toguest <= spi_mosi_int;
 	
 mytimer : entity work.timer_controller
@@ -536,6 +545,7 @@ begin
 		kbdrecvreg <='0';
 		mouserecvreg <='0';
 		spi_cs_int <= '1';
+		spi_srtc_int <= '1';
 		spi_ss2 <= '1';
 		spi_ss3 <= '1';
 		spi_ss4 <= '1';
@@ -689,6 +699,11 @@ begin
 							from_mem(7 downto 0)<=not buttons;
 							mem_busy<='0';
 
+						when X"FC" => -- Platform capabilities;
+							from_mem<=(others => '0');
+							from_mem(7 downto 0)<=platform;
+							mem_busy<='0';
+
 						when others =>
 							mem_busy<='0';
 					end case;
@@ -726,6 +741,9 @@ begin
 			end if;
 			if from_cpu(5)='1' then
 				conf_data0 <= not from_cpu(0);
+			end if;
+			if from_cpu(6)='1' then
+				spi_srtc_int <= not from_cpu(0);
 			end if;
 			spi_fast_sd<=from_cpu(8);
 			spi_fast_int<=from_cpu(9);

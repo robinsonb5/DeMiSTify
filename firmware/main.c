@@ -679,6 +679,9 @@ __weak char *autoboot()
 __weak char *autoboot()
 {
 	char *result=0;
+#ifdef CONFIG_SETTINGS
+	loadsettings(CONFIG_SETTINGS_FILENAME);
+#endif
 	romtype=0;
 #ifdef ROM_REQUIRED
 	if(!LoadROM(bootrom_name))
@@ -690,12 +693,51 @@ __weak char *autoboot()
 }
 #endif
 
+
+__weak char *get_rtc()
+{
+	/* Upload current time via RTC. Use the sector buffer as temp storage. */
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	char *ptr=sector_buffer;
+	if(HAVE_RTC)
+	{
+		int t;
+		EnableRTC();
+		*spiptr=0x92;	/* Read, Subaddress 001, start reading at register 0000 */
+		*spiptr=0xff; *ptr++=*spiptr; /* Seconds */
+		*spiptr=0xff; *ptr++=*spiptr; /* Minutes */
+		*spiptr=0xff; *ptr++=*spiptr; /* Hours */
+		*spiptr=0xff; *ptr++=*spiptr; /* Day */
+		*spiptr=0xff; t=*spiptr; /* Weekday */
+		*spiptr=0xff; *ptr++=*spiptr; /* Month */
+		*spiptr=0xff; *ptr++=*spiptr; /* Year */
+		*ptr++=t;
+		DisableRTC();
+	}
+	else
+	{
+		*ptr++=0;
+		*ptr++=0;
+		*ptr++=0;
+		*ptr++=0x19;
+		*ptr++=0x01;
+		*ptr++=0x22;
+		*ptr++=0x03;
+	}
+	*ptr++=0;
+	return(sector_buffer);
+}
+
+
 __weak int main(int argc,char **argv)
 {
 	int havesd;
 	int i,c;
 	int osd=0;
 	char *err;
+#ifdef CONFIG_RTC
+	int framecounter;
+#endif
 
 	PS2Init();
 
@@ -713,10 +755,6 @@ __weak int main(int argc,char **argv)
 		while(1)
 			;
 	}
-#endif
-
-#ifdef CONFIG_SETTINGS
-	loadsettings(CONFIG_SETTINGS_FILENAME);
 #endif
 
 	menuindex=0;
@@ -740,6 +778,11 @@ __weak int main(int argc,char **argv)
 
 #ifdef CONFIG_DISKIMG
 		diskimg_poll();
+#endif
+
+#ifdef CONFIG_RTC
+		if((framecounter++&8191)==0)
+			user_io_send_rtc(get_rtc());
 #endif
 	}
 

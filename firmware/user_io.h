@@ -202,6 +202,8 @@ void add_modifiers(uint8_t mod, uint16_t* keys_ps2);
 
 void user_io_change_into_core_dir(void);
 
+void user_io_send_rtc(char *buf);
+
 void spi_uio_cmd_cont(unsigned char cmd);
 void spi_uio_cmd(unsigned char cmd);
 void spi_uio_cmd8_cont(unsigned char cmd, unsigned char parm);

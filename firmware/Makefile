@@ -67,6 +67,12 @@ clean :
 empty:=
 space:= $(empty) $(empty)
 
+$(LIBS):
+	make -C $(832DIR)/lib832
+
+$(START):
+	make -C $(832DIR)/lib832
+
 controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
 	@$(LD) $(LDFLAGS) -o $@ -M controller.map $+
 

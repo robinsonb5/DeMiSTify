@@ -3,6 +3,11 @@
 
 #define INTERCEPTBASE 0xFFFFFFFC
 #define HW_INTERCEPT(x) *(volatile unsigned int *)(INTERCEPTBASE+x)
+#define HW_PLATFORM(x) *(volatile unsigned int *)(INTERCEPTBASE+x)
+
+#define HW_PLATFORM_CAPABILITIES 0
+#define HW_PLATFORM_CAPABILITIES_RTC 1
+#define HAVE_RTC (HW_PLATFORM_CAPABILITIES_RTC & HW_PLATFORM(HW_PLATFORM_CAPABILITIES))
 
 #define SPIBASE 0xFFFFFFD0
 #define HW_SPI(x) *(volatile unsigned int *)(SPIBASE+x)
@@ -25,6 +30,7 @@
 #define HW_SPI_OSD 3
 #define HW_SPI_SNIFF 4
 #define HW_SPI_CONF 5
+#define HW_SPI_RTC 6
 
 #define SPI_CONF_READ 0x14
 
@@ -32,6 +38,8 @@
 #define SPI_FPGA_FILE_TX_DAT 0x54
 #define SPI_FPGA_FILE_INDEX 0x55
 #define SPI_FPGA_FILE_INFO 0x56
+#define SPI_FPGA_FILE_RX 0x57
+#define SPI_FPGA_FILE_RX_DAT 0x58
 
 //#define SPI_ENABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|1);}
 //#define SPI_ENABLE_FAST(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST)|(1<<x)|1);}
@@ -52,6 +60,8 @@
 #define DisableOsd() SPI_DISABLE(HW_SPI_OSD)
 #define EnableFpga() SPI_ENABLE_FAST_INT(HW_SPI_FPGA)
 #define DisableFpga() SPI_DISABLE(HW_SPI_FPGA)
+#define EnableRTC() SPI_ENABLE(HW_SPI_RTC)
+#define DisableRTC() SPI_DISABLE(HW_SPI_RTC)
 
 #ifdef __cplusplus
 extern "C" {
