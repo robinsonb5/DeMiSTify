@@ -113,54 +113,6 @@ architecture RTL of neptuno_top is
 	signal joyd : std_logic_vector(7 downto 0);
 
 
-	component guest_mist
-		port (
---			CLOCK_27 : in std_logic;                    -- Comment out one of these two lines
-			CLOCK_27 : in std_logic_vector(1 downto 0); -- to match the guest core
---			RESET_N :   IN std_logic;			LED      : out std_logic;
-			-- SDRAM
-			SDRAM_DQ   : inout std_logic_vector (15 downto 0);
-			SDRAM_A    : out std_logic_vector (12 downto 0);
-			SDRAM_DQML : out std_logic;
-			SDRAM_DQMH : out std_logic;
-			SDRAM_nWE  : out std_logic;
-			SDRAM_nCAS : out std_logic;
-			SDRAM_nRAS : out std_logic;
-			SDRAM_nCS  : out std_logic;
-			SDRAM_BA   : out std_logic_vector (1 downto 0);
-			SDRAM_CLK  : out std_logic;
-			SDRAM_CKE  : out std_logic;
-			-- UART
-			UART_TX : out std_logic;
-			UART_RX : in std_logic;
-			-- SPI
-			SPI_DO     : out std_logic;
-			-- 		We can't do bi-directional signals here, so we need separate in and out signals.
-			--		If the guest core uses direct mode for ROM upload it will need to be adapted.
---			SPI_SD_DI	:	 IN STD_LOGIC;
-			SPI_DI     : in std_logic;
-			SPI_SCK    : in std_logic;
-			SPI_SS2    : in std_logic;
-			SPI_SS3    : in std_logic;
---			SPI_SS4    : in std_logic;
-			CONF_DATA0 : in std_logic;
-			-- VGA
-			VGA_HS : out std_logic;
-			VGA_VS : out std_logic;
-			VGA_R  : out std_logic_vector (5 downto 0);
-			VGA_G  : out std_logic_vector (5 downto 0);
-			VGA_B  : out std_logic_vector (5 downto 0);
-			-- AUDIO
-				DAC_L   : out SIGNED(15 downto 0);
-				DAC_R   : out SIGNED(15 downto 0);
---				DAC_L   : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
---				DAC_R   : OUT STD_LOGIC_VECTOR (15 DOWNTO 0);
-			AUDIO_L : out std_logic;
-			AUDIO_R : out std_logic
-		);
-	end component;
-
-
 	component audio_top is
 		port (
 			clk_50MHz : in std_logic;  -- system clock (50 MHz)

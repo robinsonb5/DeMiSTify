@@ -109,54 +109,13 @@ architecture RTL of uareloaded_top is
 	signal joyc : std_logic_vector(7 downto 0);
 	signal joyd : std_logic_vector(7 downto 0);
 	
--- DAC
+-- DAC AUDIO
    signal dac_l: signed(15 downto 0);
    signal dac_r: signed(15 downto 0);
    --signal dac_l_s: signed(15 downto 0);
    --signal dac_r_s: signed(15 downto 0);
 	
-	
-
-component guest_mist
-    port (
-    CLOCK_27 : in std_logic_vector (1 downto 0);
-    LED : out std_logic;
-	-- SPI
-    SPI_DO : out std_logic;
-    SPI_DI : in std_logic;
-    SPI_SCK : in std_logic;
-    SPI_SS2 : in std_logic;
-    SPI_SS3 : in std_logic;
-    SPI_SS4 : in std_logic;
-    CONF_DATA0 : in std_logic;
-	-- SDRAM
-    SDRAM_DQ : inout std_logic_vector (15 downto 0);
-    SDRAM_A : out std_logic_vector (12 downto 0);
-    SDRAM_DQML : out std_logic;
-    SDRAM_DQMH : out std_logic;
-    SDRAM_nWE : out std_logic;
-    SDRAM_nCAS : out std_logic;
-    SDRAM_nRAS : out std_logic;
-    SDRAM_nCS : out std_logic;
-    SDRAM_BA : out std_logic_vector (1 downto 0);
-    SDRAM_CLK : out std_logic;
-    SDRAM_CKE : out std_logic;
-	-- AUDIO
-    AUDIO_L : out std_logic;
-    AUDIO_R : out std_logic;
-		DAC_L   : OUT SIGNED(15 DOWNTO 0);
-    	DAC_R   : OUT SIGNED(15 DOWNTO 0);
-	-- VGA
-    VGA_HS : out std_logic;
-    VGA_VS : out std_logic;
-    VGA_R : out std_logic_vector (5 downto 0);
-    VGA_G : out std_logic_vector (5 downto 0);
-    VGA_B : out std_logic_vector (5 downto 0);
-		VGA_BLANK : out std_logic; 
-		VGA_CLK : out std_logic
-  );
-end component;
-
+-- DAC VGA
 signal vga_clk_o :  std_logic;
 signal vga_blank_o  :  std_logic;
 
