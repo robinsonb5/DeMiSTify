@@ -729,26 +729,19 @@ __weak char *get_rtc()
 }
 
 
-__weak int main(int argc,char **argv)
+__weak void init()
 {
 	int havesd;
 	int i,c;
-	int osd=0;
 	char *err;
-#ifdef CONFIG_RTC
-	int framecounter;
-#endif
 
 	PS2Init();
-
-//	SPI(0xff);
 
 	buildmenu(1);
 
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 	havesd=0;
 #else
-	filename[0]=0;
 	if(!(havesd=sd_init() && FindDrive()))
 	{
 		Menu_Message("SD failed.",0);
@@ -764,7 +757,14 @@ __weak int main(int argc,char **argv)
 	Menu_Message(autoboot(),0);
 
 	EnableInterrupts();
+}
 
+
+__weak void mainloop()
+{
+#ifdef CONFIG_RTC
+	int framecounter;
+#endif
 	while(1)
 	{
 #ifdef CONFIG_CD
@@ -785,7 +785,12 @@ __weak int main(int argc,char **argv)
 			user_io_send_rtc(get_rtc());
 #endif
 	}
+}
 
+__weak int main(int argc,char **argv)
+{
+	init();
+	mainloop();
 	return(0);
 }
 
