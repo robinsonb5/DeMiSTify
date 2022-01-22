@@ -89,7 +89,12 @@ module video_mixer
 	output [5:0] VGA_G,
 	output [5:0] VGA_B,
 	output       VGA_VS,
-	output       VGA_HS
+	output       VGA_HS,
+
+	//added for HDMI
+	output  [5:0] vga_x_r,
+	output  [5:0] vga_x_g,
+	output  [5:0] vga_x_b
 );
 
 localparam DWIDTH = HALF_DEPTH ? 2 : 5;
@@ -243,5 +248,23 @@ assign VGA_G  = ypbpr ? (ypbpr_full ? yuv_full[y -8'd16] :  y[7:2]) : green;
 assign VGA_B  = ypbpr ? (ypbpr_full ? yuv_full[pb-8'd16] : pb[7:2]) :  blue;
 assign VGA_VS = (scandoubler_disable | ypbpr) ? 1'b1 : ~vs_sd;
 assign VGA_HS = scandoubler_disable ? ~(HSync ^ VSync) : ypbpr ? ~(hs_sd ^ vs_sd) : ~hs_sd;
+
+//added for HDMI output
+osd #(OSD_X_OFFSET, OSD_Y_OFFSET, OSD_COLOR) osd_hdmi
+(
+	.*,
+	.ce(0),
+	.rotate(0),
+
+	.R_in(VGA_DE ? R : 6'b0),
+	.G_in(VGA_DE ? G : 6'b0),
+	.B_in(VGA_DE ? B : 6'b0),
+	.HSync(HSync),
+	.VSync(VSync),
+
+	.R_out(vga_x_r),
+	.G_out(vga_x_g),
+	.B_out(vga_x_b)
+);
 
 endmodule
