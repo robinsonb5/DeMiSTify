@@ -51,3 +51,11 @@ ISE_SPARTAN3 = $(ISE14)
 QUARTUS_MIST = $(Q13)
 QUARTUS_MISTER = $(Q17)
 
+# A command to be executed when a board has finished compiling.
+NOTIFY_BOARDCOMPLETE = notify-send -a DeMiSTify
+#NOTIFY_BOARDCOMPLETE = echo -ne '\007'
+
+# A command to be executed when all boards have finished compiling.
+NOTIFY_COMPLETE = notify-send -a DeMiSTify
+#NOTIFY_COMPLETE = echo -ne '\007'
+
