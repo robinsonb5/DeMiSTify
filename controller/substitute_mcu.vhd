@@ -244,8 +244,12 @@ reset_out<=reset_n;
 process(clk)
 begin
 	if rising_edge(clk) then
+		timer_tick<='0';
 		millisecond_tick<=millisecond_tick+1;
 		if millisecond_tick=sysclk_frequency*100 then
+			if millisecond_counter(3 downto 0)=X"0" then
+				timer_tick<='1';
+			end if;
 			millisecond_counter<=millisecond_counter+1;
 			millisecond_tick<=X"00000";
 		end if;
@@ -401,22 +405,22 @@ spi_mosi <= spi_mosi_int;
 spi_fromguest_sd <= spi_miso when (spi_cs_int='0' or spi_srtc_int='0') else spi_fromguest;
 spi_toguest <= spi_mosi_int;
 	
-mytimer : entity work.timer_controller
-  generic map(
-		prescale => sysclk_frequency, -- Prescale incoming clock
-		timers => 0
-  )
-  port map (
-		clk => clk,
-		reset => reset_n,
-
-		reg_addr_in => cpu_addr(7 downto 0),
-		reg_data_in => from_cpu,
-		reg_rw => '0', -- we never read from the timers
-		reg_req => timer_reg_req,
-
-		ticks(0) => timer_tick -- Tick signal is used to trigger an interrupt
-	);
+--mytimer : entity work.timer_controller
+--  generic map(
+--		prescale => sysclk_frequency, -- Prescale incoming clock
+--		timers => 0
+--  )
+--  port map (
+--		clk => clk,
+--		reset => reset_n,
+--
+--		reg_addr_in => cpu_addr(7 downto 0),
+--		reg_data_in => from_cpu,
+--		reg_rw => '0', -- we never read from the timers
+--		reg_req => timer_reg_req,
+--
+--		ticks(0) => timer_tick -- Tick signal is used to trigger an interrupt
+--	);
 
 
 -- Interrupt controller
@@ -579,9 +583,9 @@ begin
 		if mem_wr='1' and mem_wr_d='0' and mem_busy='1' then
 			case cpu_addr(31)&cpu_addr(10 downto 8) is
 
-				when X"C" =>	-- Timer controller at 0xFFFFFC00
-					timer_reg_req<='1';
-					mem_busy<='0';	-- Timer controller never blocks the CPU
+--				when X"C" =>	-- Timer controller at 0xFFFFFC00
+--					timer_reg_req<='1';
+--					mem_busy<='0';	-- Timer controller never blocks the CPU
 
 				when X"F" =>	-- Peripherals
 					case cpu_addr(7 downto 0) is
