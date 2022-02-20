@@ -11,9 +11,10 @@ ROMSIZE1=8192
 ROMSIZE2=4096
 # Default to a 512 byte stack - can be overriden in the project makefile.
 STACKSIZE=0x200
+OPT=-size
 
 CDEFS =
-CFLAGS = -quiet -+ -c99 -O=1343 -size -unsigned-char -I. $(CDEFS)
+CFLAGS = -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
 

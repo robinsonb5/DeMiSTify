@@ -248,7 +248,7 @@ __weak int loadimage(char *filename,int unit)
 #endif
 #ifdef CONFIG_CD
 		case 'C':
-//				printf("Opening %s\n",filename);
+//				printf("Opening %s\n",filename ? filename : "(null)");
 			return(setcuefile(filename));
 			break;
 #endif
