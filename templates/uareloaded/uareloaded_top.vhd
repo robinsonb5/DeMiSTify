@@ -248,8 +248,8 @@ controller : entity work.substitute_mcu
 	)
 	port map (
 		clk => CLOCK_50,
-		reset_in =>  '1',
-		reset_out => reset_n,
+		reset_in =>  '1',		--reset_in when 0
+		reset_out => reset_n,	--reset_out when 0
 
 		-- SPI signals
 		spi_miso => sd_miso,

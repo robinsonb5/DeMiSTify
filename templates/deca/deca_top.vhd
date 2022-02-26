@@ -396,8 +396,8 @@ begin
 			)
 			port map(
 				clk       => MAX10_CLK1_50,
-				reset_in  => KEY(0),
-				reset_out => reset_n,
+				reset_in  => KEY(0),		--reset_in when 0
+				reset_out => reset_n,		--reset_out when 0
 
 				-- SPI signals
 				spi_miso      => sd_miso,

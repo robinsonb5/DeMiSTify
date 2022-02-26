@@ -300,8 +300,8 @@ begin
 			)
 			port map(
 				clk       => CLOCK_50_I,
-				reset_in  => '1',
-				reset_out => reset_n,
+				reset_in  => '1',			--reset_in when 0
+				reset_out => reset_n,		--reset_out when 0
 
 				-- SPI signals
 				spi_miso      => sd_miso,
