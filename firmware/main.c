@@ -413,14 +413,15 @@ static void scrollmenu(int row)
 {
 	switch(row)
 	{
-		case ROW_LEFT:
-			submenu(7);
-			return;
-			break;
-
 		case ROW_RIGHT:
+#ifdef CONFIG_SETTINGS	/* If settings are disabled, fall through to ROW_LEFT: */
 			menupage=MENUPAGE_SETTINGS;
 			buildmenu(1);
+			return;
+			break;
+#endif
+		case ROW_LEFT:
+			submenu(7);
 			return;
 			break;
 

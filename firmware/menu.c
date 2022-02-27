@@ -187,6 +187,7 @@ void Menu_Run()
 {
 	int i;
 	int upd=0;
+	int act=0;
 	int press=0;
 	int buttons=HW_JOY(REG_JOY_EXTRA);
 	int menu_timestamp;
@@ -269,22 +270,24 @@ void Menu_Run()
 
 	if((joy&0x02)||(TestKey(KEY_LEFTARROW)&2))
 	{
-		if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LEFT);
+		act=ROW_LEFT;
+//		if((m+menurows)->action)
+//			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LEFT);
 	}
 
 	if((joy&0x01)||(TestKey(KEY_RIGHTARROW)&2))
 	{
-		if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_RIGHT);
+		act=ROW_RIGHT;
+//		if((m+menurows)->action)
+//			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_RIGHT);
 	}
 
 	if((joy&0x08)||(TestKey(KEY_UPARROW)&2))
 	{
 		if(currentrow)
 			--currentrow;
-		else if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LINEUP);
+		else
+			act=ROW_LINEUP;
 		upd=1;
 	}
 
@@ -292,8 +295,8 @@ void Menu_Run()
 	{
 		if(currentrow<(menurows-1))
 			++currentrow;
-		else if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LINEDOWN);
+		else
+			act=ROW_LINEDOWN;
 		upd=1;
 	}
 
@@ -301,8 +304,8 @@ void Menu_Run()
 	{
 		if(currentrow)
 			currentrow=0;
-		else if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_PAGEUP);
+		else
+			act=ROW_PAGEUP;
 		upd=1;
 	}
 
@@ -310,10 +313,12 @@ void Menu_Run()
 	{
 		if(currentrow<(menurows-1))
 			currentrow=menurows-1;
-		else if((m+menurows)->action)
-			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_PAGEDOWN);
+		else
+			act=ROW_PAGEDOWN;
 		upd=1;
 	}
+	if((act<0) && (m+menurows)->action)
+		MENU_ACTION_CALLBACK((m+menurows)->action)(act);
 
 	// Find the currently highlighted menu item
 	press=0;

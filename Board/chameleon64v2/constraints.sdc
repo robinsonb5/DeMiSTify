@@ -5,6 +5,7 @@ set hostclk {clocks|altpll_component|auto_generated|pll1|clk[1]}
 set supportclk {clocks|altpll_component|auto_generated|pll1|clk[0]}
 
 create_generated_clock -name spiclk -source [get_pins ${hostclk}] -divide_by 4 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
+create_generated_clock -name spiclkfast -source [get_pins ${supportclk}] -divide_by 4 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
 
 derive_pll_clocks 
 derive_clock_uncertainty
@@ -17,7 +18,7 @@ set RAM_IN {ram_d*}
 set VGA_OUT {red* grn* blu* hsync_n vsync_n}
 
 set FALSE_OUT {iec_* sigma_l sigma_r low_a[*] low_d[*] spi_mosi spi_clk mmc_cs usart_rx}
-set FALSE_IN { low_d[*] spi_miso nmi_in freeze_btn usart_tx usart_clk usart_rts}
+set FALSE_IN { low_d[*] spi_miso nmi_in freeze_btn usart_tx usart_clk usart_rts usart_cts}
 
 # Constraints for board-specific signals
 
