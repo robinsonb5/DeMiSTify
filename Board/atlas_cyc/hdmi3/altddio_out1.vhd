@@ -60,7 +60,7 @@ BEGIN
 	ALTDDIO_OUT_component : ALTDDIO_OUT
 	GENERIC MAP (
 		extend_oe_disable => "OFF",
-		intended_device_family => "Cyclone IV E",
+		intended_device_family => "Cyclone 10 LP",
 		invert_output => "OFF",
 		lpm_hint => "UNUSED",
 		lpm_type => "altddio_out",
@@ -83,9 +83,9 @@ END SYN;
 -- CNX file retrieval info
 -- ============================================================
 -- Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
--- Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
+-- Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone 10 LP"
 -- Retrieval info: CONSTANT: EXTEND_OE_DISABLE STRING "OFF"
--- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
+-- Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone 10 LP"
 -- Retrieval info: CONSTANT: INVERT_OUTPUT STRING "OFF"
 -- Retrieval info: CONSTANT: LPM_HINT STRING "UNUSED"
 -- Retrieval info: CONSTANT: LPM_TYPE STRING "altddio_out"
