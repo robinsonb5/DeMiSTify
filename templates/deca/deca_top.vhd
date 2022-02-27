@@ -308,7 +308,7 @@ begin
 	-- pll2_inst : pll2
 	-- port map (
 	--	inclk0		=> MAX10_CLK1_50,
-	--	c0		=> vga_clk		
+	--	c0			=> vga_clk,		
 	--	locked		=> open
 	-- );
 
