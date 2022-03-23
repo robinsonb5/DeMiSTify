@@ -324,9 +324,10 @@ void Menu_Run()
 	press=0;
 	menu_longpress=0;
 	menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
+	if(TestKey(KEY_ENTER)&2)
+		press=1;
 	while(!menu_longpress && ((joy&0xf0) || TestKey(KEY_ENTER)))
 	{
-		press=1;
 		joy=HW_JOY(REG_JOY);
 		joy=(joy&0xff)|(joy>>8); // Merge ports;
 		HandlePS2RawCodes(menu_visible);

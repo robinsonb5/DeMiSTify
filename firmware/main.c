@@ -751,9 +751,6 @@ __weak void init()
 	}
 #endif
 
-	menuindex=0;
-	menupage=0;
-
 	Menu_Message("Booting...",0);
 	Menu_Message(autoboot(),0);
 
@@ -790,6 +787,8 @@ __weak void mainloop()
 
 __weak int main(int argc,char **argv)
 {
+	menuindex=0;
+	menupage=0;
 	init();
 	mainloop();
 	return(0);
