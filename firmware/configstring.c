@@ -119,7 +119,7 @@ __weak int configstring_matchextension(const char *ext)
 		c3=configstring_next();
 //		printf("%d, %d, %d, %d, %d, %d\n",c1,c2,c3,ext[8],ext[9],ext[10]);
 		++i;
-		if(c1==ext[8] && c2==ext[9] && c3==ext[10])
+		if((c1==ext[8] || c1=='?') && (c2==ext[9] || c2=='?') && (c3==ext[10] || c3=='?')
 			done=1;
 		else if(c1==',' || c1==';')
 		{

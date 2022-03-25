@@ -69,6 +69,7 @@ char std_label_back[]="\x80 Back";
 int LoadROM(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	int i;
 	if(FileOpen(&file,fn))
 	{
 		int minsize=rom_minsize;
@@ -81,15 +82,17 @@ int LoadROM(const char *fn)
 
 		SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|((extindex-1)<<6));
 
-		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
-		{
-			unsigned int i;
+//		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
+//		{
+//			unsigned int i;
 			SPI_ENABLE(HW_SPI_FPGA);
 			*spiptr=SPI_FPGA_FILE_INFO;
-			for(i=0;i<32;++i)
+			for(i=0;i<11;++i)
+				*spiptr=fn[i];
+			for(i=12;i<32;++i)
 				*spiptr=0xff;
 			SPI_DISABLE(HW_SPI_FPGA);
-		}
+//		}
 		*spiptr=0xFF;
 
 		SPIFPGA(SPI_FPGA_FILE_TX,1);
