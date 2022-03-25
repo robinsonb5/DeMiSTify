@@ -182,10 +182,40 @@ unsigned int joy_timestamp=0;
 #define SCANDOUBLE_TIMEOUT 1000
 #define LONGPRESS_TIMEOUT 750
 
+int menu_buttons;
+int menu_joy;
+int menu_joymerged;
+
+void Menu_UpdateInput()
+{
+	UpdateKeys(menu_visible);
+	menu_joy=HW_JOY(REG_JOY);
+	menu_buttons=HW_JOY(REG_JOY_EXTRA);
+	menu_joymerged=(menu_joy&0xff)|(menu_joy>>8); // Merge ports;
+}
+
+int Menu_PollInput(int key, int joymask, int buttonmask)
+{
+	int timeout;
+	int menu_press;
+	Menu_UpdateInput();
+	menu_longpress=0;
+	menu_press=TestKey(key)&2;
+	timeout=GetTimer(LONGPRESS_TIMEOUT);
+	while(!menu_longpress && ((menu_joymerged&joymask) || (menu_buttons&buttonmask) || TestKey(key)))
+	{
+		menu_press=1;
+		Menu_UpdateInput();
+		if(CheckTimer(timeout))
+			menu_longpress=1;
+	}
+	return(menu_press);
+}
 
 void Menu_Run()
 {
 	int i;
+	int joy;
 	int upd=0;
 	int act=0;
 	int press=0;
@@ -195,45 +225,26 @@ void Menu_Run()
 #ifdef MENU_HOTKEYS
 	struct hotkey *hk=hotkeys;
 #endif
-	int joy=HW_JOY(REG_JOY);
-
-	HandlePS2RawCodes(menu_visible);
 
 #ifdef CONFIG_JOYKEYS_TOGGLE
-	while(TestKey(KEY_NUMLOCK))
-	{
-		HandlePS2RawCodes(menu_visible);
-		press=1;
-	}
-
-	if(press)
+	if(Menu_PollInput(KEY_NUMLOCK,0,0))
 	{
 		joykeys_active=!joykeys_active;
 		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",700);
 	}
-	press=0;
 #endif
 
-	menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-	while(TestKey(KEY_F12) || (buttons & JOY_BUTTON_MENU))
-	{
-		press=1;
-		buttons=HW_JOY(REG_JOY_EXTRA);
-		HandlePS2RawCodes(menu_visible);
-		if(CheckTimer(menu_timestamp))
-		{
-			SetScandouble(scandouble^=1);
-			menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-		}
-	}
-	if(press)
+	if(Menu_PollInput(KEY_F12,0,JOY_BUTTON_MENU))
 	{
 		Menu_ShowHide(-1);
 		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
 		//		printf("Menu visible %d\n",menu_visible);
 		upd=1;
 	}
+	if(menu_longpress)
+		SetScandouble(scandouble^=1);
 
+	joy=menu_joy;
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...
 	{
 #ifdef CONFIG_JOYKEYS
@@ -256,7 +267,7 @@ void Menu_Run()
 		return;
 	}
 
-	joy=(joy&0xff)|(joy>>8); // Merge ports;
+	joy=menu_joymerged;
 
 	if(joy)
 	{
@@ -321,20 +332,7 @@ void Menu_Run()
 		MENU_ACTION_CALLBACK((m+menurows)->action)(act);
 
 	// Find the currently highlighted menu item
-	press=0;
-	menu_longpress=0;
-	menu_timestamp=GetTimer(LONGPRESS_TIMEOUT);
-	if(TestKey(KEY_ENTER)&2)
-		press=1;
-	while(!menu_longpress && ((joy&0xf0) || TestKey(KEY_ENTER)))
-	{
-		joy=HW_JOY(REG_JOY);
-		joy=(joy&0xff)|(joy>>8); // Merge ports;
-		HandlePS2RawCodes(menu_visible);
-		if(CheckTimer(menu_timestamp))
-			menu_longpress=1;
-	}
-	if(press && (m+currentrow)->action)
+	if(Menu_PollInput(KEY_ENTER,0xf0,0) && (m+currentrow)->action)
 		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 
 #ifdef MENU_HOTKEYS

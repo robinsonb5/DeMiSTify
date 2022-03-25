@@ -438,7 +438,11 @@ port map (
 	status => int_status
 );
 
-int_triggers<=(0=>timer_tick, 1=>ps2_int, others => '0');
+int_triggers<=(
+	0=>'0',--timer_tick,
+	1=>ps2_int,
+	others => '0'
+);
 
 
 -- ROM
@@ -749,8 +753,10 @@ begin
 			if from_cpu(6)='1' then
 				spi_srtc_int <= not from_cpu(0);
 			end if;
-			spi_fast_sd<=from_cpu(8);
-			spi_fast_int<=from_cpu(9);
+			if from_cpu(0)='1' then
+				spi_fast_sd<=from_cpu(8);
+				spi_fast_int<=from_cpu(9);
+			end if;
 			spi_setcs<='0';
 			mem_busy<='0';
 		end if;

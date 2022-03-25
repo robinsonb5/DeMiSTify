@@ -75,6 +75,11 @@ int HandlePS2RawCodes(int blockkeys)
 }
 
 
+__weak int UpdateKeys(int blockkeys)
+{
+	return(HandlePS2RawCodes(blockkeys));
+}
+
 void ClearKeyboard()
 {
 	int i;
