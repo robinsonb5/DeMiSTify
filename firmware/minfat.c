@@ -505,16 +505,17 @@ unsigned int FileRead(fileTYPE *file, unsigned char *buffer, int count)
 		count-=c;
 		while(c--)
 			*buffer++=*p++;
+		FileNextSector(file,1);
 	}
 	while(count>0)
 	{
-		FileNextSector(file,1);
 		if(count>511)
 		{
 			FileReadSector(file, buffer);
 			buffer+=512;
 			file->cursor+=512;
 			count-=512;
+			FileNextSector(file,1);
 		}
 		else
 		{
