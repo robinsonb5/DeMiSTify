@@ -11,6 +11,9 @@ include $(DEMISTIFYPATH)/site.mk
 ROMSIZE1=8192
 ROMSIZE2=4096
 
+ifndef NOTIFY_BOARDCOMPLETE
+NOTIFY_BOARDCOMPLETE=echo -ne '\007'
+endif
 
 all: $(EIGHTTHIRTYTWOPATH)/Makefile $(DEMISTIFYPATH)/site.mk firmware init compile
 
@@ -54,6 +57,7 @@ ifdef BOARD
 else
 	@for BOARD in ${BOARDS}; do \
 		make --quiet -f $(DEMISTIFYPATH)/Scripts/project.mk PROJECTTOROOT=$(PROJECTTOROOT) DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) BOARD=$$BOARD PROJECTPATH=$(PROJECTPATH) CMD=compile; \
+		$(NOTIFY_BOARDCOMPLETE) "DeMiSTify: Finished building for $$BOARD"; \
 	done
 endif
 

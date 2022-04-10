@@ -120,7 +120,9 @@
 #define KEY_BACKSLASH 0x61  // Not present on US keyboards
 #define KEY_TAB 0x0D
 
+#define KEY_PRTSCRN 0xfc // By rights should be 0xe0 0x12 0xe0 0x7c, so 0x92 0x7c, but the BBC core only checks for 0xe0 0x7c.
 	
+int UpdateKeys(int blockkeys);
 int HandlePS2RawCodes(int blockkeys);
 void ClearKeyboard();
 

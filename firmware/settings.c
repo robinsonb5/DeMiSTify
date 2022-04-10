@@ -11,13 +11,14 @@ extern fileTYPE file;
 
 #ifdef CONFIG_SETTINGS
 
-__weak void configtocore(char *buf)
+__weak int configtocore(char *buf)
 {
 	unsigned int *b=(unsigned int *)buf;
 	statusword=*b++;
 	scandouble=*b++;
 	SetScandouble(scandouble);
 	sendstatus();
+	return(1);
 }
 
 __weak void coretoconfig(char *buf)
@@ -33,8 +34,7 @@ __weak int loadsettings(const char *filename)
 	{
 		if(FileReadSector(&file,sector_buffer))
 		{
-			configtocore(sector_buffer);	
-			return(1);
+			return(configtocore(sector_buffer));	
 		}
 	}
 	return(0);

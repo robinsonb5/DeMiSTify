@@ -100,13 +100,12 @@ static int cue_getword(char* word)
 
   while(1) {
     c = FileGetCh(&cue_file);
-//	putchar(c);
     if (CHAR_IS_EOF(c) || CHAR_IS_LINEEND(c) || (CHAR_IS_WHITESPACE(c) && !literal)) break;
     else if (CHAR_IS_QUOTE(c)) literal ^= 1;
     else if ((literal || (CHAR_IS_VALID(c))) && i<(CUE_WORD_SIZE-1)) word[i++] = c;
   }
   word[i] = '\0';
-  return c==0 ? CUE_EOT : i == 0 ? CUE_NOWORD : literal ? 1 : 0;
+  return CHAR_IS_EOF(c) ? CUE_EOT : i == 0 ? CUE_NOWORD : literal ? 1 : 0;
 }
 
 char cueword[CUE_WORD_SIZE] = {0};
@@ -115,7 +114,7 @@ int cue_open(const char *filename)
 {
 	int result=CUE_RES_OK;
 	memset(&toc, 0, sizeof(toc));
-
+//	printf("Opening cuefile %s\n",filename);
 #ifdef CUE_PARSER_TEST
 	if ((cue_fp = fopen(filename, "rb")) == NULL)
 #else

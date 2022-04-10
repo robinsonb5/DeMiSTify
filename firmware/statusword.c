@@ -8,7 +8,7 @@ __weak void sendstatus()
 {
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
-	SPI(UIO_SET_STATUS2); // Read conf string command
+	SPI(UIO_SET_STATUS2);
 	SPI(statusword);
 	SPI(statusword>>8);
 	SPI(statusword>>16);

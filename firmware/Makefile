@@ -11,9 +11,10 @@ ROMSIZE1=8192
 ROMSIZE2=4096
 # Default to a 512 byte stack - can be overriden in the project makefile.
 STACKSIZE=0x200
+OPT=-size
 
 CDEFS =
-CFLAGS = -quiet -+ -c99 -O=1343 -size -unsigned-char -I. $(CDEFS)
+CFLAGS = -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
 
@@ -66,6 +67,12 @@ clean :
 
 empty:=
 space:= $(empty) $(empty)
+
+$(LIBS):
+	make -C $(832DIR)/lib832
+
+$(START):
+	make -C $(832DIR)/lib832
 
 controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
 	@$(LD) $(LDFLAGS) -o $@ -M controller.map $+

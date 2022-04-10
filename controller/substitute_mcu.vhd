@@ -25,6 +25,7 @@ entity substitute_mcu is
 	generic (
 		debug : boolean := false;
 		jtag_uart : boolean := false;
+		spirtc : boolean := false;
 		sysclk_frequency : integer := 500; -- Sysclk frequency * 10
 		SPI_SLOWBIT : integer := 6;  -- ~384KHz when sysclk is 50MHz
 		SPI_FASTBIT : integer := 2 ; -- ~5MHz when sysclk is 50MHz
@@ -46,6 +47,7 @@ entity substitute_mcu is
 		spi_ss2 : out std_logic;
 		spi_ss3 : out std_logic;
 		spi_ss4 : out std_logic;
+		spi_srtc : out std_logic;
 		conf_data0 : out std_logic;
 		spi_req : out std_logic;
 		spi_ack : in std_logic := '1';
@@ -84,6 +86,8 @@ constant sysclk_hz : integer := sysclk_frequency*1000;
 constant uart_divisor : integer := sysclk_hz/1152;
 constant maxAddrBit : integer := 31;
 
+signal platform : std_logic_vector(7 downto 0);
+
 -- Define speeds for fast and slow SPI clocks.
 -- Effective speed is sysclk / (2*(1+2^triggerbit))
 
@@ -104,6 +108,7 @@ signal spi_tick : std_logic;
 signal spi_fast_sd : std_logic;
 signal spi_fast_int : std_logic;
 signal spi_cs_int : std_logic;
+signal spi_srtc_int : std_logic;
 
 -- SPI signals
 signal host_to_spi : std_logic_vector(7 downto 0);
@@ -205,6 +210,9 @@ signal joy4_r : std_logic_vector(7 downto 0);
 
 begin
 
+platform(7 downto 1) <= (others=>'0');
+platform(0) <= '1' when spirtc=true else '0';
+
 -- Remap joystick data;
 joy1_r(7 downto 4) <= not joy1(7 downto 4);
 joy2_r(7 downto 4) <= not joy2(7 downto 4);
@@ -236,8 +244,12 @@ reset_out<=reset_n;
 process(clk)
 begin
 	if rising_edge(clk) then
+		timer_tick<='0';
 		millisecond_tick<=millisecond_tick+1;
 		if millisecond_tick=sysclk_frequency*100 then
+			if millisecond_counter(3 downto 0)=X"0" then
+				timer_tick<='1';
+			end if;
 			millisecond_counter<=millisecond_counter+1;
 			millisecond_tick<=X"00000";
 		end if;
@@ -387,27 +399,28 @@ spi : entity work.spi_controller
 	);
 
 -- SPI input will be SD card MISO when SPI_CD is low, otherwise the MISO signal from the guest
+spi_srtc <= spi_srtc_int;
 spi_cs <= spi_cs_int;
 spi_mosi <= spi_mosi_int;
-spi_fromguest_sd <= spi_miso when spi_cs_int='0' else spi_fromguest;
+spi_fromguest_sd <= spi_miso when (spi_cs_int='0' or spi_srtc_int='0') else spi_fromguest;
 spi_toguest <= spi_mosi_int;
 	
-mytimer : entity work.timer_controller
-  generic map(
-		prescale => sysclk_frequency, -- Prescale incoming clock
-		timers => 0
-  )
-  port map (
-		clk => clk,
-		reset => reset_n,
-
-		reg_addr_in => cpu_addr(7 downto 0),
-		reg_data_in => from_cpu,
-		reg_rw => '0', -- we never read from the timers
-		reg_req => timer_reg_req,
-
-		ticks(0) => timer_tick -- Tick signal is used to trigger an interrupt
-	);
+--mytimer : entity work.timer_controller
+--  generic map(
+--		prescale => sysclk_frequency, -- Prescale incoming clock
+--		timers => 0
+--  )
+--  port map (
+--		clk => clk,
+--		reset => reset_n,
+--
+--		reg_addr_in => cpu_addr(7 downto 0),
+--		reg_data_in => from_cpu,
+--		reg_rw => '0', -- we never read from the timers
+--		reg_req => timer_reg_req,
+--
+--		ticks(0) => timer_tick -- Tick signal is used to trigger an interrupt
+--	);
 
 
 -- Interrupt controller
@@ -425,7 +438,11 @@ port map (
 	status => int_status
 );
 
-int_triggers<=(0=>timer_tick, 1=>ps2_int, others => '0');
+int_triggers<=(
+	0=>'0',--timer_tick,
+	1=>ps2_int,
+	others => '0'
+);
 
 
 -- ROM
@@ -536,6 +553,7 @@ begin
 		kbdrecvreg <='0';
 		mouserecvreg <='0';
 		spi_cs_int <= '1';
+		spi_srtc_int <= '1';
 		spi_ss2 <= '1';
 		spi_ss3 <= '1';
 		spi_ss4 <= '1';
@@ -569,9 +587,9 @@ begin
 		if mem_wr='1' and mem_wr_d='0' and mem_busy='1' then
 			case cpu_addr(31)&cpu_addr(10 downto 8) is
 
-				when X"C" =>	-- Timer controller at 0xFFFFFC00
-					timer_reg_req<='1';
-					mem_busy<='0';	-- Timer controller never blocks the CPU
+--				when X"C" =>	-- Timer controller at 0xFFFFFC00
+--					timer_reg_req<='1';
+--					mem_busy<='0';	-- Timer controller never blocks the CPU
 
 				when X"F" =>	-- Peripherals
 					case cpu_addr(7 downto 0) is
@@ -689,6 +707,11 @@ begin
 							from_mem(7 downto 0)<=not buttons;
 							mem_busy<='0';
 
+						when X"FC" => -- Platform capabilities;
+							from_mem<=(others => '0');
+							from_mem(7 downto 0)<=platform;
+							mem_busy<='0';
+
 						when others =>
 							mem_busy<='0';
 					end case;
@@ -727,8 +750,13 @@ begin
 			if from_cpu(5)='1' then
 				conf_data0 <= not from_cpu(0);
 			end if;
-			spi_fast_sd<=from_cpu(8);
-			spi_fast_int<=from_cpu(9);
+			if from_cpu(6)='1' then
+				spi_srtc_int <= not from_cpu(0);
+			end if;
+			if from_cpu(0)='1' then
+				spi_fast_sd<=from_cpu(8);
+				spi_fast_int<=from_cpu(9);
+			end if;
 			spi_setcs<='0';
 			mem_busy<='0';
 		end if;

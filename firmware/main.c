@@ -69,6 +69,7 @@ char std_label_back[]="\x80 Back";
 int LoadROM(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	int i;
 	if(FileOpen(&file,fn))
 	{
 		int minsize=rom_minsize;
@@ -81,15 +82,17 @@ int LoadROM(const char *fn)
 
 		SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|((extindex-1)<<6));
 
-		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
-		{
-			unsigned int i;
+//		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
+//		{
+//			unsigned int i;
 			SPI_ENABLE(HW_SPI_FPGA);
 			*spiptr=SPI_FPGA_FILE_INFO;
-			for(i=0;i<32;++i)
+			for(i=0;i<11;++i)
+				*spiptr=fn[i];
+			for(i=12;i<32;++i)
 				*spiptr=0xff;
 			SPI_DISABLE(HW_SPI_FPGA);
-		}
+//		}
 		*spiptr=0xFF;
 
 		SPIFPGA(SPI_FPGA_FILE_TX,1);
@@ -248,7 +251,7 @@ __weak int loadimage(char *filename,int unit)
 #endif
 #ifdef CONFIG_CD
 		case 'C':
-//				printf("Opening %s\n",filename);
+//				printf("Opening %s\n",filename ? filename : "(null)");
 			return(setcuefile(filename));
 			break;
 #endif
@@ -413,14 +416,15 @@ static void scrollmenu(int row)
 {
 	switch(row)
 	{
-		case ROW_LEFT:
-			submenu(7);
-			return;
-			break;
-
 		case ROW_RIGHT:
+#ifdef CONFIG_SETTINGS	/* If settings are disabled, fall through to ROW_LEFT: */
 			menupage=MENUPAGE_SETTINGS;
 			buildmenu(1);
+			return;
+			break;
+#endif
+		case ROW_LEFT:
+			submenu(7);
 			return;
 			break;
 
@@ -679,6 +683,9 @@ __weak char *autoboot()
 __weak char *autoboot()
 {
 	char *result=0;
+#ifdef CONFIG_SETTINGS
+	loadsettings(CONFIG_SETTINGS_FILENAME);
+#endif
 	romtype=0;
 #ifdef ROM_REQUIRED
 	if(!LoadROM(bootrom_name))
@@ -690,23 +697,55 @@ __weak char *autoboot()
 }
 #endif
 
-__weak int main(int argc,char **argv)
+
+__weak char *get_rtc()
+{
+	/* Upload current time via RTC. Use the sector buffer as temp storage. */
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	char *ptr=sector_buffer;
+	if(HAVE_RTC)
+	{
+		int t;
+		EnableRTC();
+		*spiptr=0x92;	/* Read, Subaddress 001, start reading at register 0000 */
+		*spiptr=0xff; *ptr++=*spiptr; /* Seconds */
+		*spiptr=0xff; *ptr++=*spiptr; /* Minutes */
+		*spiptr=0xff; *ptr++=*spiptr; /* Hours */
+		*spiptr=0xff; *ptr++=*spiptr; /* Day */
+		*spiptr=0xff; t=*spiptr; /* Weekday */
+		*spiptr=0xff; *ptr++=*spiptr; /* Month */
+		*spiptr=0xff; *ptr++=*spiptr; /* Year */
+		*ptr++=t;
+		DisableRTC();
+	}
+	else
+	{
+		*ptr++=0;
+		*ptr++=0;
+		*ptr++=0;
+		*ptr++=0x19;
+		*ptr++=0x01;
+		*ptr++=0x22;
+		*ptr++=0x03;
+	}
+	*ptr++=0;
+	return(sector_buffer);
+}
+
+
+__weak void init()
 {
 	int havesd;
 	int i,c;
-	int osd=0;
 	char *err;
 
 	PS2Init();
-
-//	SPI(0xff);
 
 	buildmenu(1);
 
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 	havesd=0;
 #else
-	filename[0]=0;
 	if(!(havesd=sd_init() && FindDrive()))
 	{
 		Menu_Message("SD failed.",0);
@@ -715,18 +754,18 @@ __weak int main(int argc,char **argv)
 	}
 #endif
 
-#ifdef CONFIG_SETTINGS
-	loadsettings(CONFIG_SETTINGS_FILENAME);
-#endif
-
-	menuindex=0;
-	menupage=0;
-
 	Menu_Message("Booting...",0);
 	Menu_Message(autoboot(),0);
 
 	EnableInterrupts();
+}
 
+
+__weak void mainloop()
+{
+#ifdef CONFIG_RTC
+	int framecounter;
+#endif
 	while(1)
 	{
 #ifdef CONFIG_CD
@@ -741,8 +780,20 @@ __weak int main(int argc,char **argv)
 #ifdef CONFIG_DISKIMG
 		diskimg_poll();
 #endif
-	}
 
+#ifdef CONFIG_RTC
+		if((framecounter++&8191)==0)
+			user_io_send_rtc(get_rtc());
+#endif
+	}
+}
+
+__weak int main(int argc,char **argv)
+{
+	menuindex=0;
+	menupage=0;
+	init();
+	mainloop();
 	return(0);
 }
 

@@ -6,7 +6,7 @@ DEMISTIFYPATH=
 MANIFEST=$(PROJECTOROOT)/project_files.rtl
 SCRIPTSDIR=$(DEMISTIFYPATH)/Scripts
 
-SOF=$(PROJECT)_$(BOARD).sof
+SOF=output_files/$(PROJECT)_$(BOARD).sof
 QSF=$(PROJECT)_$(BOARD).qsf
 FILES=$(PROJECT)_$(BOARD)_files.tcl
 
@@ -29,9 +29,7 @@ compile: $(QSF)
 	-@grep implicit compile.log
 
 clean:
-	-rm $(SOF)
 	-rm $(QSF)
 	-rm $(FILES)
-
-
+	-rm -rf db incremental_db output_files
 
