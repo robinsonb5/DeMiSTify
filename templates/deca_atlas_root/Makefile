@@ -7,7 +7,15 @@ BOARD=
 ROMSIZE1=8192
 ROMSIZE2=4096
 
-all: $(DEMISTIFYPATH)/site.template $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns
+# Prevent MiST / MiSTer targets being built if the user supplied the BOARDS variable when invoking make.
+TARGETS_NOMIST=$(DEMISTIFYPATH)/site.template $(DEMISTIFYPATH)/site.mk $(SUBMODULES) firmware init compile tns
+ifndef BOARDS
+	TARGETS = $(TARGETS_NOMIST) mist mister
+else
+	TARGETS = $(TARGETS_NOMIST)
+endif
+
+all: $(TARGETS)
 # Use the file least likely to change within DeMiSTify to detect submodules!
 $(DEMISTIFYPATH)/COPYING:
 	git submodule update --init --recursive
@@ -52,7 +60,7 @@ clean:
 tns:
 	@for BOARD in ${BOARDS}; do \
 		echo $$BOARD; \
-		grep -r Design-wide\ TNS $$BOARD/output_files/*.rpt; \
+		grep -r Design-wide\ TNS $$BOARD/output_files/*.rpt || echo "No data for $$BOARD"; \
 		echo -ne '\007'; \
 	done
 

@@ -464,8 +464,8 @@ begin
 			)
 			port map(
 				clk       => clock_50M,	
-				reset_in  => KEY0,
-				reset_out => reset_n,
+				reset_in  => KEY0,			--reset_in when 0
+				reset_out => reset_n,		--reset_out when 0
 
 				-- SPI signals
 				spi_miso      => sd_miso,

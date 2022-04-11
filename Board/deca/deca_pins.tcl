@@ -321,14 +321,9 @@ set_location_assignment PIN_W11 -to DRAM_RAS_N
 set_location_assignment PIN_AB10 -to DRAM_WE_N
 set_location_assignment PIN_V12 -to DRAM_CS_N
 #DQMH/L & CKE not connected in Mister new SDRAM modules
-set_location_assignment PIN_AA16 -to DRAM_CKE
-set_location_assignment PIN_Y11 -to DRAM_LDQM
-set_location_assignment PIN_W13 -to DRAM_UDQM
-
-#for testing 3 pins sdram modules
-#set_location_assignment PIN_W18 -to DRAM_CKE
-#set_location_assignment PIN_Y19 -to DRAM_LDQM
-#set_location_assignment PIN_AA17 -to DRAM_UDQM
+set_location_assignment PIN_AA16 -to DRAM_UDQM 
+set_location_assignment PIN_AB17 -to DRAM_LDQM
+set_location_assignment PIN_W13 -to DRAM_CKE
 
 
 # SDRAM set_instance_assignment

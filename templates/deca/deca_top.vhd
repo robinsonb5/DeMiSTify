@@ -308,7 +308,7 @@ begin
 	-- pll2_inst : pll2
 	-- port map (
 	--	inclk0		=> MAX10_CLK1_50,
-	--	c0		=> vga_clk		
+	--	c0			=> vga_clk,		
 	--	locked		=> open
 	-- );
 
@@ -396,8 +396,8 @@ begin
 			)
 			port map(
 				clk       => MAX10_CLK1_50,
-				reset_in  => KEY(0),
-				reset_out => reset_n,
+				reset_in  => KEY(0),		--reset_in when 0
+				reset_out => reset_n,		--reset_out when 0
 
 				-- SPI signals
 				spi_miso      => sd_miso,

@@ -44,10 +44,16 @@ set_location_assignment PIN_N2  -to TMDS[7]
 
 
 #============================================================
-# Keyboard
+# Keyboard before AT1
 #============================================================
-set_location_assignment PIN_L2 -to PS2_KEYBOARD_CLK
-set_location_assignment PIN_K2 -to PS2_KEYBOARD_DAT
+#set_location_assignment PIN_L2 -to PS2_KEYBOARD_CLK
+#set_location_assignment PIN_K2 -to PS2_KEYBOARD_DAT
+
+#============================================================
+# Keyboard AT1
+#============================================================
+set_location_assignment PIN_K2 -to PS2_KEYBOARD_CLK
+set_location_assignment PIN_L2 -to PS2_KEYBOARD_DAT
 
 #============================================================
 # Mouse 
@@ -85,6 +91,17 @@ set_location_assignment PIN_J14 -to JOY1_UP
 set_location_assignment PIN_R1  -to JOY1_DOWN
 set_location_assignment PIN_T15 -to JOY1_LEFT
 set_location_assignment PIN_N16 -to JOY1_RIGHT
+
+#============================================================
+# JOYSTICK added for AT1
+#============================================================
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B2_P9
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B1_P6
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_UP
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_DOWN
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_LEFT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_RIGHT
+
 
 #============================================================
 # Shared PIN_P11:   Audio EAR / Joystick select

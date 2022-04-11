@@ -36,6 +36,7 @@ set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS R
 
 set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
 set_global_assignment -name GENERATE_RBF_FILE ON
+set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF
 #set_global_assignment -name SEED 1
 
 if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
