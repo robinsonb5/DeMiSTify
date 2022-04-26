@@ -52,8 +52,20 @@ set_location_assignment PIN_N2  -to TMDS[7]
 #============================================================
 # Keyboard AT1
 #============================================================
-set_location_assignment PIN_K2 -to PS2_KEYBOARD_CLK
-set_location_assignment PIN_L2 -to PS2_KEYBOARD_DAT
+#set_location_assignment PIN_K2 -to PS2_KEYBOARD_CLK
+#set_location_assignment PIN_L2 -to PS2_KEYBOARD_DAT
+
+#============================================================
+# Keyboard Agnostic version
+#============================================================
+set_location_assignment PIN_K2 -to PS2_KEYBOARD_1
+set_location_assignment PIN_L2 -to PS2_KEYBOARD_2
+
+#============================================================
+# Keyboard USB - Internal cyc1000 pulldowns
+#============================================================
+set_location_assignment PIN_L1 -to PDP_4k7
+set_location_assignment PIN_K1 -to PDM_4k7
 
 #============================================================
 # Mouse 
@@ -70,17 +82,23 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 #============================================================
-# UDA 1334A
+# BUS RPI (SHARED SPI RPI, I2S, MIDI)
 #============================================================
-set_location_assignment PIN_F15 -to I2S_BCLK
-set_location_assignment PIN_F16 -to I2S_LRCLK
-set_location_assignment PIN_F13 -to I2S_DATA
+set_location_assignment PIN_F15 -to PI_MISO_I2S_BCLK
+set_location_assignment PIN_F16 -to PI_MOSI_I2S_LRCLK
+set_location_assignment PIN_F13 -to PI_CLK_I2S_DATA
+set_location_assignment PIN_C15 -to PI_CS_MIDI_CLKBD
 
 #============================================================
-# UART
+# UART (SHARED MIDI)
 #============================================================
-set_location_assignment PIN_D16 -to UART_RXD
-set_location_assignment PIN_D15 -to UART_TXD
+set_location_assignment PIN_D16 -to UART_RXD_MIDI_WSBD
+set_location_assignment PIN_D15 -to UART_TXD_MIDI_OUT
+
+#============================================================
+# Shared PIN_P11:   Audio EAR / Joystick select / MIDI_WSBD
+#============================================================
+set_location_assignment PIN_P11 -to JOYX_SEL_EAR_MIDI_DABD
 
 #============================================================
 # JOYSTICK 
@@ -101,12 +119,6 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_UP
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_DOWN
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_LEFT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_RIGHT
-
-
-#============================================================
-# Shared PIN_P11:   Audio EAR / Joystick select
-#============================================================
-set_location_assignment PIN_P11 -to JOYX_SEL_EAR
 
 #============================================================
 # MicroSD Card
