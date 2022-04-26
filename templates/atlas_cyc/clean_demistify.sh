@@ -1,6 +1,6 @@
 #demistify
-find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
-rm -f gameboy_*
+#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
+rm -f MiSTery_*
 #quartus
 find output_files/ -type f \(  ! -iname "*.sof"  ! -iname "*.svf" ! -iname "*.rbf" ! -iname "*.flow.rpt" \) -delete
 find software/spl_bsp/ -type f -not -name '*.bin' -delete

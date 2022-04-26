@@ -9,14 +9,22 @@ use work.demistify_config_pkg.all;
 
 entity atlas_top is
 	generic (
-		ATLAS_CYC_EAR : natural := 0; -- 0 = JOY SEL pin,	1 = EAR pin
-		ATLAS_CYC_VGA : natural := 0  -- 0 = HDMI,  		1 = VGA
+		ATLAS_CYC_EAR : natural := 2; -- 0 = JOY SEL pin,	1 = EAR pin,  2 = MIDI_WSBD
+		ATLAS_CYC_VGA : natural := 1; -- 0 = HDMI,  		1 = VGA
+		ATLAS_CYC_KEYB: natural := 3  -- 0=PS2 NO AT1, 1=PS2 AT1, 2=USB NO AT1, 3=USB AT1, 
 	);
 	port (
 		CLK12M : in std_logic;
 		CLK_X  : in std_logic;
 		KEY0   : in std_logic;
 		LED    : out std_logic_vector(7 downto 0);
+		-- PS2
+		PS2_KEYBOARD_1 	 : inout std_logic;
+		PS2_KEYBOARD_2 	 : inout std_logic;
+		PDP_4k7			 : out   std_logic;		--USB2PS2
+    	PDM_4k7			 : out   std_logic;
+		PS2_MOUSE_CLK    : inout std_logic;
+		PS2_MOUSE_DAT    : inout std_logic;
 		-- SDRAM
 		DRAM_CLK   : out std_logic;
 		DRAM_CKE   : out std_logic;
@@ -35,17 +43,15 @@ entity atlas_top is
 		SIGMA_R : out std_logic;
 		SIGMA_L : out std_logic;
 		-- -- I2S audio		
--- 		I2S_BCLK		: 	 out std_logic	:= '0';
--- 		I2S_LRCLK		: 	 out std_logic	:= '0';
--- 		I2S_DATA		: 	 out std_logic	:= '0';		
-		-- PS2
-		PS2_KEYBOARD_CLK : inout std_logic;
-		PS2_KEYBOARD_DAT : inout std_logic;
-		PS2_MOUSE_CLK    : inout std_logic;
-		PS2_MOUSE_DAT    : inout std_logic;
-		-- UART
-		UART_RXD : in std_logic;
-		UART_TXD : out std_logic;
+		PI_MISO_I2S_BCLK		: 	 out std_logic	:= '0';
+		PI_MOSI_I2S_LRCLK		: 	 out std_logic	:= '0';
+		PI_CLK_I2S_DATA			: 	 out std_logic	:= '0';	
+		-- UART / MIDI
+		UART_TXD_MIDI_OUT 		: 	out std_logic;
+		UART_RXD_MIDI_WSBD 		: 	in std_logic;
+		PI_CS_MIDI_CLKBD		: 	in std_logic;
+		-- SHARED PIN_P11: JOY SELECT Output / EAR Input / MIDI
+		JOYX_SEL_EAR_MIDI_DABD  : 	inout std_logic := '0';
 		-- JOYSTICK 
 		JOY1_B2_P9 : in std_logic;
 		JOY1_B1_P6 : in std_logic;
@@ -53,8 +59,6 @@ entity atlas_top is
 		JOY1_DOWN  : in std_logic;
 		JOY1_LEFT  : in std_logic;
 		JOY1_RIGHT : in std_logic;
-		-- SHARED PIN_P11: JOY SELECT Output / EAR Input
-		JOYX_SEL_EAR : inout std_logic := '0';
 		-- SD Card
 		SD_CS_N_O : out std_logic := '1';
 		SD_SCLK_O : out std_logic := '0';
@@ -140,7 +144,7 @@ architecture RTL of atlas_top is
 	-- I2S 
 	signal i2s_mclk : std_logic;
 
-	-- HDMI TDMS signas
+	-- HDMI TDMS signals
 	signal clock_vga_s    : std_logic;
 	signal clock_dvi_s    : std_logic;
 	signal sound_hdmi_l_s : std_logic_vector(15 downto 0);
@@ -168,16 +172,17 @@ architecture RTL of atlas_top is
 	signal vga_x_hs  : std_logic;
 	signal vga_x_vs  : std_logic;
 
-
-	signal clock_50M : std_logic;
+	signal CLK50M : std_logic;
+	signal CLK48M : std_logic;
 
 	component pll2 is			-- for hdmi output & 50 MHz clock
 	    port (
 	--  areset : in std_logic;
 	    inclk0 : in std_logic;
-	    c0 : out std_logic;
-	    c1 : out std_logic;
-		c2 : out std_logic;
+	    c0 : out std_logic;		--   50 MHz
+	    c1 : out std_logic;		--   48 MHz
+--		c2 : out std_logic;		--   x5
+--		c3 : out std_logic;		--	 x
 	    locked : out std_logic
 	  );
 	end component;
@@ -185,6 +190,25 @@ architecture RTL of atlas_top is
 	-- SHARE PIN P11 EAR IN / JOY SEL OUT  
 	signal EAR        : std_logic;
 	signal JOYX_SEL_O : std_logic;
+	signal MIDI_DABD  : std_logic;
+
+	-- USB2PS2
+	component USB_PS2
+		port (
+		clk : in std_logic;
+		LedNum : in std_logic;
+		LedCaps : in std_logic;
+		LedScroll : in std_logic;
+		dp : inout std_logic;
+		dm : inout std_logic;
+		PS2data : out std_logic;
+		PS2clock : out std_logic
+	);
+	end component;
+
+	signal PS2data 		:  std_logic; 
+	signal PS2clock 	:  std_logic; 
+	signal clk48	    :  std_logic; 
 
 begin
 
@@ -201,20 +225,80 @@ begin
 	ps2_mouse_clk_in <= ps2_mouse_clk;
 	ps2_mouse_clk    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
-	ps2_keyboard_dat_in <= ps2_keyboard_dat;
-	ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
-	ps2_keyboard_clk_in <= ps2_keyboard_clk;
-	ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+-- ATLAS_CYC_KEYB -- 0 = PS2 NON AT1, 1 = PS2 AT1,  2 = USB NON AT1, 3 = USB AT1, 
+
+	KEYBOARD_0 : if ATLAS_CYC_KEYB = 0 generate -- Keyboard PS2 previous AT1
+		ps2_keyboard_dat_in <= PS2_KEYBOARD_1;
+		PS2_KEYBOARD_1    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+		ps2_keyboard_clk_in <= PS2_KEYBOARD_2;
+		PS2_KEYBOARD_2    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+	end generate KEYBOARD_0;
+
+	KEYBOARD_1 : if ATLAS_CYC_KEYB = 1 generate -- Keyboard PS2 AT1 
+		ps2_keyboard_dat_in <= PS2_KEYBOARD_2;
+		PS2_KEYBOARD_2    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+		ps2_keyboard_clk_in <= PS2_KEYBOARD_1;
+		PS2_KEYBOARD_1    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+	end generate KEYBOARD_1;
+
+	KEYBOARD_2 : if ATLAS_CYC_KEYB = 2 generate -- Keyboard USB previous AT1
+		-- USB2PS2
+		PDP_4k7	<= '0';
+		PDM_4k7	<= '0';
+
+		USB_PS2_inst : USB_PS2
+		port map (
+			clk => CLK48M,
+			LedNum =>  '0',
+			LedCaps =>  '0',
+			LedScroll =>  '0',
+			dp => PS2_KEYBOARD_2,
+			dm => PS2_KEYBOARD_1,
+			PS2data => PS2data,
+			PS2clock => PS2clock
+		);
+
+		ps2_keyboard_dat_in <= PS2data;
+		ps2_keyboard_clk_in <= PS2clock;
+	end generate KEYBOARD_2;
+
+	KEYBOARD_3 : if ATLAS_CYC_KEYB = 3 generate -- Keyboard USB AT1 
+		-- USB2PS2
+		PDP_4k7	<= '0';
+		PDM_4k7	<= '0';
+
+		USB_PS2_inst : USB_PS2
+		port map (
+			clk => CLK48M,
+			LedNum =>  '0',
+			LedCaps =>  '0',
+			LedScroll =>  '0',
+			dp => PS2_KEYBOARD_1,
+			dm => PS2_KEYBOARD_2,
+			PS2data => PS2data,
+			PS2clock => PS2clock
+		);
+
+		ps2_keyboard_dat_in <= PS2data;
+		ps2_keyboard_clk_in <= PS2clock;
+	end generate KEYBOARD_3;
+
+
+	PIN_P11_JOYSEL_0 : if ATLAS_CYC_EAR = 0 generate -- JOY Select Output
+		JOYX_SEL_O   <= '1';
+		JOYX_SEL_EAR_MIDI_DABD <= JOYX_SEL_O;
+		EAR          <= '0';
+	end generate PIN_P11_JOYSEL_0;
 
 	PIN_P11_JOYSEL_1 : if ATLAS_CYC_EAR = 1 generate -- EAR Input
-		EAR <= JOYX_SEL_EAR;
+		EAR 		<= JOYX_SEL_EAR_MIDI_DABD;
 	end generate PIN_P11_JOYSEL_1;
 
-	PIN_P11_JOYSEL_2 : if ATLAS_CYC_EAR = 0 generate -- JOY Select Output
-		JOYX_SEL_O   <= '1';
-		JOYX_SEL_EAR <= JOYX_SEL_O;
-		EAR          <= '0';
+	PIN_P11_JOYSEL_2 : if ATLAS_CYC_EAR = 2 generate -- MIDI WSBD input
+		MIDI_DABD 	<= JOYX_SEL_EAR_MIDI_DABD;
+		EAR         <= '0';
 	end generate PIN_P11_JOYSEL_2;
+
 
 	joya <= "11" & JOY1_B2_P9 & JOY1_B1_P6 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
 	joyb <= (others => '1');
@@ -224,11 +308,11 @@ begin
 	-- -- I2S audio
 	-- audio_i2s: audio_top
 	-- port map(
-	-- 	clk_50MHz => CLK12M,
-	-- 	dac_MCLK  => i2s_mclk,
-	-- 	dac_LRCK  => I2S_LRCLK,
-	-- 	dac_SCLK  => I2S_BCLK,
-	-- 	dac_SDIN  => I2S_DATA,
+	-- 	clk_50MHz => CLK50M,
+	-- 	dac_MCLK  => I2S_MCLK,
+	-- 	dac_LRCK  => PI_MOSI_I2S_LRCLK,
+	-- 	dac_SCLK  => PI_MISO_I2S_BCLK,
+	-- 	dac_SDIN  => PI_CLK_I2S_DATA,
 	-- 	L_data    => std_logic_vector(dac_l),
 	-- 	R_data    => std_logic_vector(dac_r)
 	-- );		
@@ -254,13 +338,14 @@ begin
 	-- END VGA ATLAS -------------------  
 
 
-	-- PLL VIDEO / 50 MHz
+	-- PLL VIDEO / 50 MHz / 48 USB
 	pllvideo : pll2
 	port map (
-		inclk0		=> CLK12M,				--      PAL       NTSC
-		c0			=> clock_dvi_s,			-- x5	177.5     143.2
-		c1			=> clock_vga_s,			-- x 	35.5      28.63
-		c2			=> clock_50M,			-- 50 MHz
+		inclk0		=> CLK12M,				--      
+		c0			=> CLK50M,				-- 50 MHz
+		c1			=> CLK48M,				-- 48 MHz
+--		c2			=> clock_dvi_s,			-- x5	    
+--		c3			=> clock_vga_s,			-- x 	   
 		locked		=> locked
 	);
 
@@ -416,8 +501,8 @@ begin
 			SDRAM_CLK  => DRAM_CLK,
 			SDRAM_CKE  => DRAM_CKE,
 			--UART
-			UART_TX  => UART_TXD,
-			UART_RX  => UART_RXD,
+			UART_TX  => UART_TXD_MIDI_OUT,
+			UART_RX  => UART_RXD_MIDI_WSBD,
 --			UART_TX  => open,
 --			UART_RX  => EAR,   
 			--SPI
@@ -463,7 +548,7 @@ begin
 				jtag_uart => false
 			)
 			port map(
-				clk       => clock_50M,	
+				clk       => CLK50M,	
 				reset_in  => KEY0,			--reset_in when 0
 				reset_out => reset_n,		--reset_out when 0
 

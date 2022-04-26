@@ -1,24 +1,23 @@
 # xxxxx DeMiSTified - Atlas CYC1000 port
 
-27/11/21 Atlas CYC1000 port DeMiSTified by Somhic from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx
-
-27/11/21 DECA port by Somhic from original Demistified MiST core https://github.com/robinsonb5/xxxxx by Alastair M. Robinson.
-
-Special thanks to Alastair M. Robinson creator of [DeMiSTify](https://github.com/robinsonb5/DeMiSTify) for helping me. 
+xx/xx/22 Atlas CYC1000 port DeMiSTified by Somhic from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx
+xx/xx/22  Atlas CYC1000 port by Somhic from previous Demistifyied MiST core https://github.com/xxxx by @xxx   
 
 [Read this guide if you want to know how I DeMiSTified this core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
 
 **Features:**
 
-* HDMI video output
+* ~~HDMI video output~~
 * VGA 222 video output is available through an HDMI to VGA adapter
 * HDMI audio output
-* Sigma-Delta audio
+* Audio Sigma-Delta output
+* ~~Audio output (Midi, I2S)~~
 * Joystick (tested with a Megadrive gamepad)
 
 **Additional hardware required**:
 
-- PS/2 Keyboard 
+* PS/2 keyboard 
+* ~~USB keyboard~~ 
 
 ##### Versions:
 
@@ -26,7 +25,8 @@ v0.x Changes in Mist core to adapt DeMiSTify to both Deca and new board Atlas_cy
 
 ### STATUS
 
-* HDMI video outputs special resolution so will not work on all monitors. 
+* VGA version only at the moment.
+* ~~HDMI video outputs special resolution so will not work on all monitors.~~ 
 
 
 
