@@ -1,5 +1,5 @@
 #demistify
-find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
+#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
 rm -f nes_*
 #quartus
 find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" \) -delete

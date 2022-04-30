@@ -8,6 +8,9 @@ use work.demistify_config_pkg.all;
 -- -----------------------------------------------------------------------
 
 entity deca_top is
+	generic (
+		DECA_KEYB: natural := 1  -- 1=PS2 INOUT, 2= USB LOW SPEED (BETA)
+	);
 	port (
 		ADC_CLK_10    : in std_logic;
 		MAX10_CLK1_50 : in std_logic;
@@ -32,14 +35,18 @@ entity deca_top is
 		VGA_R  : out std_logic_vector(3 downto 0);
 		VGA_G  : out std_logic_vector(3 downto 0);
 		VGA_B  : out std_logic_vector(3 downto 0);
-		-- AUDIO
-		SIGMA_R : out std_logic;
-		SIGMA_L : out std_logic;
+		-- -- AUDIO
+		-- SIGMA_R : out std_logic;
+		-- SIGMA_L : out std_logic;
+		-- -- MIDI
+		-- SPI_MISO_WSBD         : in    std_logic;
+		-- SPI_SCLK_DABD         : in    std_logic;
+		-- SPI_CS0_CLKBD        : in    std_logic;
 		-- EAR
 		EAR : in std_logic;
 		-- PS2
-		PS2_KEYBOARD_CLK : inout std_logic;
-		PS2_KEYBOARD_DAT : inout std_logic;
+		PS2_KEYBOARD_CLK : inout std_logic := '1';
+		PS2_KEYBOARD_DAT : inout std_logic := '1';
 		PS2_MOUSE_CLK    : inout std_logic;
 		PS2_MOUSE_DAT    : inout std_logic;
 		-- UART
@@ -86,7 +93,21 @@ entity deca_top is
 		I2S_MCK          : out std_logic;
 		I2S_SCK          : out std_logic;
 		I2S_LR           : out std_logic;
-		I2S_D            : out std_logic
+		I2S_D            : out std_logic;
+
+		--Switches 
+		SW 			: in std_logic_vector(1 downto 0);
+		-- Toggle leds in USB keyboard SW[0] LedCaps	SW[1] LedNum
+
+		--TUSB1210
+		USB_CLKIN 	: in std_logic;     	--60MHz from ULPI
+		USB_FAULT_n	: in std_logic;    		--Overcurrent
+		USB_DATA 	: inout std_logic_vector(7 downto 0);
+		USB_NXT 	: in std_logic;
+		USB_DIR 	: in std_logic;
+		USB_STP 	: out std_logic;
+		USB_RESET_n : out std_logic;    	--Fixed to High
+		USB_CS 		: out std_logic        	--Fixed to High
 	);
 end entity;
 
@@ -142,22 +163,11 @@ architecture RTL of deca_top is
 	signal joyc : std_logic_vector(7 downto 0);
 	signal joyd : std_logic_vector(7 downto 0);
 
-
-	component audio_top is
-		port (
-			clk_50MHz : in std_logic;  -- system clock (50 MHz)
-			dac_MCLK  : out std_logic; -- outputs to PMODI2L DAC
-			dac_LRCK  : out std_logic;
-			dac_SCLK  : out std_logic;
-			dac_SDIN  : out std_logic;
-			L_data    : in std_logic_vector(15 downto 0); -- LEFT data (16-bit signed)
-			R_data    : in std_logic_vector(15 downto 0)  -- RIGHT data (16-bit signed) 
-		);
-	end component;
-
 	-- DAC AUDIO     
 	signal dac_l : signed(15 downto 0);
 	signal dac_r : signed(15 downto 0);
+    --signal dac_midi_l : signed(15 downto 0);
+	--signal dac_midi_r : signed(15 downto 0);
 	--signal dac_l: std_logic_vector(15 downto 0);
 	--signal dac_r: std_logic_vector(15 downto 0);
 	--signal dac_l_s: signed(15 downto 0);
@@ -182,6 +192,17 @@ architecture RTL of deca_top is
 	signal i2s_Lr_o  : std_logic;
 	signal i2s_D_o   : std_logic;
 
+	component audio_top is
+		port (
+			clk_50MHz : in std_logic;  -- system clock (50 MHz)
+			dac_MCLK  : out std_logic; -- outputs to I2S DAC
+			dac_LRCK  : out std_logic;
+			dac_SCLK  : out std_logic;
+			dac_SDIN  : out std_logic;
+			L_data    : in std_logic_vector(15 downto 0); -- LEFT data (16-bit signed)
+			R_data    : in std_logic_vector(15 downto 0)  -- RIGHT data (16-bit signed) 
+		);
+	end component;
 
 	-- HDMI
 
@@ -211,6 +232,42 @@ architecture RTL of deca_top is
 	signal vga_clk   : std_logic;
 	signal vga_blank : std_logic;
 
+
+
+	-- USB ULPI KEYBOARD
+	signal USB_CLK_PHASE  : std_logic;
+	signal USB_PLL_LOCKED : std_logic;
+	signal PS2_KEYBOARD_CLK_USB : std_logic := '1';
+	signal PS2_KEYBOARD_DAT_USB : std_logic := '1';
+
+	component PLL_PHASE90
+		port (
+			inclk0 : in std_logic;
+			c0     : out std_logic;
+			locked : out std_logic
+		);
+	end component;
+
+	-- https://github.com/TheSonders/USBKeyboard/blob/main/ULPI_PS2_PUBLIC.v
+	component ULPI_PS2
+		port (
+		clk 		: in std_logic;
+		LedNum 		: in std_logic;
+		LedCaps 	: in std_logic;
+		LedScroll 	: in std_logic;
+		PS2data 	: out std_logic;
+		PS2clock 	: out std_logic;
+		FAULT_n 	: in std_logic;
+		DATA 		: inout std_logic_vector  (7 downto 0);
+		NXT 		: in std_logic;
+		DIR 		: in std_logic;
+		STP 		: out std_logic;
+		RESET_n 	: out std_logic;
+		CS 			: out std_logic
+	);
+	end component;
+
+
 begin
 
 
@@ -226,10 +283,48 @@ begin
 	ps2_mouse_clk_in <= ps2_mouse_clk;
 	ps2_mouse_clk    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
-	ps2_keyboard_dat_in <= ps2_keyboard_dat;
-	ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
-	ps2_keyboard_clk_in <= ps2_keyboard_clk;
-	ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+	-- DECA_KEYB:  1=PS2 INOUT, 2= PS2 & USB LOW SPEED
+	KEYBOARD_1 : if DECA_KEYB = 1 generate -- KEYB PS2 INOUT
+		ps2_keyboard_dat_in <= ps2_keyboard_dat;
+		ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+		ps2_keyboard_clk_in <= ps2_keyboard_clk;
+		ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+		USB_PLL_LOCKED      <= '1';
+	end generate KEYBOARD_1;
+
+	KEYBOARD_2 : if DECA_KEYB = 2 generate -- KEYB USB LOW SPEED 
+		ps2_keyboard_dat_in <= PS2_KEYBOARD_DAT_USB;
+--		ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+		ps2_keyboard_clk_in <= PS2_KEYBOARD_CLK_USB;
+--		ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+	
+		-- PLL ULPI_PS2
+		PLL_PHASE90_inst : PLL_PHASE90
+		port map (
+			inclk0		=> USB_CLKIN,
+			c0			=> USB_CLK_PHASE,		
+			locked		=> USB_PLL_LOCKED
+		);
+
+		-- ULPI_PS2
+		ULPI_PS2_inst : ULPI_PS2
+		port map (
+			clk 		=> USB_CLK_PHASE,
+			LedNum 		=> SW(1),
+			LedCaps 	=> SW(0),
+			LedScroll 	=> '0',
+			PS2data 	=> PS2_KEYBOARD_DAT_USB,
+			PS2clock 	=> PS2_KEYBOARD_CLK_USB,
+			FAULT_n 	=> USB_FAULT_n,
+			DATA 		=> USB_DATA,
+			NXT 		=> USB_NXT,
+			DIR 		=> USB_DIR,
+			STP 		=> USB_STP,
+			RESET_n 	=> USB_RESET_n,
+			CS 			=> USB_CS
+		);
+	end generate KEYBOARD_2;
+
 	
 	JOYX_SEL_O          <= '1';
 	joya                <= "11" & JOY1_B2_P9 & JOY1_B1_P6 & JOY1_RIGHT & JOY1_LEFT & JOY1_DOWN & JOY1_UP;
@@ -378,6 +473,8 @@ begin
 			--AUDIO
 				DAC_L   => dac_l,
 				DAC_R   => dac_r,
+				--DAC_MIDI_L=> DAC_MIDI_L,
+				--DAC_MIDI_R=> DAC_MIDI_R,
 			AUDIO_L => SIGMA_L,
 			AUDIO_R => SIGMA_R
 		);
@@ -396,8 +493,8 @@ begin
 			)
 			port map(
 				clk       => MAX10_CLK1_50,
-				reset_in  => KEY(0),		--reset_in when 0
-				reset_out => reset_n,		--reset_out when 0
+				reset_in  => KEY(0) and USB_PLL_LOCKED,		--reset_in  when 0
+				reset_out => reset_n,						--reset_out when 0
 
 				-- SPI signals
 				spi_miso      => sd_miso,
@@ -431,6 +528,7 @@ begin
 				-- UART
 				rxd       => rs232_rxd,
 				txd       => rs232_txd,
+				--
 				intercept => intercept
 			);
 
