@@ -45,7 +45,7 @@ set_location_assignment PIN_C5 -to LED[7]
 set_instance_assignment -name IO_STANDARD "1.2 V" -to LED[7]
 
 #============================================================
-# VGA
+# VGA (SHARED WITH PMOD 1 & PMOD 2)
 #============================================================
 #Pins for 333 addon like Waveshare ps2 vga 
 #connect MSB from addon to MSB of location assign. (eg VGAR2 from waveshare to VGA_R[3])
@@ -66,6 +66,30 @@ set_location_assignment PIN_AB8 -to VGA_G[0]
 set_location_assignment PIN_W8  -to VGA_B[0]
 
 #============================================================
+# PMOD 1 & 2  (SHARED WITH VGA AND PMOD DETO pins 1&2)
+#============================================================
+# PMOD 1
+#set_location_assignment PIN_V8  -to PMOD1[0]
+#set_location_assignment PIN_U7  -to PMOD1[1]
+#set_location_assignment PIN_Y7  -to PMOD1[2]
+#set_location_assignment PIN_AA7 -to PMOD1[3]
+#set_location_assignment PIN_W8  -to PMOD1[4]
+#set_location_assignment PIN_V10 -to PMOD1[5]
+#set_location_assignment PIN_AA6 -to PMOD1[6]
+#set_location_assignment PIN_AB6 -to PMOD1[7]
+
+# PMOD 2
+#set_location_assignment PIN_AB8 -to PMOD2[0]
+#set_location_assignment PIN_AB7 -to PMOD2[1]
+#set_location_assignment PIN_R11 -to PMOD2[2]
+#set_location_assignment PIN_V7  -to PMOD2[3]
+#set_location_assignment PIN_W7  -to PMOD2[4]
+#set_location_assignment PIN_W6  -to PMOD2[5]
+# PMOD DETO pins 1&2 are shared with PMOD2
+#set_location_assignment PIN_W9  -to DETO1_PMOD2[6]
+#set_location_assignment PIN_W5  -to DETO2_PMOD2[7]
+
+#============================================================
 # Keyboard (P9:11,12 GPIO1_D0/1) 
 #============================================================
 set_location_assignment PIN_Y5 -to PS2_KEYBOARD_CLK
@@ -74,40 +98,44 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 
 #============================================================
-# Mouse - (P9:10,9)   (Atlas: pmod 10 mclk VT, 9 mdat GY / 1x14 right (6p) 3v3 p1, GND p4)
+# Mouse - (P9:10,9)   
 #============================================================
 set_location_assignment PIN_AA2 -to PS2_MOUSE_CLK
 set_location_assignment PIN_U6  -to PS2_MOUSE_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
-#(10k resistor)set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
+#(10k resistor phisical pull-up) set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
 #============================================================
-# Audio pwm output (P8:5,6 GPIO0_D02/03)   #(Atlas board: T12_left 1, 2 gnd, 3 R11_right)
+# EAR
 #============================================================
-set_location_assignment PIN_Y19  -to SIGMA_L
-set_location_assignment PIN_AA17 -to SIGMA_R
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
-# EAR (in some mist cores ear function is using UART_RXD)
+# EAR (in some MiST cores ear function is using UART_RXD)
 set_location_assignment PIN_H4 -to EAR
 
 #============================================================
-# UDA 1334A - #NOT USED W18 P8:3, BCLK Y18 P8:4,  WSEL Y19 P8:5, DIN AA17 P8:6
+# PMOD3 SPI / MIDI_DB  
 #============================================================
-#set_location_assignment PIN_W18 -to I2S_MCK2
-#set_location_assignment PIN_Y18 -to I2S_BCLK
-#set_location_assignment PIN_Y19 -to I2S_LRCLK
-#set_location_assignment PIN_AA17 -to I2S_DATA
+# MOSI = P9:30 = PIN_W4
+# MISO = MIDI_WSBD  = P9:29 = PIN_R9
+# SCLK = MIDI_DABD  = P9:31 = PIN_P9
+# CS0 = SPI_CS0 (OSD)  = MIDI_CLKBD = P8:5 = PIN_Y19
+# CS1 = SPI_CS1 (IO)   = P8:6 = PIN_AA17
+# CS2 = SPI_CS2 (FPGA) = P9:42 = PIN_W3
+set_location_assignment PIN_W4   -to SPI_MOSI
+set_location_assignment PIN_R9   -to SPI_MISO_WSBD
+set_location_assignment PIN_P9   -to SPI_SCLK_DABD
+set_location_assignment PIN_Y19  -to SPI_CS0_CLKBD
+set_location_assignment PIN_AA17 -to SPI_CS1
+set_location_assignment PIN_W3   -to SPI_CS2
 
 #============================================================
-# UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
+# PMOD3 UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
 #============================================================
 set_location_assignment PIN_Y18 -to UART_RXD
 set_location_assignment PIN_W18 -to UART_TXD
 
 
 #============================================================
-# JOYSTICK 
+# JOYSTICK DB9 / USB3 USER PORT
 #============================================================
 set_location_assignment PIN_J4 -to JOY1_B2_P9
 set_location_assignment PIN_H3 -to JOY1_B1_P6
@@ -115,12 +143,19 @@ set_location_assignment PIN_J8 -to JOY1_UP
 set_location_assignment PIN_J9 -to JOY1_DOWN
 set_location_assignment PIN_F4 -to JOY1_LEFT
 set_location_assignment PIN_F5 -to JOY1_RIGHT
+# joystick select pin 
+set_location_assignment PIN_K5 -to JOYX_SEL_O
+# joystick Mux pin (for DB9 Antonio Villena dual joystick adapters)
+# SHARED WITH PMOD DETO pin 3 (NOT SHARED WITH USB3 USER PORT)
+set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+#
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B2_P9
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B1_P6
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_UP
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_DOWN
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_LEFT
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_RIGHT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to JOYX_SEL_O
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B2_P9
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_B1_P6
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY1_UP
@@ -133,10 +168,30 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_LEFT
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_B1_P6
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_B2_P9
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOY1_RIGHT
-# joystick select pin 
-set_location_assignment PIN_K5 -to JOYX_SEL_O
-set_instance_assignment -name IO_STANDARD "2.5 V" -to JOYX_SEL_O
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
+
+#============================================================
+# PMOD DETO (6 PIN MULTIPURPOSE PMOD) (I2C, SPI, I2S, Sigma/delta, ...)
+#============================================================
+# DETO PINS 1&2 SHARED WITH PMOD2[6] AND PMOD2[7]
+#set_location_assignment PIN_W9  -to DETO1_PMOD2[6]
+#set_location_assignment PIN_W5  -to DETO2_PMOD2[7]
+# DETO PIN 3 SHARED WITH JOYSTICK MUX pin 
+#set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+#set_location_assignment PIN_Y11 -to DETO4
+
+# This Pmod is compatible with the PCM5102A I2S DAC pinout
+# BCLK  = DETO2
+# DIN   = DETO3
+# LRCLK = DETO4
+
+#(Sigma/Delta Atlas board: T12_left 1, 2 gnd, 3 R11_right)
+#SIGMA_L
+#set_location_assignment PIN_V17 -to SIGMA_L
+#set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
+#SIGMA_R
+#set_location_assignment PIN_Y11 -to SIGMA_R
+#set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 
 #============================================================
@@ -199,6 +254,43 @@ set_location_assignment PIN_P13 -to SD_SEL
 #set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_DAT2
 #set_location_assignment PIN_R22 -to SD_FB_CLK		## NOT USED
 #set_instance_assignment -name IO_STANDARD "1.5 V" -to SD_FB_CLK
+
+
+#============================================================
+#  USB OTG PHY
+#============================================================
+set_location_assignment PIN_H11 -to USB_CLKIN
+set_location_assignment PIN_F15 -to USB_DATA[7]
+set_location_assignment PIN_E15 -to USB_DATA[6]
+set_location_assignment PIN_D15 -to USB_DATA[5]
+set_location_assignment PIN_H14 -to USB_DATA[4]
+set_location_assignment PIN_E14 -to USB_DATA[3]
+set_location_assignment PIN_H13 -to USB_DATA[2]
+set_location_assignment PIN_E13 -to USB_DATA[1]
+set_location_assignment PIN_E12 -to USB_DATA[0]
+set_location_assignment PIN_H12 -to USB_NXT
+set_location_assignment PIN_J13 -to USB_DIR
+set_location_assignment PIN_J12 -to USB_STP
+set_location_assignment PIN_J11 -to USB_CS
+set_location_assignment PIN_E16 -to USB_RESET_n
+set_location_assignment PIN_D8 -to USB_FAULT_n
+
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_CS
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DATA[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_DIR
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_NXT
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_RESET_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB_STP
+set_instance_assignment -name IO_STANDARD "1.2 V" -to USB_FAULT_n
+set_instance_assignment -name IO_STANDARD "1.2 V" -to USB_CLKIN
+
 
 #============================================================
 # HDMI-TX
