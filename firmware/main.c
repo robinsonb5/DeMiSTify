@@ -74,13 +74,8 @@ int LoadROM(const char *fn)
 	{
 		int minsize=rom_minsize;
 		int sendsize;
-		/* Figure out which extension configstring_matches, and thus which index we need to use */
-		int extindex=configstring_matchextension(fn);
 
-		if(!extindex)
-			extindex=1;
-
-		SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|((extindex-1)<<6));
+		configstring_setindex(fn);
 
 //		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 //		{

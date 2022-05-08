@@ -12,8 +12,8 @@ int configstring_next();
 int configstring_nextfield();
 int configstring_copytocomma(char *buf, int limit,int copy);
 int configstring_getdigit();
-int configstring_setindex(int idx);
 int configstring_matchextension(const char *ext);
+void configstring_setindex(const char *fn);
 
 #endif
 

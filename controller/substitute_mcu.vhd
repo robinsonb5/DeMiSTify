@@ -522,6 +522,8 @@ int_triggers<=(
 		debug_ack=>debug_ack		
 	);
 
+	cpu_addr(1 downto 0)<="00";
+	
 gendebugbridge:
 if debug=true generate
 	debugbridge : entity work.debug_bridge_jtag
@@ -764,11 +766,11 @@ begin
 		-- Set this after the read operation has potentially cleared it.
 		if ser_rxint='1' then
 			ser_rxrecv<='1';
-			if ser_rxdata=X"04" then
-				soft_reset_n<='0';
-				ser_rxrecv<='0';
-				int_enabled<='0';
-			end if;
+--			if ser_rxdata=X"04" then
+--				soft_reset_n<='0';
+--				ser_rxrecv<='0';
+--				int_enabled<='0';
+--			end if;
 		end if;
 
 		-- PS2 interrupt

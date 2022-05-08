@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "config.h"
 #include "spi.h"
 #include "configstring.h"
@@ -66,6 +67,23 @@ __weak int configstring_getdigit()
 	if(c>='A' && c<='Z')
 		c-='A'-10;
 	return(c);	
+}
+
+
+extern unsigned char romtype;
+#define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
+__weak void configstring_setindex(const char *fn)
+{
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	/* Figure out which extension configstring_matches, and thus which index we need to use */
+	int extindex=configstring_matchextension(fn);
+
+	if(extindex)
+		--extindex;
+
+//	printf("Setting index to %x (%x, %x, %x)\n",0xff&(romtype|(extindex<<6)),extindex,romtype,configstring_index);
+
+	SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|(extindex<<6));
 }
 
 
