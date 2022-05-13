@@ -29,6 +29,7 @@
 #include "minfat.h"
 #include "interrupts.h"
 #include "ps2.h"
+#include "mouse.h"
 #include "user_io.h"
 #include "osd.h"
 #include "menu.h"
@@ -763,6 +764,10 @@ __weak void mainloop()
 #endif
 	while(1)
 	{
+#ifdef PS2_MOUSE
+		HandlePS2Mouse(0);
+#endif
+
 #ifdef CONFIG_CD
 		pcecd_poll();
 #endif
