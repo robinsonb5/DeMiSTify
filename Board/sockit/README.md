@@ -16,66 +16,63 @@ Total PLLs: 15
 
 ### F P G A   D e v i c e
 
-Cyclone V SoC 5CSXFC6D6F31 Device
-Dual-core ARM Cortex-A9 (HPS)
-110K Programmable Logic Elements
-5,140 Kbits embedded memory
-6 Fractional PLLs
-2 Hard Memory Controllers
-3.125G Transceivers
-SoCKit User Manual
+Cyclone V SoC 5CSXFC6D6F31 Device</br>
+Dual-core ARM Cortex-A9 (HPS)</br>
+110K Programmable Logic Elements</br>
+5,140 Kbits embedded memory</br>
+6 Fractional PLLs</br>
+2 Hard Memory Controllers</br>
+3.125G Transceivers</br>
+SoCKit User Manual</br>
 
 ### C o n f i g u r a t i o n   a n d   D e b u g
 
-Quad Serial Configuration device – EPCQ256 on FPGA
-On-Board USB Blaster II (mini USB type B connector)
+Quad Serial Configuration device – EPCQ256 on FPGA</br>
+On-Board USB Blaster II (mini USB type B connector)</br>
 
 ### M e m o r y   D e v i c e
 
-1GB (2x256MBx16) DDR3 SDRAM on FPGA
-1GB (2x256MBx16) DDR3 SDRAM on HPS
-64MB QSPI Flash on HPS
-Micro SD Card Socket on HPS
+1GB (2x256MBx16) DDR3 SDRAM on FPGA</br>
+1GB (2x256MBx16) DDR3 SDRAM on HPS</br>
+64MB QSPI Flash on HPS</br>
+Micro SD Card Socket on HPS</br>
 
 ### C o m m u n i c a t i o n
 
-USB 2.0 OTG (ULPI interface with mini USB type AB connector)
-USB to UART (mini USB type B connector)
-10/100/1000 Ethernet
+USB 2.0 OTG (ULPI interface with mini USB type AB connector)</br>
+USB to UART (mini USB type B connector)</br>
+10/100/1000 Ethernet</br>
 
 ### C o n n e c t o r s
 
-One HSMC (8-channel Transceivers, Configurable I/O standards 1.5/1.8/2.5/3.3V)
+One HSMC (8-channel Transceivers, Configurable I/O standards 1.5/1.8/2.5/3.3V)</br>
 One LTC connector (One Serial Peripheral Interface (SPI) Master ,one I2C and one GPIO
-interface )
+interface )</br>
 
 ### D i s p l a y
 
-24-bit VGA DAC
-128x64 dots LCD Module with Backlight
+24-bit VGA DAC</br>
+128x64 dots LCD Module with Backlight</br>
 
 ### A u d i o
 
-24-bit CODEC, Line-in, line-out, and microphone-in jacks
+24-bit CODEC, Line-in, line-out, and microphone-in jacks</br>
 
 ### S w i t c h e s , B u t t o n s   a n d   L E D s
 
-8 User Keys (FPGA x4 ; HPS x 4)
-8 User Switches (FPGA x4 ; HPS x 4)
-8 User LEDs (FPGA x4 ; HPS x 4)
-2 HPS Reset Buttons (HPS_RSET_n and HPS_WARM_RST_n)
+8 User Keys (FPGA x4 ; HPS x 4)</br>
+8 User Switches (FPGA x4 ; HPS x 4)</br>
+8 User LEDs (FPGA x4 ; HPS x 4)</br>
+2 HPS Reset Buttons (HPS_RSET_n and HPS_WARM_RST_n)</br>
 
 ### S e n s o r s
 
-G-Sensor on HPS
-Temperature Sensor on FPGA
+G-Sensor on HPS</br>
+Temperature Sensor on FPGA</br>
 
 ### P o w e r
 
 12V DC input
-
-
-
 
 
 ### Pinout connections:
