@@ -2,8 +2,7 @@
 #find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
 rm -f xxxxxxx_sockit*
 #quartus
-find output_files/ -type f \( ! -iname "*.rbf" ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" \) -delete
-rm -f output_files/xxxxxxxxx_sockit_pof.svf
+find output_files/ -type f \( ! -iname "*.rbf" ! -iname "*.sof" ! -iname "*.flow.rpt" \) -delete
 #find output_files/  -type f -not -name '*.sof' -delete
 find software/spl_bsp/ -type f -not -name '*.bin' -delete
 #rm -rf output_files

@@ -31,7 +31,6 @@ set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_100MHZ
 #set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
 #set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
 
-set_global_assignment -name GENERATE_SVF_FILE ON
 set_global_assignment -name GENERATE_RBF_FILE ON
 set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF
 
