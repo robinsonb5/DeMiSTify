@@ -186,10 +186,10 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 # LRCLK = DETO4
 
 #(Sigma/Delta Atlas board: T12_left 1, 2 gnd, 3 R11_right)
-#SIGMA_L
+#SIGMA_L = DETO3
 #set_location_assignment PIN_V17 -to SIGMA_L
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
-#SIGMA_R
+#SIGMA_R = DETO4
 #set_location_assignment PIN_Y11 -to SIGMA_R
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
@@ -528,6 +528,47 @@ set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[12]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[13]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[14]
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to DRAM_DQ[15]
+
+
+
+#============================================================
+# SRAM
+#============================================================
+#set_location_assignment PIN_AA20 -to sram_addr_o[20]
+#set_location_assignment PIN_R13 -to sram_addr_o[19]
+#set_location_assignment PIN_AA19 -to sram_addr_o[18]
+#set_location_assignment PIN_AB21 -to sram_addr_o[17]
+#set_location_assignment PIN_AB20 -to sram_addr_o[16]
+#set_location_assignment PIN_V11 -to sram_addr_o[15]
+#set_location_assignment PIN_V13 -to sram_addr_o[14]
+#set_location_assignment PIN_V14 -to sram_addr_o[13]
+#set_location_assignment PIN_Y17 -to sram_addr_o[12]
+#set_location_assignment PIN_W14 -to sram_addr_o[11]
+#set_location_assignment PIN_U15 -to sram_addr_o[10]
+#set_location_assignment PIN_AA12 -to sram_addr_o[9]
+#set_location_assignment PIN_AB13 -to sram_addr_o[8]
+#set_location_assignment PIN_AA13 -to sram_addr_o[7]
+#set_location_assignment PIN_AB14 -to sram_addr_o[6]
+#set_location_assignment PIN_AB12 -to sram_addr_o[5]
+#set_location_assignment PIN_Y13 -to sram_addr_o[4]
+#set_location_assignment PIN_W16 -to sram_addr_o[3]
+#set_location_assignment PIN_AB16 -to sram_addr_o[2]
+#set_location_assignment PIN_V15 -to sram_addr_o[1]
+#set_location_assignment PIN_W17 -to sram_addr_o[0]
+
+#set_location_assignment PIN_AB19 -to sram_data_io[7]
+#set_location_assignment PIN_Y16 -to sram_data_io[6]
+#set_location_assignment PIN_V16 -to sram_data_io[5]
+#set_location_assignment PIN_AB18 -to sram_data_io[4]
+#set_location_assignment PIN_Y14 -to sram_data_io[3]
+#set_location_assignment PIN_AA15 -to sram_data_io[2]
+#set_location_assignment PIN_W15 -to sram_data_io[1]
+#set_location_assignment PIN_AB15 -to sram_data_io[0]
+
+#set_location_assignment PIN_W13 -to sram_ce_n_o
+#set_location_assignment PIN_AB10 -to sram_we_n_o
+#set_location_assignment PIN_W12 -to sram_oe_n_o
+
 
 #============================================================
 

@@ -267,6 +267,7 @@ architecture RTL of deca_top is
 	);
 	end component;
 
+	signal act_led : std_logic;
 
 begin
 
@@ -278,25 +279,25 @@ begin
 	SD_SCLK_O <= sd_clk;
 
 	-- External devices tied to GPIOs
-	ps2_mouse_dat_in <= ps2_mouse_dat;
-	ps2_mouse_dat    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
-	ps2_mouse_clk_in <= ps2_mouse_clk;
-	ps2_mouse_clk    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
+	ps2_mouse_dat_in <= PS2_MOUSE_DAT;
+	PS2_MOUSE_DAT    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
+	ps2_mouse_clk_in <= PS2_MOUSE_CLK;
+	PS2_MOUSE_CLK    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
 	-- DECA_KEYB:  1=PS2 INOUT, 2= PS2 & USB LOW SPEED
 	KEYBOARD_1 : if DECA_KEYB = 1 generate -- KEYB PS2 INOUT
-		ps2_keyboard_dat_in <= ps2_keyboard_dat;
-		ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
-		ps2_keyboard_clk_in <= ps2_keyboard_clk;
-		ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+		ps2_keyboard_dat_in <= PS2_KEYBOARD_DAT;
+		PS2_KEYBOARD_DAT    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+		ps2_keyboard_clk_in <= PS2_KEYBOARD_CLK;
+		PS2_KEYBOARD_CLK    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
 		USB_PLL_LOCKED      <= '1';
 	end generate KEYBOARD_1;
 
 	KEYBOARD_2 : if DECA_KEYB = 2 generate -- KEYB USB LOW SPEED 
 		ps2_keyboard_dat_in <= PS2_KEYBOARD_DAT_USB;
---		ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+--		PS2_KEYBOARD_DAT    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
 		ps2_keyboard_clk_in <= PS2_KEYBOARD_CLK_USB;
---		ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+--		PS2_KEYBOARD_CLK    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
 	
 		-- PLL ULPI_PS2
 		PLL_PHASE90_inst : PLL_PHASE90
@@ -430,7 +431,7 @@ begin
 --			CLOCK_27 => MAX10_CLK1_50,
          	CLOCK_27 => MAX10_CLK1_50&MAX10_CLK1_50,
 --	        RESET_N => reset_n,
-			LED => LED(0),
+			LED => act_led,
 			--SDRAM
 			SDRAM_DQ   => DRAM_DQ,
 			SDRAM_A    => DRAM_ADDR,
@@ -531,5 +532,7 @@ begin
 				--
 				intercept => intercept
 			);
+
+		LED <= (0 => not act_led, others => '1');
 
 	end rtl;
