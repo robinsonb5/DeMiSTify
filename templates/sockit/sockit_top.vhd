@@ -129,25 +129,42 @@ architecture RTL of sockit_top is
 	signal joyd : std_logic_vector(7 downto 0);
 
 	-- DAC AUDIO     
-	component audio_top
-		port (
-			clk         : in std_logic;
-			rst_n       : in std_logic;
-			mix         : in std_logic;
-			rdata       : in std_logic_vector (15 - 1 downto 0);
-			ldata       : in std_logic_vector (15 - 1 downto 0);
-			exchan      : in std_logic;
-			aud_bclk    : out std_logic;
-			aud_daclrck : out std_logic;
-			aud_dacdat  : out std_logic;
-			aud_xck     : out std_logic;
-			i2c_sclk    : out std_logic;
-			i2c_sdat    : inout std_logic
+	component I2C_AV_Config
+		-- generic (
+		--   CLK_Freq : 24000000;
+		--   I2C_Freq : 20000;
+		--   LUT_SIZE : 11;
+		--   Dummy_DATA : 0;
+		--   SET_LIN_L : 1;
+		--   SET_LIN_R : 2;
+		--   SET_HEAD_L : 3;
+		--   SET_HEAD_R : 4;
+		--   A_PATH_CTRL : 5;
+		--   D_PATH_CTRL : 6;
+		--   POWER_ON : 7;
+		--   SET_FORMAT : 8;
+		--   SAMPLE_CTRL : 9;
+		--   SET_ACTIVE : 10
+		-- );
+		  port (
+		  iCLK : in std_logic;
+		  iRST_N : in std_logic;
+		  oI2C_SCLK : out std_logic;
+		  oI2C_SDAT : inout std_logic
 		);
-	end component;
-
-	signal exchan : std_logic;
-	signal mix    : std_logic;
+	  end component;
+	  
+	component audio_top is
+		Port ( 	
+			clk_50MHz : in STD_LOGIC; -- system clock (50 MHz)
+			dac_MCLK : out STD_LOGIC; -- outputs to PMODI2L DAC
+			dac_LRCK : out STD_LOGIC;
+			dac_SCLK : out STD_LOGIC;
+			dac_SDIN : out STD_LOGIC;
+			L_data : 	in std_logic_vector(15 downto 0);  	-- LEFT data (16-bit signed)
+			R_data : 	in std_logic_vector(15 downto 0)  	-- RIGHT data (16-bit signed) 
+		);
+	end component;	
 
 	--signal dac_l: signed(15 downto 0);
 	--signal dac_r: signed(15 downto 0);
@@ -158,17 +175,6 @@ architecture RTL of sockit_top is
 	-- signal dac_l_s: std_logic_vector(15 downto 0);
 	-- signal dac_r_s: std_logic_vector(15 downto 0);
 
-	-- component audio_top is
-	-- Port ( 	
-	-- 		clk_50MHz : in STD_LOGIC; -- system clock (50 MHz)
-	-- 		dac_MCLK : out STD_LOGIC; -- outputs to PMODI2L DAC
-	-- 		dac_LRCK : out STD_LOGIC;
-	-- 		dac_SCLK : out STD_LOGIC;
-	-- 		dac_SDIN : out STD_LOGIC;
-	-- 		L_data : 	in std_logic_vector(15 downto 0);  	-- LEFT data (16-bit signed)
-	-- 		R_data : 	in std_logic_vector(15 downto 0)  	-- RIGHT data (16-bit signed) 
-	-- );
-	-- end component;	
 
 
 	-- ADC AUDIO     
@@ -226,41 +232,56 @@ begin
 	joyc       <= (others => '1');
 	joyd       <= (others => '1');
 
-	VGA_R  <= vga_red(7 downto 2) & vga_red(7 downto 6);
-	VGA_G  <= vga_green(7 downto 2) & vga_green(7 downto 6);
-	VGA_B  <= vga_blue(7 downto 2) & vga_blue(7 downto 6);
+	-- -- PLL2
+	-- pll2_inst : pll2
+	-- port map (
+	-- 	inclk0		=> FPGA_CLK1_50,
+	-- 	c0			=> vga_clk_x,		
+	-- 	locked		=> open
+	-- );
+
+	VGA_R  <= vga_red;
+	VGA_G  <= vga_green;
+	VGA_B  <= vga_blue;
 	VGA_HS <= vga_hsync;
 	VGA_VS <= vga_vsync;
 
-	VGA_SYNC_n  <= '0';			   	-- supplying RGB/Composite sync might give better black
-	VGA_BLANK_n <= not vga_blank;  	-- vga_hsync and vga_vsync; --'1'
-	VGA_CLK     <= vga_clk_x;		-- should be clk_sys from top mist core 
-	-- In top MiST core might be needed to supply .line_start(vga_hblank) to video mixer
+	VGA_SYNC_n  <= '0';			-- RGB/Composite sync
+	VGA_BLANK_n <= '1'; 		-- not vga_blank;  	-- vga_hsync and vga_vsync; (blank signal usually gives darker blacks)
+	VGA_CLK     <= vga_clk_x;	-- use clk_sys from top mist core. Could be used pll2 like UA reloaded
+								-- UA reloaded has the same Video DAC ADV7123 
 
 	-- AUDIO CODEC
 	AUD_MUTE <= '1'; --SW(0);
-	exchan   <= '0';
-	mix      <= '0';
 
-	audio_top_inst : audio_top
-	port map(
-		clk   => FPGA_CLK1_50, -- input clock
-		rst_n => reset_n,      -- active low reset (from reset button)
-		-- config
-		exchan => exchan, -- switch audio left / right channel
-		mix    => mix,    -- normal / centered mix (play some left channel on the right channel and vise-versa)
-		-- audio shifter
-		rdata       => std_logic_vector(dac_r(14 downto 0)), -- right channel sample data
-		ldata       => std_logic_vector(dac_l(14 downto 0)), -- left channel sample data
-		aud_bclk    => AUD_BCLK,                             -- CODEC data clock
-		aud_daclrck => AUD_DACLRCK,                          -- CODEC data clock
-		aud_dacdat  => AUD_DACDAT,                           -- CODEC data
-		aud_xck     => AUD_XCK,                              -- CODEC data clock
-		-- I2C audio config
-		i2c_sclk => AUD_I2C_SCLK, -- CODEC config clock
-		i2c_sdat => AUD_I2C_SDAT  -- CODEC config data
+	I2C_AV_Config_inst : I2C_AV_Config
+	-- generic map (
+	--   CLK_Freq => CLK_Freq,
+	-- )
+	port map (
+	  iCLK 		=> FPGA_CLK1_50,
+	  iRST_N 	=> reset_n,
+	  oI2C_SCLK => AUD_I2C_SCLK,
+	  oI2C_SDAT => AUD_I2C_SDAT
 	);
+  
+	audio_i2s: entity work.audio_top
+	port map(
+		clk_50MHz => FPGA_CLK1_50,
+		dac_MCLK  => AUD_XCK,
+		dac_LRCK  => AUD_DACLRCK,
+		dac_SCLK  => AUD_BCLK,
+		dac_SDIN  => AUD_DACDAT,
+		L_data    => std_logic_vector(dac_l),
+		R_data    => std_logic_vector(dac_r)
+	--	L_data    => std_logic_vector(dac_l_s),
+	--	R_data    => std_logic_vector(dac_r_s)
+	);		
 
+	-- dac_l_s <= ('0' & dac_l(14 downto 0));
+	-- dac_r_s <= ('0' & dac_r(14 downto 0));
+
+	-- EAR
 	midi_module : i2s_decoder
 	port map(
 		clk       => FPGA_CLK1_50,
@@ -286,27 +307,6 @@ begin
 		end if;
 	end process;
 
-	-- audio_i2s: entity work.audio_top
-	-- port map(
-	-- 	clk_50MHz => MAX10_CLK1_50,
-	-- 	dac_MCLK  => AUD_XCK,
-	-- 	dac_LRCK  => AUD_DACLRCK,
-	-- 	dac_SCLK  => AUD_BCLK,
-	-- 	dac_SDIN  => AUD_DACDAT,
-	-- 	L_data    => std_logic_vector(dac_l),
-	-- 	R_data    => std_logic_vector(dac_r)
-	-- );		
-
-	-- dac_l_s <= ('0' & dac_l(14 downto 0));
-	-- dac_r_s <= ('0' & dac_r(14 downto 0));
-	
-	-- -- PLL2
-	-- pll2_inst : pll2
-	-- port map (
-	-- 	inclk0		=> MAX10_CLK1_50,
-	-- 	c0			=> vga_clk_x,		
-	-- 	locked		=> open
-	-- );
 
 	guest : component guest_mist
 		port map
@@ -377,7 +377,7 @@ begin
 
 				-- SPI signals
 				spi_miso      => sd_miso,
-				spi_mosi      => sd_mosi,			
+				spi_mosi      => sd_mosi,
 				spi_clk       => spi_clk_int,
 				spi_cs        => sd_cs,
 				spi_fromguest => spi_fromguest,
