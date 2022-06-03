@@ -92,6 +92,7 @@ signal platform : std_logic_vector(7 downto 0);
 -- Effective speed is sysclk / (2*(1+2^triggerbit))
 
 signal reset_n : std_logic := '0';
+signal reset : std_logic := '1';
 signal reset_counter : unsigned(15 downto 0) := X"FFFF";
 
 -- Millisecond counter
@@ -173,7 +174,7 @@ signal mouserecvbyte : std_logic_vector(10 downto 0);
 
 
 -- CPU signals
-
+signal cpureset_n : std_logic;
 signal soft_reset_n : std_logic;
 signal mem_busy : std_logic;
 signal mem_rom : std_logic;
@@ -194,6 +195,7 @@ signal mem_rd_d : std_logic;
 signal mem_wr_d : std_logic; 
 signal cache_valid : std_logic;
 signal flushcaches : std_logic;
+signal cpu_int : std_logic;
 
 -- CPU Debug signals
 signal debug_req : std_logic;
@@ -208,7 +210,12 @@ signal joy2_r : std_logic_vector(7 downto 0);
 signal joy3_r : std_logic_vector(7 downto 0);
 signal joy4_r : std_logic_vector(7 downto 0);
 
+signal peripheral_block : std_logic_vector(3 downto 0);
+
 begin
+
+reset <= not reset_n;
+cpureset_n <= reset_n and soft_reset_n;
 
 platform(7 downto 1) <= (others=>'0');
 platform(0) <= '1' when spirtc=true else '0';
@@ -315,7 +322,7 @@ end generate;
 		)
 		port map (
 			clk => clk,
-			reset => not reset_n, -- active high!
+			reset => reset, -- active high!
 			ps2_clk_in => ps2k_clk_in,
 			ps2_dat_in => ps2k_dat_in,
 			ps2_clk_out => ps2k_clk_out,
@@ -338,7 +345,7 @@ end generate;
 		)
 		port map (
 			clk => clk,
-			reset => not reset_n, -- active high!
+			reset => reset, -- active high!
 			ps2_clk_in => ps2m_clk_in,
 			ps2_dat_in => ps2m_dat_in,
 			ps2_clk_out => ps2m_clk_out,
@@ -431,7 +438,7 @@ generic map (
 )
 port map (
 	clk => clk,
-	reset_n => reset_n and soft_reset_n,
+	reset_n => cpureset_n,
 	trigger => int_triggers,
 	ack => int_ack,
 	int => int_req,
@@ -490,6 +497,8 @@ int_triggers<=(
 		end if;	
 	end process;
 	
+	cpu_int <= int_req and int_enabled;
+	
 	cpu : entity work.eightthirtytwo_cpu
 	generic map
 	(
@@ -502,8 +511,8 @@ int_triggers<=(
 	port map
 	(
 		clk => clk,
-		reset_n => reset_n and soft_reset_n,
-		interrupt => int_req and int_enabled,
+		reset_n => cpureset_n,
+		interrupt => cpu_int,
 
 		-- cpu fetch interface
 
@@ -541,10 +550,11 @@ end generate;
 
 gennodebug:
 if debug=false generate
-	debug_req<='0';
 	debug_ack<='0';
 	debug_tocpu<=(others=>'0');
 end generate;
+
+peripheral_block <= cpu_addr(31)&cpu_addr(10 downto 8);
 
 process(clk, reset_n)
 begin
@@ -587,7 +597,7 @@ begin
 
 		-- Write from CPU?
 		if mem_wr='1' and mem_wr_d='0' and mem_busy='1' then
-			case cpu_addr(31)&cpu_addr(10 downto 8) is
+			case peripheral_block is
 
 --				when X"C" =>	-- Timer controller at 0xFFFFFC00
 --					timer_reg_req<='1';

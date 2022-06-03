@@ -17,7 +17,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.numeric_std.all;
 
 
 entity spi_controller is
@@ -44,7 +44,7 @@ architecture rtl of spi_controller is
 signal spi_req_r : std_logic;
 signal sck : std_logic;
 signal sd_shift : std_logic_vector(7 downto 0);
-signal shiftcnt : std_logic_vector(5 downto 0);
+signal shiftcnt : unsigned(5 downto 0);
 begin
 
 -----------------------------------------------------------------
@@ -58,8 +58,10 @@ begin
 	PROCESS (sysclk, reset) BEGIN
 
 		IF reset ='0' THEN 
-			shiftcnt(5)<='0';
+			shiftcnt<=(others =>'0');
 			sck <= '1';
+			mosi <= '1';
+			sd_shift<=(others =>'1');
 		ELSIF rising_edge(sysclk) then			
 			IF trigger='1' then
 				shiftcnt <= "100111";  -- shift out 8 bits, underflow will clear bit 5, mapped to busy
