@@ -294,33 +294,6 @@ static void selectdir(int row)
 	buildmenu(1);
 }
 
-static void MenuHide(int row)
-{
-	Menu_ShowHide(0);
-}
-
-static void submenu(int row)
-{
-	menupage=menu[row].u.menu.page;
-	menuindex=0;
-//	putchar(row+'0');
-	buildmenu(1);
-}
-
-static void menufoot(int sub)
-{
-	if(sub)
-	{
-		menu[7].u.menu.page=0;
-		menu[7].action=MENU_ACTION(&submenu);
-		menu[7].label=std_label_back;
-	}
-	else
-	{
-		menu[7].label=std_label_exit;
-		menu[7].action=MENU_ACTION(&MenuHide);
-	}
-}
 
 static int listroms()
 {
@@ -380,6 +353,35 @@ static void fileselector(int row)
 }
 
 #endif
+
+static void submenu(int row)
+{
+	menupage=menu[row].u.menu.page;
+	menuindex=0;
+//	putchar(row+'0');
+	buildmenu(1);
+}
+
+static void MenuHide(int row)
+{
+	Menu_ShowHide(0);
+}
+
+
+static void menufoot(int sub)
+{
+	if(sub)
+	{
+		menu[7].u.menu.page=0;
+		menu[7].action=MENU_ACTION(&submenu);
+		menu[7].label=std_label_back;
+	}
+	else
+	{
+		menu[7].label=std_label_exit;
+		menu[7].action=MENU_ACTION(&MenuHide);
+	}
+}
 
 
 void cycle(int row)

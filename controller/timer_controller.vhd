@@ -59,7 +59,7 @@ begin
 		elsif rising_edge(clk) then
 			prescaled_tick<='0';
 			prescale_counter<=prescale_counter-1;
-			if prescale_counter=X"00" then
+			if prescale_counter=X"0000" then
 				prescaled_tick<='1';
 				prescale_counter<=to_unsigned(prescale_adj,16);
 			end if;

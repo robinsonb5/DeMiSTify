@@ -61,7 +61,7 @@ if {[info exists verilog_files]} {
 }
 yosys ghdl ${topmodule}
 # Create .json file
-yosys synth_ecp5 -noflatten -top ${topmodule} -json ${corename}.json
+yosys synth_ecp5 -abc9 -top ${topmodule} -json ${corename}.json
 #yosys hierarchy -top ${topmodule}
 #yosys proc
 #yosys bugpoint -script ${boardpath}/${board}/test.ys -clean -grep "combinatorial loop"
