@@ -28,16 +28,18 @@ config: $(SVFFILE)
 clean:
 	-rm $(TARGET)
 	-rm $(PROJECT)_$(BOARD)_files.tcl
-	-rm $(BITIFLE)
+	-rm $(BITFILE)
 
 $(PROJECT)_$(BOARD)_files.tcl: $(MANIFEST)
 	$(SCRIPTSDIR)/expandtemplate_yosys.sh $+ $(PROJECTTOROOT) >$@
 	$(SCRIPTSDIR)/expandtemplate_yosys.sh $(BOARDDIR)/board.files $(BOARDDIR) >>$@
 
 $(TARGET): $(MANIFEST) $(PROJECT)_$(BOARD)_files.tcl
+	-rm $@
+	$(TOOLPATH)yosys -mghdl -p 'tcl $(SCRIPTSDIR)/mkproject_yosys.tcl $(PROJECT) $(BOARD)' || echo "Compilation failed."
 
 $(CFGFILE): $(TARGET) $(PROJECT)_$(BOARD)_files.tcl $(BOARDDIR)/$(BOARD).lpf
-	$(TOOLPATH)yosys -mghdl -p 'tcl $(SCRIPTSDIR)/mkproject_yosys.tcl $(PROJECT) $(BOARD)' || echo "Compilation failed."
+	-rm $@
 	$(TOOLPATH)nextpnr-ecp5 $(DEVICE) --package $(DEVICE_PACKAGE) --speed $(DEVICE_SPEED) --json $< --textcfg $@ --lpf $(BOARDDIR)/$(BOARD).lpf --timing-allow-fail
 
 $(BITFILE): $(CFGFILE)
