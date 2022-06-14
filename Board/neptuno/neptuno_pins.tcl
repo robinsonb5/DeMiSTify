@@ -123,6 +123,7 @@ set_location_assignment PIN_Y6 -to DRAM_CLK
 set_location_assignment PIN_AA3 -to DRAM_CS_N
 
 #NEPTUNO SRAM#
+set_location_assignment PIN_AB15 -to SRAM_A[20]
 set_location_assignment PIN_U21 -to SRAM_A[19]
 set_location_assignment PIN_A17 -to SRAM_A[18]
 set_location_assignment PIN_B18 -to SRAM_A[17]
