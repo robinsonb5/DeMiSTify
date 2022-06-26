@@ -37,6 +37,12 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
+#UART
+# shared with PS2_MOUSE_CLK
+#set_location_assignment PIN_C21 -to UART_RXD
+# shared with -to PS2_MOUSE_DAT
+#set_location_assignment PIN_B21 -to UART_TXD
+
 #NEPTUNO JOYSTICKS#
 set_location_assignment PIN_AA18 -to JOYP7_O
 set_location_assignment PIN_A20 -to JOY_CLK
