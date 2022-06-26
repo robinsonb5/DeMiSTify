@@ -1,20 +1,3 @@
--- Simple UART
--- Copyright © 2014 by Alastair M. Robinson
-
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
-
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty
--- of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
-
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.ALL;
@@ -35,6 +18,7 @@ entity simple_uart is
 		txgo : in std_logic;			-- trigger transmission
 		txready : out std_logic;	-- ready to transmit
 		rxdata : out std_logic_vector(7 downto 0);
+		rxready : in std_logic :='1';	-- ready to receive
 
 		rxint : out std_logic;	-- Interrupt, momentary pulse when character received
 		txint : out std_logic;	-- Interrupt, momentary pulse when data has finished sending
@@ -76,50 +60,23 @@ begin
 	-- to another is not an atomic operation; leaving one state and entering the next
 	-- are distinct, and it's possible (and, in fact, common) for one 
 	-- to happen without the other if inputs aren't properly synchronised.
-	
+genrx : if enable_rx generate	
 	process(clk,rxd)
 	begin
-		if enable_rx and rising_edge(clk) then
+		if rising_edge(clk) then
 			rxd_sync2<=rxd;
 			rxd_sync<=rxd_sync2;
 		end if;
 	end process;
-	
 
-	-- Clock generators.
-	-- We have independent Rx and Tx clocks, generated from counters
-	-- which count down from clock_divisor to zero.
-	-- At zero, we generate a momentary high pulse which is used as the serial clock signal.
-
-	-- Tx Clock generation
-	-- Very simple - the counter is reset when either it reaches zero or
-	-- the Tx is idle, and counts down once per system clock tick.
-
-	process(clk)
-	begin
-		if enable_tx and rising_edge(clk) then
-			txclock<='0';
-
-			if txstate=idle then
-				txcounter<=clock_divisor;
-			else
-				txcounter<=txcounter-1;
-				if txcounter=0 then
-					txclock<='1';
-					txcounter<=clock_divisor;
-				end if;
-			end if;
-		end if;
-	end process;
-
-	
 	-- Rx Clock generation
 	-- The Rx clock is slightly more complicated.  When idle we detect the leading edge of the
 	-- start bit, and set the counter to half a bit width.  When it reaches zero, the counter is
 	-- set to a full bit width, so clock ticks should land in the centre of each bit.
+
 	process(clk,reset,rxd_sync,rxcounter,rxstate)
 	begin
-		if enable_rx and rising_edge(clk) then
+		if rising_edge(clk) then
 			rxclock<='0';
 
 			if rxstate=idle then
@@ -148,7 +105,7 @@ begin
 		if reset='0' then
 			rxstate<=idle;
 			rxint<='0';
-		elsif enable_rx and rising_edge(clk) then
+		elsif rising_edge(clk) then
 			rxint<='0';
 			case rxstate is
 				when idle =>
@@ -184,6 +141,36 @@ begin
 			end case;
 		end if;
 	end process;
+end generate;
+
+gennorx: if not enable_rx generate
+	rxint<='0';	
+end generate;
+	-- Clock generators.
+	-- We have independent Rx and Tx clocks, generated from counters
+	-- which count down from clock_divisor to zero.
+	-- At zero, we generate a momentary high pulse which is used as the serial clock signal.
+
+	-- Tx Clock generation
+	-- Very simple - the counter is reset when either it reaches zero or
+	-- the Tx is idle, and counts down once per system clock tick.
+gentx: if enable_tx generate
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			txclock<='0';
+
+			if txstate=idle then
+				txcounter<=clock_divisor;
+			else
+				txcounter<=txcounter-1;
+				if txcounter=0 then
+					txclock<='1';
+					txcounter<=clock_divisor;
+				end if;
+			end if;
+		end if;
+	end process;
 
 
 	-- Data Tx
@@ -197,7 +184,7 @@ begin
 			txready<='1';
 			txd<='1';
 			txint<='0';
-		elsif enable_tx and rising_edge(clk) then
+		elsif rising_edge(clk) then
 			txint <='0';
 			case txstate is
 				when idle =>
@@ -224,5 +211,12 @@ begin
 			end case;
 		end if;
 	end process;
-	
+end generate;
+
+gennotx: if not enable_tx generate
+	txready<='0';
+	txint<='0';	
+	txd<='1';
+end generate;
+
 end architecture;

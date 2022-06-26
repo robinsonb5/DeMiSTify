@@ -61,6 +61,16 @@ else
 	done
 endif
 
+.PHONY: config
+config:
+ifdef BOARD
+	@make -f $(DEMISTIFYPATH)/Scripts/project.mk PROJECTTOROOT=$(PROJECTTOROOT) DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) BOARD=$(BOARD) PROJECTPATH=$(PROJECTPATH) CMD=compile
+else
+	@for BOARD in ${BOARDS}; do \
+		make --quiet -f $(DEMISTIFYPATH)/Scripts/project.mk PROJECTTOROOT=$(PROJECTTOROOT) DEMISTIFYPATH=$(DEMISTIFYPATH) PROJECTS=$(PROJECTS) BOARD=$$BOARD PROJECTPATH=$(PROJECTPATH) CMD=config; \
+	done
+endif
+
 .PHONY: clean
 clean:
 ifdef BOARD
