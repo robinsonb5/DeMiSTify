@@ -4,6 +4,8 @@ create_generated_clock -name spiclk -source [get_ports {FPGA_CLK1_50}] -divide_b
 set hostclk { clk_50 }
 set supportclk { clk_50 }
 
+set cyclonev 1
+
 derive_pll_clocks -create_base_clocks
 derive_clock_uncertainty
 
