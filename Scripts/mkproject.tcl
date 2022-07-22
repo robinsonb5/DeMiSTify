@@ -31,6 +31,13 @@ if { ${requires_sdram}==0 || ${have_sdram}==1 } {
 	source ${boardpath}/${board}/${board}_opts.tcl
 	source ${boardpath}/${board}/${board}_pins.tcl
 	source ${boardpath}/${board}/${board}_support.tcl
+	
+	if {[catch "source custom_defs.tcl"]} {
+		puts "Board-specific project override not found, or contains errors."
+	} else {
+		puts "Included board-specific project override without error."
+	}
+	
 	set_global_assignment -name VERILOG_MACRO "DEMISTIFY=1"
 
 	set_global_assignment -name QIP_FILE top.qip
