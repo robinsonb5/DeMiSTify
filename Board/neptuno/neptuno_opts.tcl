@@ -1,8 +1,7 @@
 # Project-Wide Assignments
 # ========================
-set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.2
-set_global_assignment -name LAST_QUARTUS_VERSION 13.1
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "01:53:30  APRIL 20, 2017"
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
+set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
 
@@ -82,4 +81,12 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
 set_global_assignment -name SEED 1
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "NORMAL COMPILATION"
 set_global_assignment -name PRE_MAPPING_RESYNTHESIS ON
+
+if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
+	set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+} else {
+	set_global_assignment -name OPTIMIZATION_MODE BALANCED
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
+}
 

@@ -1,5 +1,5 @@
 create_clock -name {clk_50} -period 20.000 -waveform {0.000 10.000} { FPGA_CLK1_50 }
-create_generated_clock -name spiclk -source [get_ports {FPGA_CLK1_50}] -divide_by 4 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
+create_generated_clock -name spiclk -source [get_ports {FPGA_CLK1_50}] -divide_by 16 [get_registers {substitute_mcu:controller|spi_controller:spi|sck}]
 
 set hostclk { clk_50 }
 set supportclk { clk_50 }

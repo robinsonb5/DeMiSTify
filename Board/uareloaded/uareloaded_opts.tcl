@@ -83,3 +83,12 @@ set_global_assignment -name SEED 1
 set_global_assignment -name OPTIMIZE_POWER_DURING_SYNTHESIS "NORMAL COMPILATION"
 set_global_assignment -name PRE_MAPPING_RESYNTHESIS ON
 
+
+if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
+	set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+} else {
+	set_global_assignment -name OPTIMIZATION_MODE BALANCED
+	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
+}
+

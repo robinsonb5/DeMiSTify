@@ -5,5 +5,5 @@ set_global_assignment -name VERILOG_FILE ${boardpath}/sockit/audio/I2C_Controlle
 set_global_assignment -name VERILOG_FILE ${boardpath}/sockit/audio/i2s_decoder.v
 
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_PARALLEL_AUDIO=1"
-set_global_assignment -name VERILOG_MACRO "DEMISTIFY_sockit=1"
+set_global_assignment -name VERILOG_MACRO "DEMISTIFY_SOCKIT=1"
 
