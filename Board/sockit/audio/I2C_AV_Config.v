@@ -130,9 +130,12 @@ begin
   SET_HEAD_R  :  LUT_DATA <= 16'h0679;  //R3 RHPVOL = 7Bh (+2dB)
   A_PATH_CTRL :  LUT_DATA <= 16'h08D2;//16'h08F8;  //R4 DACSEL = 1
   D_PATH_CTRL :  LUT_DATA <= 16'h0A06;  //R5 DEEMP = 11 (48 KHz)
-  POWER_ON    :  LUT_DATA <= 16'h0C00;  //R6
-  SET_FORMAT  :  LUT_DATA <= 16'h0E01;  //R7 FORMAT=01,16 bit
-  SAMPLE_CTRL :  LUT_DATA <= 16'h1009;  //R8 48KHz,USB-mode
+  //POWER_ON    :  LUT_DATA <= 16'h0C00;  //R6 all powered ON
+  POWER_ON    :  LUT_DATA <= 16'h0C20;    //R6 internal oscilator MCLK powered down
+  //SET_FORMAT  :  LUT_DATA <= 16'h0E01;  //R7 FORMAT=01,16 bit   format left justified
+  SET_FORMAT  :  LUT_DATA <= 16'h0E02;    //R7 FORMAT=10,16 bit   format I2S
+  //SAMPLE_CTRL :  LUT_DATA <= 16'h1009;  //R8 48KHz,USB-mode
+  SAMPLE_CTRL :  LUT_DATA <= 16'h1008;    //R8 48KHz,Normal mode, clkdiv2=0 
   SET_ACTIVE  :  LUT_DATA <= 16'h1201;  //R9 ACTIVE
   default     :  LUT_DATA <= 16'h0000;
   endcase
