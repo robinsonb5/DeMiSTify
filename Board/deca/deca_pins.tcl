@@ -174,11 +174,11 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 # PMOD DETO (6 PIN MULTIPURPOSE PMOD) (I2C, SPI, I2S, Sigma/delta, ...)
 #============================================================
 # DETO PINS 1&2 SHARED WITH PMOD2[6] AND PMOD2[7]
-#set_location_assignment PIN_W9  -to DETO1_PMOD2[6]
-#set_location_assignment PIN_W5  -to DETO2_PMOD2[7]
+set_location_assignment PIN_W9  -to DETO1_PMOD2_6
+set_location_assignment PIN_W5  -to DETO2_PMOD2_7
 # DETO PIN 3 SHARED WITH JOYSTICK MUX pin 
-#set_location_assignment PIN_V17 -to DETO3_JOY_MUX
-#set_location_assignment PIN_Y11 -to DETO4
+set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+set_location_assignment PIN_Y11 -to DETO4
 
 # This Pmod is compatible with the PCM5102A I2S DAC pinout
 # BCLK  = DETO2

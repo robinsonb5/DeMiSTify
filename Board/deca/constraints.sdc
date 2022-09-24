@@ -11,7 +11,7 @@ derive_clock_uncertainty
 create_clock -name i2sclk -period 20.000 {audio_top:audio_i2s|tcount[4]}
 create_clock -name audio-spi-clk-1m -period 2480.000  {AUDIO_SPI_CTL_RD:AUDIO_SPI_CTL_RD_inst|CLK_1M}
 create_clock -name audio-spi-rom-ck -period 2480.000  {AUDIO_SPI_CTL_RD:AUDIO_SPI_CTL_RD_inst|ROM_CK}
-create_clock -name i2c-ctrl-clk -period 100000.000  {I2C_HDMI_Config:I2C_HDMI_Config_inst|mI2C_CTRL_CLK}
+#create_clock -name i2c-ctrl-clk -period 100000.000  {I2C_HDMI_Config:I2C_HDMI_Config_inst|mI2C_CTRL_CLK}
 
 
 # Set pin definitions for downstream constraints
@@ -27,7 +27,7 @@ set FALSE_IN  {KEY[*] SW[*] PS2_* JOY1* AUDIO* HDMI_I2C* HDMI_LRCLK HDMI_MCLK HD
 #the HDMI signals are probably fast enough to worth constraining properly at some point
 
 # JTAG constraints for debug interface (if enabled)
-# create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
+#create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
 set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
