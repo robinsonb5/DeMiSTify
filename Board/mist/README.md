@@ -1,6 +1,6 @@
 # MiST board
 
-Website ATLAS: https://github.com/mist-devel/mist-board/wiki/TheBoard
+Website: https://github.com/mist-devel/mist-board/wiki/TheBoard
 
 Family: Cyclone III
 
