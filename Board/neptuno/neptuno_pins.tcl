@@ -37,12 +37,6 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
-#UART
-# shared with PS2_MOUSE_CLK
-#set_location_assignment PIN_C21 -to UART_RXD
-# shared with -to PS2_MOUSE_DAT
-#set_location_assignment PIN_B21 -to UART_TXD
-
 #NEPTUNO JOYSTICKS#
 set_location_assignment PIN_AA18 -to JOYP7_O
 set_location_assignment PIN_A20 -to JOY_CLK
@@ -53,14 +47,14 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
 #NEPTUNO AUDIO#
 set_location_assignment PIN_A3 -to SIGMA_L
 set_location_assignment PIN_B4 -to SIGMA_R
-#set_location_assignment PIN_N5 -to mic_o -- No asignado
 set_location_assignment PIN_AA13 -to AUDIO_INPUT
 
-## I2S audio
+## I2S audio#
 set_location_assignment PIN_M20 -to I2S_BCLK
 set_location_assignment PIN_AA15 -to I2S_DATA 
 set_location_assignment PIN_AB14 -to I2S_LRCLK
-## Neptuno I2C
+
+## Neptuno I2C#
 set_location_assignment PIN_R22 -to I2C_SCL
 set_location_assignment PIN_V21 -to I2C_SDA 
 
@@ -80,12 +74,6 @@ set_location_assignment PIN_N21 -to SPI_SCK
 set_location_assignment PIN_M21 -to SPI_DO
 set_location_assignment PIN_K22 -to SPI_DI
 #set_location_assignment PIN_R6 -to SPI_nWAIT  -- No asignado
-
-#NEPTUNO DAC#
-#set_location_assignment PIN_M20 -to SCLK
-#set_location_assignment PIN_AB14 -to LRCLK
-#set_location_assignment PIN_AA15 -to SDIN
-
 
 #NEPTUNO SDRAM#
 set_location_assignment PIN_V2 -to DRAM_ADDR[0]
@@ -170,5 +158,29 @@ set_location_assignment PIN_A10 -to SRAM_WE
 set_location_assignment PIN_AA20 -to SRAM_OE
 set_location_assignment PIN_R2 -to SRAM_UB
 set_location_assignment PIN_AA16 -to SRAM_LB
+
+
+##################  EDGE PINS ##################
+
+#PMOD4 SIGNALS ON MIDI2SBC ADDON
+#PIN_P22,    B14 _SPI CE0_MIDI CLKBD,   PMOD4_D0
+#PIN_B22,    A1  _SPI MOSI,             PMOD4_D1
+#PIN_AA14,   A28 _MISO_MIDI WSBD,       PMOD4_D2
+#PIN_N22,    B13 _SPI SCLK_MIDI DABD,   PMOD4_D3
+#PIN_M19,    B1  _UART_RX,              PMOD4_D4
+#PIN_U22,    B16 _UART_TX_MIDI,         PMOD4_D5
+#PIN_C22,    A2  _SPI CE1,              PMOD4_D6
+#PIN_AB13,   B27 _SPI CE2,              PMOD4_D7
+#
+set_location_assignment PIN_P22  -to PMOD4_D0
+set_location_assignment PIN_B22  -to PMOD4_D1
+set_location_assignment PIN_AA14 -to PMOD4_D2
+set_location_assignment PIN_N22  -to PMOD4_D3
+#UART
+set_location_assignment PIN_M19  -to PMOD4_D4
+set_location_assignment PIN_U22  -to PMOD4_D5
+#
+set_location_assignment PIN_C22  -to PMOD4_D6
+set_location_assignment PIN_AB13 -to PMOD4_D7
 
 

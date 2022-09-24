@@ -21,7 +21,7 @@ set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS}
 set FALSE_OUT {LED I2S_* JOY_CLK JOY_LOAD PS2* sd_cs_n_o sd_mosi_o sd_sclk_o SIGMA_*}
 set FALSE_IN  {PS2* sd_miso_i JOY_DATA AUDIO_INPUT}
 
-# create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
+#create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
 #set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 #set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
 #set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
