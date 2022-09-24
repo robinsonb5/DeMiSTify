@@ -10,6 +10,8 @@ Total login elements (LEs): 24624
 
 Total memory (BRAM):  76 kB  (608256 bits) [66 M9k]
 
+Total PLLs: 2
+
 
 
 # Main Components
