@@ -22,7 +22,7 @@ set FALSE_IN  {KEY[*] SW[*] PS2_* JOY1* AUD_* UART_RXD SD_MISO_I}
 #the HDMI signals are probably fast enough to worth constraining properly at some point
 
 # JTAG constraints for debug interface (if enabled)
-# create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
+#create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
 #set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 #set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms
 #set_output_delay -clock altera_reserved_tck 3 altera_reserved_tdo
