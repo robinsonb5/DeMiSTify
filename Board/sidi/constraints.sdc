@@ -6,7 +6,8 @@ create_clock -name {spiclk}  -period 41.666 -waveform { 20.8 41.666 } [get_ports
 set hostclk { clock27 }
 set supportclk { clock27 }
 
-derive_pll_clocks 
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
 
 # Set pin definitions for downstream constraints
 
