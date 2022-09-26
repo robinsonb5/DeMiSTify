@@ -174,3 +174,7 @@ set_location_assignment PIN_F22 -to LRCLK
 
 #
 set_location_assignment PIN_A7 -to STM_RST
+
+#  UART   
+set_location_assignment PIN_C3 -to UART_RXD
+set_location_assignment PIN_A3 -to UART_TXD
