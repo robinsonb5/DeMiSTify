@@ -132,6 +132,25 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_TXD
 
 #============================================================
+# DETO - GENERAL USAGE GPIOS
+#============================================================
+
+# HSMC J3 connector pin 37 HSMC_TX _n[1] PIN_D7 – DETO1
+# HSMC J3 connector pin 38 HSMC_TX _n[0] PIN_A8 – DETO2
+# HSMC J3 connector pin 39 HSMC_TX _p[1] PIN_E8 – DETO3
+# HSMC J3 connector pin 40 HSMC_TX _p[0] PIN_A9 – DETO4
+set_location_assignment PIN_D7 -to DETO1
+set_location_assignment PIN_A8 -to DETO2
+set_location_assignment PIN_E8 -to DETO3
+set_location_assignment PIN_A9 -to DETO4
+
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DETO1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DETO2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DETO3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DETO4
+
+
+#============================================================
 # JOYSTICK 
 #============================================================
 # assign GPIO0_D[10] = JOY1_B2_P9;        //HSMC_TX _p[7] PIN_C3

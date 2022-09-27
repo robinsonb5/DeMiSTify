@@ -48,18 +48,24 @@ set_location_assignment PIN_N2  -to TMDS[7]
 #============================================================
 #set_location_assignment PIN_L2 -to PS2_KEYBOARD_CLK
 #set_location_assignment PIN_K2 -to PS2_KEYBOARD_DAT
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 
 #============================================================
 # Keyboard AT1
 #============================================================
 #set_location_assignment PIN_K2 -to PS2_KEYBOARD_CLK
 #set_location_assignment PIN_L2 -to PS2_KEYBOARD_DAT
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_DAT
 
 #============================================================
 # Keyboard Agnostic version
 #============================================================
 set_location_assignment PIN_K2 -to PS2_KEYBOARD_1
 set_location_assignment PIN_L2 -to PS2_KEYBOARD_2
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_1
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_2
 
 #============================================================
 # Keyboard USB - Internal cyc1000 pulldowns
@@ -72,6 +78,8 @@ set_location_assignment PIN_K1 -to PDM_4k7
 #============================================================
 set_location_assignment PIN_C16  -to PS2_MOUSE_CLK
 set_location_assignment PIN_B16  -to PS2_MOUSE_DAT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
 #============================================================
 # Audio pwm output   #(Atlas board: T12_left 1, 2 gnd, 3 R11_right)
