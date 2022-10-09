@@ -49,5 +49,8 @@ here, the number of units defaults to 4. */
 /* ROM name will default to "BOOT    ROM" if not defined here... */ 
 #undef ROM_FILENAME "CORE    ROM"
 
+/* Support for 64-bit status word.  Adds around 200 bytes to the firmware size. */
+#undef CONFIG_STATUSWORD_64BIT
+
 #endif
 

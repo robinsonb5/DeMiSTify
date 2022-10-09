@@ -388,16 +388,7 @@ void cycle(int row)
 {
 	int v;
 	struct menu_entry *m=&menu[row];
-	v=(statusword>>m->u.opt.shift);	// Extract value from existing statusword
-	v&=m->u.opt.val;					// and mask...
-	++v;
-	if(v>=m->u.opt.limit)
-		v=0;
-	statusword&=~(m->u.opt.val<<m->u.opt.shift); // Mask off old bits from status word
-	statusword|=v<<m->u.opt.shift;		// and insert new value
-
-	sendstatus();
-
+	statusword_cycle(m->u.opt.shift,m->u.opt.val,m->u.opt.limit);
 	buildmenu(0);
 	Menu_Draw(row);
 }
@@ -599,11 +590,12 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 						menu[line].u.opt.shift=low;
 						menu[line].u.opt.val=(1<<(1+high-low))-1;
+						#ifdef CONFIG_STATUSWORD_64BIT
+						val=statusword_get(low,menu[line].u.opt.val);
+						#else
 						val=(statusword>>low)&menu[line].u.opt.val;
-	//					printf("Statusword %x, shifting by %d: %x\n",statusword,low,menu[line].u.opt.val);
-
+						#endif
 						title=menu[line].label;
-	//					printf("selpage %d, page %d\n",selpage,page);
 						if((c=configstring_copytocomma(title,LINELENGTH,selpage==page))>0)
 						{
 							title+=c;

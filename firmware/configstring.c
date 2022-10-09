@@ -66,6 +66,10 @@ __weak int configstring_getdigit()
 		c-='0';
 	if(c>='A' && c<='Z')
 		c-='A'-10;
+#ifdef CONFIG_STATUSWORD_64BIT
+	if(c>='a' && c<='z')
+		c-='a'-36;
+#endif
 	return(c);	
 }
 
