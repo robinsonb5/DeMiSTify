@@ -52,5 +52,8 @@ here, the number of units defaults to 4. */
 /* Support for 64-bit status word.  Adds around 200 bytes to the firmware size. */
 #undef CONFIG_STATUSWORD_64BIT
 
+/* Automatically close OSD on toggle menu items (generally reset) */
+#define CONFIG_AUTOCLOSE_OSD
+
 #endif
 

@@ -134,6 +134,9 @@ int LoadROM(const char *fn)
 		}
 
 		SPIFPGA(SPI_FPGA_FILE_TX,0);
+#ifdef CONFIG_AUTOCLOSE_OSD
+		
+#endif
 		return(1);
 	}
 	else
@@ -398,6 +401,9 @@ __weak void toggle(int row)
 {
 	cycle(row);
 	cycle(row);
+#ifdef CONFIG_AUTOCLOSE_OSD
+	Menu_ShowHide(0);
+#endif
 }
 
 

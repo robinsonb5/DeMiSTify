@@ -93,6 +93,9 @@ architecture rtl of io_ps2_com is
 	signal bitCount : unsigned(3 downto 0);
 	signal parity : std_logic;
 
+	signal watchdog : unsigned(3 downto 0); -- AMR - reset the state machine if it gets out of sync
+	                                        -- (Can happen if the guest core is writing to PS/2)
+	
 	signal recvByteLoc : std_logic_vector(10 downto 0);
 	signal ena : std_logic;
 begin
@@ -141,6 +144,7 @@ begin
 						comState <= stateWait100;
 					end if;
 					if (clkReg = '0') and (clkFilterCnt = 0) then
+						watchdog <= (others => '1');
 						comState <= stateRecvBit;
 					end if;
 				--
@@ -206,6 +210,13 @@ begin
 				--
 				-- Receive a single bit.
 				when stateRecvBit =>
+					if waitcount=0 then
+						waitcount<=ticksPer100Usec;
+						watchdog<=watchdog-1;
+					end if;
+					if watchdog=0 then
+						comState <= stateIdle;
+					end if;
 					if (clkReg = '0') and (clkFilterCnt = 0) then
 						recvByteLoc <= ps2_dat_in & recvByteLoc(recvByteLoc'high downto 1);
 						bitCount <= bitCount + 1;
@@ -215,6 +226,7 @@ begin
 				-- Wait for 0->1 transition on clock for receive.
 				when stateWaitHighRecv =>
 					if (clkReg = '1') and (clkFilterCnt = 0) then
+						watchdog <= (others => '1');
 						comState <= stateRecvBit;
 						if bitCount = 11 then
 							recvTrigger <= '1';
