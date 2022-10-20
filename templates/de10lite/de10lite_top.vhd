@@ -204,7 +204,7 @@ guest: COMPONENT guest_top
 		SDRAM_CLK => DRAM_CLK,
 		SDRAM_CKE => DRAM_CKE,
 		
-		SPI_DO_IN => sd_mosi,
+		SPI_DO_IN => sd_miso,
 		SPI_DO => spi_fromguest,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,

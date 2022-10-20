@@ -4,9 +4,9 @@
 #include "user_io.h"
 #include "config.h"
 
-unsigned int statusword; /* Support 32-bit status word initially - need to be 64-bit in the long run */
+unsigned int statusword; /* Low 32-bits of status word */
 #ifdef CONFIG_STATUSWORD_64BIT
-unsigned int statusword_high; /* Support 32-bit status word initially - need to be 64-bit in the long run */
+unsigned int statusword_high; /* Upper 32-bits of a 64-bit status word */
 #endif
 
 __weak void sendstatus()

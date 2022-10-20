@@ -19,6 +19,11 @@
 #define ROW_LEFT -5
 #define ROW_RIGHT -6
 
+#define MENUPAGE_ROOT 0
+#define MENUPAGE_DIPSWITCHES 29
+#define MENUPAGE_FILE 30
+#define MENUPAGE_SETTINGS 31
+
 typedef long menu_action;
 #define MENU_ACTION(x) ((long)(x))
 #define MENU_ACTION_CALLBACK(x) ((void (*)(int row))x)

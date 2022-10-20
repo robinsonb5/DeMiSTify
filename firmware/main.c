@@ -40,6 +40,7 @@
 #include "diskimg.h"
 #include "statusword.h"
 #include "settings.h"
+#include "arcfile.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
@@ -47,8 +48,7 @@
 
 #define LINELENGTH 32
 
-#define MENUPAGE_SETTINGS 31
-#define MENUPAGE_FILE 30
+
 int menupage;
 unsigned char romtype=0;
 unsigned char unit=0;
@@ -75,8 +75,24 @@ int LoadROM(const char *fn)
 	{
 		int minsize=rom_minsize;
 		int sendsize;
+		int idx;
 
-		configstring_setindex(fn);
+		idx=configstring_setindex(fn);
+
+#ifdef CONFIG_ARCFILE
+		/* Load Arc file, then load the associated ROM */
+		if(idx==CONFIGSTRING_INDEX_ARC)
+		{
+			int default_dip;
+			if((default_dip=arcfile_open(fn)))
+			{
+				spi_uio_cmd8(UIO_SET_MOD, arcstate.mod);
+				romtype=0; /* ROMs loaded alongside .arc files must have index 0 */
+				LoadROM(arcstate.name);
+			}
+			return(1);
+		}
+#endif
 
 //		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 //		{
@@ -375,7 +391,7 @@ static void menufoot(int sub)
 {
 	if(sub)
 	{
-		menu[7].u.menu.page=0;
+		menu[7].u.menu.page=MENUPAGE_ROOT;
 		menu[7].action=MENU_ACTION(&submenu);
 		menu[7].label=std_label_back;
 	}
@@ -446,6 +462,14 @@ static void scrollmenu(int row)
 }
 
 
+void dipswitches(int row)
+{
+	menupage=MENUPAGE_DIPSWITCHES;
+	buildmenu(0);
+	Menu_Draw(row);
+}
+
+
 void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
 {
 	int c;
@@ -482,7 +506,11 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 		configstring_nextfield(); /* Skip over core name */
 		c=configstring_next();
+#ifdef CONFIG_ARCFILE
+		if(1)
+#else
 		if(c!=';')
+#endif
 		{
 			if(!selpage) /* Add the load item only for the first menu page */
 			{
@@ -492,7 +520,10 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 				menu[line].u.file.index=fileindex;
 				menu[line].u.file.cfgidx=0;
 				menu[line].u.file.unit=0;
-				configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
+#ifdef CONFIG_ARCFILE
+				if(c!=';')
+#endif
+					configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
 				if(line>=skip)
 					++line;
 				else
@@ -509,6 +540,23 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 			unsigned int page=0;
 			c=configstring_next();
 
+#ifdef CONFIG_ARCFILE
+			if(selpage==MENUPAGE_DIPSWITCHES)
+				page=selpage;
+				
+			/* Simplified page handling for Arcade cores */
+			while(c=='P')
+			{
+				c=configstring_next(); /* Skip over the digit */
+				c=configstring_next();
+				if(c==',')	/* New page - skip over it to flatten options into the toplevel and DIP switch menus */
+				{
+					c=configstring_nextfield();
+				}
+				if(c=='P')
+					++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
+			}
+#else
 			/* Page handling - P either declares a new page, or prefixes an option within a page */
 			while(c=='P')
 			{
@@ -543,18 +591,28 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 				if(c=='P')
 					++configidx; /* Keep track of which line from the config string we're reading - for pattern matching. */
 			}
+#endif
 
 			if(page==selpage)
 			{
 				unsigned int low,high=0;
 				unsigned int opt=0;
 				unsigned int val;
+				unsigned int nextline=0;
 
 				switch(c)
 				{
 					case ';':
 						break;
-					case 'S': // Disk image select
+#ifdef CONFIG_ARCFILE
+					case 'D': /* DIP Switches */
+						strcpy(menu[line].label,"DIP Switches");
+						menu[line].action=MENU_ACTION(&dipswitches);
+						c=configstring_next();
+						nextline=1;
+						break;
+#endif					
+					case 'S': /* Disk image select */
 						diskunit='0';
 						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
 						if(c!=',')
@@ -578,10 +636,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 						menu[line].u.file.cfgidx=configidx;
 						menu[line].u.file.unit=diskunit;
 						++fileindex;
-						if(line>=skip)
-							++line;
-						else
-							--skip;
+						nextline=1;
 						break;
 					case 'O':
 					case 'T':
@@ -623,16 +678,19 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 							menu[line].u.opt.limit=2;
 							menu[line].action=MENU_ACTION(&toggle);
 						}
-
-						if(line>=skip)
-							++line;
-						else
-							--skip;
+						nextline=1;
 						break;
 					default:
 						c=configstring_nextfield();
 						break;
 				}
+				if(nextline)
+				{
+					if(line>=skip)
+						++line;
+					else
+						--skip;
+				}				
 			}
 			else
 			{
