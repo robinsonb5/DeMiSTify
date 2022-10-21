@@ -5,6 +5,10 @@ set_location_assignment PIN_T2 -to CLOCK_50_I
 
 set_location_assignment PIN_E4 -to LED
 
+# KEY
+set_location_assignment PIN_W13 -to KEY[0]
+set_location_assignment PIN_Y13 -to KEY[1]
+
 #NEPTUNO VIDEO#
 set_location_assignment PIN_F1 -to VGA_R[5]
 set_location_assignment PIN_D2 -to VGA_R[4]

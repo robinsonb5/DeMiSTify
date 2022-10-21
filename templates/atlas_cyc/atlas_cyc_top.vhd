@@ -50,6 +50,13 @@ entity atlas_top is
 		UART_TXD_MIDI_OUT 		: 	out std_logic;
 		UART_RXD_MIDI_WSBD 		: 	in std_logic;
 		PI_CS_MIDI_CLKBD		: 	in std_logic;
+
+		--PI_CLK_I2S_DATA		: 	 out std_logic;	  	-- Composite output 0
+		--PI_CS_MIDI_CLKBD		: 	 out std_logic;	  	-- Composite output 1
+
+		--PI_MISO_I2S_BCLK		: 	 in  std_logic;   			-- UART_CTS
+		--PI_MOSI_I2S_LRCLK		: 	 out std_logic	:= '0';	  	-- UART_RTS
+
 		-- SHARED PIN_P11: JOY SELECT Output / EAR Input / MIDI
 		JOYX_SEL_EAR_MIDI_DABD  : 	inout std_logic := '0';
 		-- JOYSTICK 
@@ -172,6 +179,8 @@ architecture RTL of atlas_top is
 	signal vga_x_hs  : std_logic;
 	signal vga_x_vs  : std_logic;
 
+--	signal composite_output : std_logic_vector(1 downto 0);
+
 	signal CLK50M : std_logic;
 	signal CLK48M : std_logic;
 
@@ -220,10 +229,10 @@ begin
 	SD_SCLK_O <= sd_clk;
 
 	-- External devices tied to GPIOs
-	ps2_mouse_dat_in <= ps2_mouse_dat;
-	ps2_mouse_dat    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
-	ps2_mouse_clk_in <= ps2_mouse_clk;
-	ps2_mouse_clk    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
+	ps2_mouse_dat_in <= PS2_MOUSE_DAT;
+	PS2_MOUSE_DAT    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
+	ps2_mouse_clk_in <= PS2_MOUSE_CLK;
+	PS2_MOUSE_CLK    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
 -- ATLAS_CYC_KEYB -- 0 = PS2 NON AT1, 1 = PS2 AT1,  2 = USB NON AT1, 3 = USB AT1, 
 
@@ -337,6 +346,10 @@ begin
 	end generate PINS_HDMI_VGA_1;
 	-- END VGA ATLAS -------------------  
 
+	-- Composite video output
+	-- PI_CLK_I2S_DATA  <= composite_output(0);
+	-- PI_CS_MIDI_CLKBD <= composite_output(1);
+
 
 	-- PLL VIDEO / 50 MHz / 48 USB
 	pllvideo : pll2
@@ -361,13 +374,13 @@ begin
 		sound_hdmi_r_s <= dac_r;
 		-- sound_hdmi_l_s <= '0' & std_logic_vector(dac_l(15 downto 1));
 		-- sound_hdmi_r_s <= '0' & std_logic_vector(dac_r(15 downto 1));
-
+		-- sound_hdmi_l_s <= std_logic_vector(dac_l);
+		-- sound_hdmi_r_s <= std_logic_vector(dac_r);
 
 		------------------------------------------------------------------------------------------------------
 		-- JUST LEAVE ONE HDMI WRAPPER (1/2/3) UNCOMMENTED                                                  --
 		-- SELECT PROJECT FILES FOR HDMI WRAPPER (1/2/3) AT DeMiSTify/Board/atlas_cyc/atlas_cyc_support.tcl --
 		------------------------------------------------------------------------------------------------------
-		
 
 		---- BEGIN HDMI 1 NO SOUND (MULTICPM / Next186) 
 
@@ -484,8 +497,8 @@ begin
 
 	guest : component guest_mist
 		port map(
---			CLOCK_27 => CLK12M,
-			CLOCK_27 => CLK12M & CLK12M,
+			CLOCK_27 => CLK12M,
+--			CLOCK_27 => CLK12M & CLK12M,
 --			RESET_N => reset_n,
 			LED => LED(0),
 			--SDRAM
@@ -503,6 +516,8 @@ begin
 			--UART
 			UART_TX  => UART_TXD_MIDI_OUT,
 			UART_RX  => UART_RXD_MIDI_WSBD,
+--			UART_CTS  => PI_MISO_I2S_BCLK,
+--			UART_RTS  => PI_MOSI_I2S_LRCLK,
 --			UART_TX  => open,
 --			UART_RX  => EAR,   
 			--SPI
@@ -520,17 +535,18 @@ begin
 			VGA_R     => vga_red(7 downto 2),
 			VGA_G     => vga_green(7 downto 2),
 			VGA_B     => vga_blue(7 downto 2),
-				VGA_BLANK => vga_blank,
-				VGA_CLK   => vga_clk,
-				HDMI_CLK  => hdmi_clk,
-				vga_x_r   => vga_x_r,
-				vga_x_g   => vga_x_g,
-				vga_x_b   => vga_x_b,
-				vga_x_hs  => vga_x_hs,
-				vga_x_vs  => vga_x_vs,
+			-- COMPOSITE_OUT => composite_output,
+			-- VGA_BLANK => vga_blank,
+			-- VGA_CLK   => vga_clk,
+			-- HDMI_CLK  => hdmi_clk,
+			-- vga_x_r   => vga_x_r,
+			-- vga_x_g   => vga_x_g,
+			-- vga_x_b   => vga_x_b,
+			-- vga_x_hs  => vga_x_hs,
+			-- vga_x_vs  => vga_x_vs,
 			--AUDIO
-				DAC_L   => dac_l,
-				DAC_R   => dac_r,
+			DAC_L   => dac_l,
+			DAC_R   => dac_r,
 			AUDIO_L => SIGMA_L,
 			AUDIO_R => SIGMA_R
 		);
@@ -575,7 +591,7 @@ begin
 				ps2m_dat_out => ps2_mouse_dat_out,
 
 				-- Buttons
-				buttons => (0 => KEY0, others => '1'),
+				buttons => (0 => '1', others => '1'),	-- 0 = opens OSD
 
 				-- JOYSTICKS
 				joy1 => joya,
@@ -583,6 +599,7 @@ begin
 				-- UART
 				rxd       => rs232_rxd,
 				txd       => rs232_txd,
+				--
 				intercept => intercept
 			);
 
