@@ -25,8 +25,8 @@ __weak int configstring_next()
 #ifdef CONFIG_ARCFILE
 	if(configstring_from_arc)
 		result=arcfile_next();
-#endif
 	else
+#endif
 		result=SPI(0xff);
 	return(result);
 }

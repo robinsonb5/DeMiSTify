@@ -17,6 +17,7 @@
 
 #include "user_io.h"
 #include "spi.h"
+#include "minfat.h"
 
 /* User_io related SPI functions */
 void spi_uio_cmd_cont(unsigned char cmd) {

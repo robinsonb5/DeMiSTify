@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include "gamepadkeys.h"
+#include "user_io.h"
 
 /* Not currently using hotkeys */
 #undef MENU_HOTKEYS
@@ -165,17 +166,7 @@ __weak unsigned char joy_keymap[]=
 };
 #endif
 
-void SetScandouble(int sd)
-{
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
-	SPI(sd<<4);
-	SPI_DISABLE(HW_SPI_CONF);
-}
 
-
-int scandouble=0;
 //int prevbuttons=0;
 unsigned int joy_timestamp=0;
 #define JOY_REPEATDELAY 160
@@ -242,7 +233,7 @@ void Menu_Run()
 		upd=1;
 	}
 	if(menu_longpress)
-		SetScandouble(scandouble^=1);
+		ToggleScandoubler();
 
 	joy=menu_joy;
 	if(!menu_visible)	// Swallow any keystrokes that occur while the OSD is hidden...

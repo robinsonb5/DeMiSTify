@@ -806,6 +806,8 @@ __weak void init()
 		while(1)
 			;
 	}
+#ifdef CONFIG_AUTOSCANDOUBLER
+	AutoScandoubler();
 #endif
 
 	Menu_Message("Booting...",0);
@@ -814,6 +816,7 @@ __weak void init()
 	EnableInterrupts();
 }
 
+#endif
 
 __weak void mainloop()
 {

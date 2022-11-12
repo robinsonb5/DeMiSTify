@@ -8,5 +8,12 @@ void coretoconfig(char *buf);
 int loadsettings(const char *filename);
 int savesettings(const char *filename);
 
+#define SCANDOUBLE_OFF 1
+#define SCANDOUBLE_ON 0
+#define AUTOSCANDOUBLER_FILENAME "15KHZ   CFG"
+void ToggleScandoubler();
+void AutoScandoubler();
+#define GetScandouble() scanddouble
+
 #endif
 
