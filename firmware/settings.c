@@ -11,14 +11,31 @@
 
 extern fileTYPE file; /* Import from main.c */
 
+int scandouble=0;
+void ToggleScandoubler()
+{
+	scandouble^=1;
+	SPI(0xff);
+	SPI_ENABLE(HW_SPI_CONF);
+	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
+	SPI(scandouble<<4);
+	SPI_DISABLE(HW_SPI_CONF);
+}
+
+void AutoScandoubler()
+{
+	if(FileOpen(&file,AUTOSCANDOUBLER_FILENAME))
+		ToggleScandoubler();
+}
+
 #ifdef CONFIG_SETTINGS
 
 __weak int configtocore(char *buf)
 {
 	unsigned int *b=(unsigned int *)buf;
 	statusword=*b++;
-	scandouble=*b++;
-	SetScandouble(scandouble);
+	scandouble=1^(*b++); // Invert retrieved scandoubler setting since we invert it again when setting it. 
+	ToggleScandoubler();
 	sendstatus();
 	return(1);
 }
@@ -54,21 +71,4 @@ __weak int savesettings(const char *filename)
 }
 
 #endif
-
-static int scandoubler=0;
-void ToggleScandoubler()
-{
-	scandoubler^=1;
-	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
-	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
-	SPI(scandoubler<<4);
-	SPI_DISABLE(HW_SPI_CONF);
-}
-
-void AutoScandoubler()
-{
-	if(FileOpen(&file,AUTOSCANDOUBLER_FILENAME))
-		ToggleScandoubler();
-}
 

@@ -11,9 +11,10 @@ int savesettings(const char *filename);
 #define SCANDOUBLE_OFF 1
 #define SCANDOUBLE_ON 0
 #define AUTOSCANDOUBLER_FILENAME "15KHZ   CFG"
+extern int scandouble;
 void ToggleScandoubler();
 void AutoScandoubler();
 #define GetScandouble() scanddouble
-
+#define SetScandouble(x) { scandouble=1^(x); ToggleScandoubler(); }
 #endif
 
