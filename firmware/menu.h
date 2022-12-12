@@ -19,11 +19,15 @@
 #define ROW_LEFT -5
 #define ROW_RIGHT -6
 
+#define MENUPAGE_ROOT 0
+#define MENUPAGE_DIPSWITCHES 29
+#define MENUPAGE_FILE 30
+#define MENUPAGE_SETTINGS 31
+
 typedef long menu_action;
 #define MENU_ACTION(x) ((long)(x))
 #define MENU_ACTION_CALLBACK(x) ((void (*)(int row))x)
 
-extern int scandouble;
 extern char menu_longpress;
 
 struct menu_entry
@@ -65,9 +69,6 @@ void Menu_Set(struct menu_entry *head);
 void Menu_SetHotKeys(struct hotkey *head);
 void Menu_Run();
 int Menu_Visible();
-
-extern int scandouble;
-void SetScandouble(int sd);
 
 extern int joya,joyb;
 

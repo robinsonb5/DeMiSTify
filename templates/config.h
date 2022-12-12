@@ -49,11 +49,22 @@ here, the number of units defaults to 4. */
 /* ROM name will default to "BOOT    ROM" if not defined here... */ 
 #undef ROM_FILENAME "CORE    ROM"
 
+/* Do we support settings files */
+
+#undef CONFIG_SETTINGS_FILENAME "CORE    CFG"
+#undef CONFIG_SETTINGS
+
+/* Do we support the Real Time Clock (if available)? */
+#undef CONFIG_RTC
+
 /* Support for 64-bit status word.  Adds around 200 bytes to the firmware size. */
 #undef CONFIG_STATUSWORD_64BIT
 
 /* Automatically close OSD on toggle menu items (generally reset) */
-#define CONFIG_AUTOCLOSE_OSD
+#undef CONFIG_AUTOCLOSE_OSD
+
+/* Is this an arcade core with .ARC file support? */
+#define CONFIG_ARCFILE
 
 #endif
 

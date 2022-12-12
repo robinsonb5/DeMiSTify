@@ -22,7 +22,7 @@ START = $(LIBDIR)/tinycrt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
 PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o ps2.o keyboard.o mouse.o user_io.o \
-	statusword.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o settings.o overrides.o
+	statusword.o arcfile.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o settings.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
@@ -65,9 +65,6 @@ clean :
 	@cat >>$*_rom2_byte.vhd $(ROMGENDIR)/rom_epilogue_byte.vhd
 	@grep __bss_ $*.map
 
-empty:=
-space:= $(empty) $(empty)
-
 $(LIBS):
 	make -C $(832DIR)/lib832
 
@@ -102,3 +99,16 @@ $(ROMGEN): $(ROMGENDIR)/romgen.c
 
 force:
 
+config.h:
+	$(info )
+	$(info DeMiSTify's firmware needs a config.h file and an overrides.c file.)
+	$(info )
+	$(info Since DeMiSTify will normally be used a submodule, these should be )
+	$(info in your own project's tree, and built using a command such as )
+	$(info > make -C your_firmware_directory -f ../DeMiSTify/firmware/Makefile )
+	($info )
+	$(info See the example Makefile and config.h file in DeMiSTify/templates for details)
+	$(info overrides.c can be used to customise firmware functions - but can also be blank.)
+	$(info )
+	$(error config.h and overrides.c required)
+	

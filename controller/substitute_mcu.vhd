@@ -117,7 +117,7 @@ signal spi_to_host : std_logic_vector(7 downto 0);
 signal spi_trigger : std_logic;
 signal spi_busy : std_logic;
 signal spi_active : std_logic;
-signal spi_active_d : std_logic_vector(4 downto 0);
+-- signal spi_active_d : std_logic_vector(4 downto 0);
 signal spi_write : std_logic;
 signal spi_setcs : std_logic;
 
@@ -572,7 +572,7 @@ begin
 		conf_data0 <= '1';
 		spi_setcs <= '0';
 		spi_write <= '0';
-		spi_active_d<=(others=>'0');
+--		spi_active_d<=(others=>'0');
 	elsif rising_edge(clk) then
 		mem_busy<='1';
 		ser_txgo<='0';

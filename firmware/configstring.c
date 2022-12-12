@@ -2,19 +2,44 @@
 #include "config.h"
 #include "spi.h"
 #include "configstring.h"
+#include "arcfile.h"
+#include "menu.h"
 
 unsigned char configstring_coretype;
 // #define configstring_next() SPI(0xff)
 
 __weak unsigned char configstring_index=0;
 
+
+/* If we're built with ARC file support then we need to be able to take config string data
+   from the ARC file when showing the DIP switches page */
+
+#ifdef CONFIG_ARCFILE
+extern int menupage;
+#define configstring_from_arc (menupage==MENUPAGE_DIPSWITCHES)
+#endif
+
 __weak int configstring_next()
 {
-	return(SPI(0xff));
+	int result;
+#ifdef CONFIG_ARCFILE
+	if(configstring_from_arc)
+		result=arcfile_next();
+	else
+#endif
+		result=SPI(0xff);
+	return(result);
 }
 
 __weak void configstring_begin()
 {
+#ifdef CONFIG_ARCFILE
+	if(configstring_from_arc)
+	{
+		arcfile_begin();
+		return;
+	}
+#endif
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
 	configstring_coretype=SPI(SPI_CONF_READ); /* Read conf string command */
@@ -76,7 +101,7 @@ __weak int configstring_getdigit()
 
 extern unsigned char romtype;
 #define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
-__weak void configstring_setindex(const char *fn)
+__weak int configstring_setindex(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 	/* Figure out which extension configstring_matches, and thus which index we need to use */
@@ -88,6 +113,7 @@ __weak void configstring_setindex(const char *fn)
 //	printf("Setting index to %x (%x, %x, %x)\n",0xff&(romtype|(extindex<<6)),extindex,romtype,configstring_index);
 
 	SPIFPGA(SPI_FPGA_FILE_INDEX,romtype|(extindex<<6));
+	return(extindex);
 }
 
 
@@ -103,6 +129,16 @@ __weak int configstring_matchextension(const char *ext)
 	{
 		if(ext[8]=='C' && ext[9]=='F' && ext[10]=='G')
 			return(1);
+		return(0);
+	}
+
+#endif
+
+#ifdef CONFIG_ARCFILE
+	if(configstring_index==0)
+	{
+		if(ext[8]=='A' && ext[9]=='R' && ext[10]=='C')
+			return(CONFIGSTRING_INDEX_ARC+1); /* Hack, adding one here, since setindex() reduces it by 1 */
 		return(0);
 	}
 

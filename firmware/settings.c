@@ -3,11 +3,30 @@
 #include "minfat.h"
 #include "statusword.h"
 #include "menu.h"
+#include "user_io.h"
+#include "spi.h"
 
 /* If settings files are supported, we provide a default implementation of loading and saving configs,
    which can be replaced in overrides.c */
 
-extern fileTYPE file;
+extern fileTYPE file; /* Import from main.c */
+
+int scandouble=0;
+void ToggleScandoubler()
+{
+	scandouble^=1;
+	SPI(0xff);
+	SPI_ENABLE(HW_SPI_CONF);
+	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
+	SPI(scandouble<<4);
+	SPI_DISABLE(HW_SPI_CONF);
+}
+
+void AutoScandoubler()
+{
+	if(FileOpen(&file,AUTOSCANDOUBLER_FILENAME))
+		ToggleScandoubler();
+}
 
 #ifdef CONFIG_SETTINGS
 
@@ -15,8 +34,8 @@ __weak int configtocore(char *buf)
 {
 	unsigned int *b=(unsigned int *)buf;
 	statusword=*b++;
-	scandouble=*b++;
-	SetScandouble(scandouble);
+	scandouble=1^(*b++); // Invert retrieved scandoubler setting since we invert it again when setting it. 
+	ToggleScandoubler();
 	sendstatus();
 	return(1);
 }
