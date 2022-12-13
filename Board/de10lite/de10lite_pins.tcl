@@ -486,7 +486,7 @@ set_location_assignment PIN_AB3 -to GPIO[32]
 set_location_assignment PIN_Y3 -to GPIO[33]
 set_location_assignment PIN_AB2 -to GPIO[34]
 set_location_assignment PIN_AA2 -to GPIO[35]
-set_location_assignment PIN_AA20 -to CLK_I2C_SCL
-set_location_assignment PIN_AB21 -to CLK_I2C_SDA
+#set_location_assignment PIN_AA20 -to CLK_I2C_SCL   -> ARDUINO_IO[15]
+#set_location_assignment PIN_AB21 -to CLK_I2C_SDA	-> ARDUINO_IO[14]
 
 
