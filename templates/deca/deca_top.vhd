@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 library work;
 use work.demistify_config_pkg.all;
 
--- -----------------------------------------------------------------------
+
+-------------------------------------------------------------------------
 
 entity deca_top is
 	generic (
@@ -52,6 +53,8 @@ entity deca_top is
 		-- UART
 		UART_RXD : in std_logic;
 		UART_TXD : out std_logic;
+		--DETO1_PMOD2_6 : in std_logic;		--CTS
+		--DETO2_PMOD2_7 : out std_logic;	--RTS
 		-- JOYSTICK
 		JOY1_B2_P9 : in std_logic;
 		JOY1_B1_P6 : in std_logic;
@@ -232,8 +235,6 @@ architecture RTL of deca_top is
 	signal vga_clk   : std_logic;
 	signal vga_blank : std_logic;
 
-
-
 	-- USB ULPI KEYBOARD
 	signal USB_CLK_PHASE  : std_logic;
 	signal USB_PLL_LOCKED : std_logic;
@@ -390,15 +391,15 @@ begin
 
 	-- DECA HDMI
 
-	-- HDMI CONFIG    
-	I2C_HDMI_Config_inst : I2C_HDMI_Config
-	port map(
-		iCLK        => MAX10_CLK1_50,
-		iRST_N      => reset_n, --reset_n, KEY(0)
-		I2C_SCLK    => HDMI_I2C_SCL,
-		I2C_SDAT    => HDMI_I2C_SDA,
-		HDMI_TX_INT => HDMI_TX_INT
-	);
+	-- -- HDMI CONFIG    
+	-- I2C_HDMI_Config_inst : I2C_HDMI_Config
+	-- port map(
+	-- 	iCLK        => MAX10_CLK1_50,
+	-- 	iRST_N      => reset_n, --reset_n, KEY(0)
+	-- 	I2C_SCLK    => HDMI_I2C_SCL,
+	-- 	I2C_SDAT    => HDMI_I2C_SDA,
+	-- 	HDMI_TX_INT => HDMI_TX_INT
+	-- );
 
 	-- -- PLL2
 	-- pll2_inst : pll2
@@ -408,28 +409,28 @@ begin
 	--	locked		=> open
 	-- );
 
-	--  HDMI VIDEO   
-	HDMI_TX_CLK <= vga_clk;
-	HDMI_TX_DE  <= not vga_blank;
-	HDMI_TX_HS  <= vga_x_hs;
-	HDMI_TX_VS  <= vga_x_vs;
-	HDMI_TX_D   <= vga_x_r & vga_x_r(4 downto 3) & vga_x_g & vga_x_g(4 downto 3) & vga_x_b & vga_x_b(4 downto 3);
-	--HDMI_TX_HS  <= vga_hsync;
-	--HDMI_TX_VS  <= vga_vsync;
-	--HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
+	-- --  HDMI VIDEO   
+	-- HDMI_TX_CLK <= vga_clk;
+	-- HDMI_TX_DE  <= not vga_blank;		-- vga_de;
+	-- HDMI_TX_HS  <= vga_x_hs;
+	-- HDMI_TX_VS  <= vga_x_vs;
+	-- HDMI_TX_D   <= vga_x_r & vga_x_r(4 downto 3) & vga_x_g & vga_x_g(4 downto 3) & vga_x_b & vga_x_b(4 downto 3);
+	-- --HDMI_TX_HS  <= vga_hsync;
+	-- --HDMI_TX_VS  <= vga_vsync;
+	-- --HDMI_TX_D   <= vga_red(7 downto 2)&vga_red(7 downto 6)&vga_green(7 downto 2)&vga_green(7 downto 6)&vga_blue(7 downto 2)&vga_blue(7 downto 6);
 
-	--  HDMI AUDIO   
-	HDMI_MCLK   <= i2s_Mck_o;
-	HDMI_SCLK   <= i2s_Sck_o; -- lr*2*16
-	HDMI_LRCLK  <= i2s_Lr_o;
-	HDMI_I2S(0) <= i2s_D_o;
+	-- --  HDMI AUDIO   
+	-- HDMI_MCLK   <= i2s_Mck_o;
+	-- HDMI_SCLK   <= i2s_Sck_o; -- lr*2*16
+	-- HDMI_LRCLK  <= i2s_Lr_o;
+	-- HDMI_I2S(0) <= i2s_D_o;
 
 
 	guest : component guest_mist
 		port map
 		(
---			CLOCK_27 => MAX10_CLK1_50,
-         	CLOCK_27 => MAX10_CLK1_50&MAX10_CLK1_50,
+			CLOCK_27 => MAX10_CLK1_50,
+--         	CLOCK_27 => MAX10_CLK1_50&MAX10_CLK1_50,
 --	        RESET_N => reset_n,
 			LED => act_led,
 			--SDRAM
@@ -447,6 +448,8 @@ begin
 			--UART
 			UART_TX => UART_TXD,
 			UART_RX => UART_RXD,
+--			UART_CTS  => DETO1_PMOD2_6,
+--			UART_RTS  => DETO2_PMOD2_7,
 --			UART_TX  => open,
 --			UART_RX  => EAR,
 			--SPI
@@ -464,20 +467,20 @@ begin
 			VGA_R     => vga_red(7 downto 2),
 			VGA_G     => vga_green(7 downto 2),
 			VGA_B     => vga_blue(7 downto 2),
-				VGA_BLANK => vga_blank,
-				VGA_CLK   => vga_clk
-				vga_x_r   => vga_x_r,
-				vga_x_g   => vga_x_g,
-				vga_x_b   => vga_x_b,
-				vga_x_hs  => vga_x_hs,
-				vga_x_vs  => vga_x_vs,
+				-- VGA_BLANK => vga_blank,
+				-- VGA_CLK   => vga_clk
+				-- vga_x_r   => vga_x_r,
+				-- vga_x_g   => vga_x_g,
+				-- vga_x_b   => vga_x_b,
+				-- vga_x_hs  => vga_x_hs,
+				-- vga_x_vs  => vga_x_vs,
 			--AUDIO
-				DAC_L   => dac_l,
-				DAC_R   => dac_r,
-				--DAC_MIDI_L=> DAC_MIDI_L,
-				--DAC_MIDI_R=> DAC_MIDI_R,
-			AUDIO_L => SIGMA_L,
-			AUDIO_R => SIGMA_R
+			DAC_L   => dac_l,
+			DAC_R   => dac_r
+			-- DAC_MIDI_L=> DAC_MIDI_L,
+			-- DAC_MIDI_R=> DAC_MIDI_R,
+			-- AUDIO_L => SIGMA_L,
+			-- AUDIO_R => SIGMA_R
 		);
 
 
@@ -494,7 +497,7 @@ begin
 			)
 			port map(
 				clk       => MAX10_CLK1_50,
-				reset_in  => KEY(0) and USB_PLL_LOCKED,		--reset_in  when 0
+				reset_in  => KEY(1) and USB_PLL_LOCKED,		--reset_in  when 0
 				reset_out => reset_n,						--reset_out when 0
 
 				-- SPI signals
@@ -520,7 +523,7 @@ begin
 				ps2m_dat_out => ps2_mouse_dat_out,
 
 				-- Buttons
-				buttons => (0 => KEY(0), 1 => KEY(1), others => '1'),
+				buttons => (0 => KEY(0), others => '1'),	-- 0 = opens OSD
 
 				-- Joysticks
 				joy1 => joya,

@@ -5,11 +5,12 @@ use ieee.numeric_std.all;
 library work;
 use work.demistify_config_pkg.all;
 
--- -----------------------------------------------------------------------
+--------------------------------------------------
 
 entity neptuno_top is
 	port (
 		CLOCK_50_I : in std_logic;
+		KEY        : in std_logic_vector(1 downto 0);  -- KEY(0) SW1, KEY(1) SW2
 		LED        : out std_logic;
 		-- SDRAM
 		DRAM_CLK   : out std_logic;
@@ -23,6 +24,13 @@ entity neptuno_top is
 		DRAM_WE_N  : out std_logic;
 		DRAM_CAS_N : out std_logic;
 		DRAM_RAS_N : out std_logic;
+        -- -- SRAM
+        -- SRAM_A      : out   std_logic_vector(20 downto 0)   := (others => '0');
+        -- SRAM_Q      : inout std_logic_vector(15 downto 0)    := (others => 'Z');
+		-- SRAM_WE     : out   std_logic                               := '1';
+        -- SRAM_OE  	: out   std_logic                               := '0';
+		-- SRAM_UB     : out   std_logic                               := '0';
+        -- SRAM_LB     : out   std_logic                               := '0';
 		-- VGA
 		VGA_HS     : out std_logic;
 		VGA_VS     : out std_logic;
@@ -36,13 +44,16 @@ entity neptuno_top is
 		I2S_BCLK  : out std_logic := '0';
 		I2S_LRCLK : out std_logic := '0';
 		I2S_DATA  : out std_logic := '0';
-		-- UART
+		-- EAR 
 		AUDIO_INPUT : in std_logic;
 		-- PS2
 		PS2_KEYBOARD_CLK : inout std_logic;
 		PS2_KEYBOARD_DAT : inout std_logic;
 		PS2_MOUSE_CLK    : inout std_logic;
 		PS2_MOUSE_DAT    : inout std_logic;
+		-- UART
+		--PMOD4_D4 : in std_logic;		--UART_RXD
+		--PMOD4_D5 : out std_logic;		--UART_TXD
 		-- JOYSTICK 
 		JOY_CLK  : out std_logic;
 		JOY_LOAD : out std_logic;
@@ -173,7 +184,18 @@ architecture RTL of neptuno_top is
 	-- i2s 
 	signal i2s_mclk : std_logic;
 
+	signal act_led : std_logic;
+	
+	signal sram_we_x : std_logic;
+
 begin
+
+	-- -- SRAM
+	-- SRAM_OE <= '0';
+	-- SRAM_WE <= sram_we_x;
+	-- --SRAM_OE <= not sram_we_x;
+	-- SRAM_UB <= '1';
+	-- SRAM_LB <= '0';
 
 	-- SPI
 	SD_CS_N_O <= sd_cs;
@@ -182,15 +204,15 @@ begin
 	SD_SCLK_O <= sd_clk;
 
 	-- External devices tied to GPIOs
-	ps2_mouse_dat_in <= ps2_mouse_dat;
-	ps2_mouse_dat    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
-	ps2_mouse_clk_in <= ps2_mouse_clk;
-	ps2_mouse_clk    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
+	ps2_mouse_dat_in <= PS2_MOUSE_DAT;
+	PS2_MOUSE_DAT    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
+	ps2_mouse_clk_in <= PS2_MOUSE_CLK;
+	PS2_MOUSE_CLK    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
-	ps2_keyboard_dat_in <= ps2_keyboard_dat;
-	ps2_keyboard_dat    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
-	ps2_keyboard_clk_in <= ps2_keyboard_clk;
-	ps2_keyboard_clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
+	ps2_keyboard_dat_in <= PS2_KEYBOARD_DAT;
+	PS2_KEYBOARD_DAT    <= '0' when ps2_keyboard_dat_out = '0' else 'Z';
+	ps2_keyboard_clk_in <= PS2_KEYBOARD_CLK;
+	PS2_KEYBOARD_CLK    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
 
 	joya <= "11" & joy1fire2 & joy1fire1 & joy1right & joy1left & joy1down & joy1up;
 	joyb <= "11" & joy2fire2 & joy2fire1 & joy2right & joy2left & joy2down & joy2up;
@@ -247,8 +269,8 @@ begin
 		port map(
 --			CLOCK_27 => CLOCK_50_I,
 			CLOCK_27 => CLOCK_50_I & CLOCK_50_I,
---	        RESET_N => reset_n,
-			LED      => LED,
+--	        RESET_N  => reset_n,
+			LED      => act_led,
 			--SDRAM
 			SDRAM_DQ   => DRAM_DQ,
 			SDRAM_A    => DRAM_ADDR,
@@ -261,9 +283,15 @@ begin
 			SDRAM_BA   => DRAM_BA,
 			SDRAM_CLK  => DRAM_CLK,
 			SDRAM_CKE  => DRAM_CKE,
+			-- --SRAM
+			-- SRAM_A		=> SRAM_A,
+			-- SRAM_Q		=> SRAM_Q,
+			-- SRAM_WE		=> sram_we_x,
 			--UART
 			UART_TX  => open,
 			UART_RX  => AUDIO_INPUT,
+			--UART_TX    => PMOD4_D5,
+			--UART_RX    => PMOD4_D4,
 			--SPI
 --			SPI_SD_DI  => sd_miso,
 			SPI_DO     => spi_fromguest,
@@ -300,7 +328,7 @@ begin
 			)
 			port map(
 				clk       => CLOCK_50_I,
-				reset_in  => '1',			--reset_in when 0
+				reset_in  => KEY(1),		--reset_in when 0
 				reset_out => reset_n,		--reset_out when 0
 
 				-- SPI signals
@@ -326,7 +354,7 @@ begin
 				ps2m_dat_out => ps2_mouse_dat_out,
 
 				-- Buttons
-				buttons => (others => '1'),
+				buttons => (0 => KEY(0), others => '1'),	-- 0 = opens OSD
 
 				-- Joysticks
 				joy1 => joya,
@@ -335,7 +363,10 @@ begin
 				-- UART
 				rxd => rs232_rxd,
 				txd => rs232_txd,
+				--
 				intercept => intercept
 			);
+
+		LED <= not act_led;
 
 	end rtl;

@@ -12,6 +12,8 @@
 
 /* PS/2 Mouse support */
 #undef PS2_MOUSE
+#undef PS2_MOUSE_WHEEL /* Attempt to initialise the mouse in 4-byte (wheel) mode */
+#undef PS2_MOUSE_USERIO /* Do we need to send the mouse data to the core (not needed if the core can interpret PS/2 wires directly. */
 #undef PS2_WRITE /* Needed to initialise the mouse and put it in wheel mode */
 
 /* CDROM support - used by the TurboGrafx core */
@@ -50,6 +52,9 @@ here, the number of units defaults to 4. */
 /* Do we support configuration files? */
 #undef CONFIG_SETTINGS
 #undef CONFIG_SETTINGS_FILENAME "VIC20   CFG"
+
+/* Support for 64-bit status word.  Adds around 200 bytes to the firmware size. */
+#undef CONFIG_STATUSWORD_64BIT
 
 #endif
 

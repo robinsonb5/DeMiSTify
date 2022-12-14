@@ -2,31 +2,34 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+library work;
+use work.demistify_config_pkg.all;
+
 -- -----------------------------------------------------------------------
 
 entity uareloaded_top is
 	port
 	(
-		CLOCK_50	:	 IN STD_LOGIC;
-		LED         :   OUT STD_LOGIC;
+		CLOCK_50		:	 IN STD_LOGIC;
+		LED         	:   OUT STD_LOGIC;
 		DRAM_CLK		:	 OUT STD_LOGIC;
 		DRAM_CKE		:	 OUT STD_LOGIC;
 		DRAM_ADDR		:	 OUT STD_LOGIC_VECTOR(12 DOWNTO 0);
-		DRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-		DRAM_DQ		:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+		DRAM_BA			:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+		DRAM_DQ			:	 INOUT STD_LOGIC_VECTOR(15 DOWNTO 0);
 		DRAM_LDQM		:	 OUT STD_LOGIC;
 		DRAM_UDQM		:	 OUT STD_LOGIC;
 		DRAM_CS_N		:	 OUT STD_LOGIC;
 		DRAM_WE_N		:	 OUT STD_LOGIC;
 		DRAM_CAS_N		:	 OUT STD_LOGIC;
 		DRAM_RAS_N		:	 OUT STD_LOGIC;
-		VGA_HS		:	 OUT STD_LOGIC;
-		VGA_VS		:	 OUT STD_LOGIC;
-		VGA_R		:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		VGA_G		:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		VGA_B		:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		VGA_BLANK:   OUT STD_LOGIC;
-		VGA_CLOCK:   OUT STD_LOGIC;
+		VGA_HS			:	 OUT STD_LOGIC;
+		VGA_VS			:	 OUT STD_LOGIC;
+		VGA_R			:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+		VGA_G			:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+		VGA_B			:	 OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+		VGA_BLANK		:   OUT STD_LOGIC;
+		VGA_CLOCK		:   OUT STD_LOGIC;
 		-- AUDIO
 		SIGMA_R                     : OUT STD_LOGIC;
 		SIGMA_L                     : OUT STD_LOGIC;
@@ -35,8 +38,11 @@ entity uareloaded_top is
 		PS2_KEYBOARD_DAT            :    INOUT STD_LOGIC;
 		PS2_MOUSE_CLK               :    INOUT STD_LOGIC;
 		PS2_MOUSE_DAT               :    INOUT STD_LOGIC;
-		-- UART
+		-- EAR
 		AUDIO_IN                    : IN STD_LOGIC;
+		-- UART
+		UART_RXD 					: in std_logic;
+		UART_TXD 					: out std_logic;
 		--STM32
         STM_RST                     : out std_logic     := 'Z'; -- '0' to hold the microcontroller reset line, to free the SD card
         -- I2S
@@ -116,7 +122,7 @@ architecture RTL of uareloaded_top is
    --signal dac_r_s: signed(15 downto 0);
 	
 -- DAC VGA
-signal vga_clk_o :  std_logic;
+signal vga_clk_o    :  std_logic;
 signal vga_blank_o  :  std_logic;
 
 begin
@@ -131,10 +137,10 @@ begin
 
 
 -- External devices tied to GPIOs
-ps2_mouse_dat_in<=ps2_mouse_dat;
-ps2_mouse_dat <= '0' when ps2_mouse_dat_out='0' else 'Z';
-ps2_mouse_clk_in<=ps2_mouse_clk;
-ps2_mouse_clk <= '0' when ps2_mouse_clk_out='0' else 'Z';
+ps2_mouse_dat_in <= PS2_MOUSE_DAT;
+PS2_MOUSE_DAT    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
+ps2_mouse_clk_in <= PS2_MOUSE_CLK;
+PS2_MOUSE_CLK    <= '0' when ps2_mouse_clk_out = '0' else 'Z';
 
 ps2_keyboard_dat_in <=ps2_keyboard_dat;
 ps2_keyboard_dat <= '0' when ps2_keyboard_dat_out='0' else 'Z';
@@ -162,17 +168,16 @@ port map (
 );
 
 
-VGA_R  <=vga_red;
-VGA_G  <=vga_green;
-VGA_B  <=vga_blue;
-VGA_HS <=vga_hsync;
-VGA_VS <=vga_vsync;
-VGA_BLANK<='1';    -- not vga_blank_o
---VGA_CLOCK<=CLOCK_50;
+VGA_R 		 <=vga_red;
+VGA_G 		 <=vga_green;
+VGA_B 		 <=vga_blue;
+VGA_HS		 <=vga_hsync;
+VGA_VS 		 <=vga_vsync;
+VGA_BLANK	 <='1';    -- not vga_blank_o
+--VGA_CLOCK	 <=vga_clk_o;
 
 
 ---- I2S out
-
 audio_i2s : entity work.audio_top
 port map(
      clk_50MHz => clock_50,
@@ -190,21 +195,10 @@ port map(
 
 guest: COMPONENT  guest_mist
   port map (			
---	CLOCK_27 => CLOCK_50,
-    CLOCK_27 => CLOCK_50&CLOCK_50,
+	CLOCK_27 => CLOCK_50,
+--  CLOCK_27 => CLOCK_50&CLOCK_50,
 --	RESET_N => reset_n,
     LED => LED,
-	--SPI
-	SPI_DO => spi_fromguest,
-	SPI_DI => spi_toguest,
-	SPI_SCK => spi_clk_int,
-	SPI_SS2 => spi_ss2,
-	SPI_SS3 => spi_ss3,
---	SPI_SS4 => spi_ss4,
-	CONF_DATA0 => conf_data0,
-	--UART
---	UART_TX  => open,
---	UART_RX  => AUDIO_IN,
 	--SDRAM
 	SDRAM_DQ => DRAM_DQ,
 	SDRAM_A => DRAM_ADDR,
@@ -217,19 +211,33 @@ guest: COMPONENT  guest_mist
 	SDRAM_BA => DRAM_BA,
 	SDRAM_CLK => DRAM_CLK,
 	SDRAM_CKE => DRAM_CKE,
-	--AUDIO
-    AUDIO_L => SIGMA_L,
-    AUDIO_R => SIGMA_R,
-		DAC_L   => dac_l,
-		DAC_R   => dac_r,
+	--EAR
+--	UART_RX  => AUDIO_IN,
+	--UART
+	UART_TX  => UART_TXD,
+	UART_RX  => UART_RXD,	
+	--SPI
+	SPI_DO => spi_fromguest,
+	SPI_DI => spi_toguest,
+	SPI_SCK => spi_clk_int,
+	SPI_SS2 => spi_ss2,
+	SPI_SS3 => spi_ss3,
+--	SPI_SS4 => spi_ss4,
+	CONF_DATA0 => conf_data0,
 	--VGA
 	VGA_HS => vga_hsync,
 	VGA_VS => vga_vsync,
 	VGA_R => vga_red(7 downto 2),
 	VGA_G => vga_green(7 downto 2),
 	VGA_B => vga_blue(7 downto 2),
-	  VGA_BLANK => vga_blank_o,
-	  VGA_CLK => vga_clk_o
+--	VGA_BLANK => vga_blank_o,
+--	VGA_CLK => vga_clk_o,
+	--AUDIO
+	DAC_L   => dac_l,
+	DAC_R   => dac_r,
+    AUDIO_L => SIGMA_L,
+    AUDIO_R => SIGMA_R
+
   );
 
 
@@ -241,8 +249,8 @@ sd_sck <= spi_clk_int;
 controller : entity work.substitute_mcu
 	generic map (
 		sysclk_frequency => 500,
-		--		SPI_FASTBIT=>3,
-		--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
+--		SPI_FASTBIT=>3,
+--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
 		debug => false,
 		jtag_uart => false
 	)
@@ -283,6 +291,7 @@ controller : entity work.substitute_mcu
 		-- UART
 		rxd => rs232_rxd,
 		txd => rs232_txd,
+		--
 		intercept => intercept
 );
 

@@ -38,8 +38,8 @@ entity de10lite_top is
 		VGA_R		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		VGA_G		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		VGA_B		:	 OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-		CLK_I2C_SCL		:	 OUT STD_LOGIC;
-		CLK_I2C_SDA		:	 INOUT STD_LOGIC;
+		--CLK_I2C_SCL		:	 OUT STD_LOGIC;
+		--CLK_I2C_SDA		:	 INOUT STD_LOGIC;
 		GSENSOR_SCLK		:	 OUT STD_LOGIC;
 		GSENSOR_SDO		:	 INOUT STD_LOGIC;
 		GSENSOR_SDI		:	 INOUT STD_LOGIC;
@@ -272,8 +272,8 @@ controller : entity work.substitute_mcu
 );
 
 LEDR <= (others=>'0');
-CLK_I2C_SCL <= '1';
-CLK_I2C_SDA	<='Z';
+--CLK_I2C_SCL <= '1';
+--CLK_I2C_SDA	<='Z';
 GSENSOR_SCLK <= '0';
 GSENSOR_CS_N <= '0';
 uart_txd<='1';

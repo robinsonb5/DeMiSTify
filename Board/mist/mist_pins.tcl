@@ -1,3 +1,4 @@
+set_location_assignment PIN_54 -to CLOCK_27
 set_location_assignment PIN_7 -to LED
 set_location_assignment PIN_144 -to VGA_R[5]
 set_location_assignment PIN_143 -to VGA_R[4]
@@ -199,5 +200,4 @@ set_instance_assignment -name FAST_INPUT_REGISTER ON -to SDRAM_DQ[15]
 set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to SPI_SCK
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to CONF_DATA0
 set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to LED
-set_location_assignment PIN_54 -to CLOCK_27
 

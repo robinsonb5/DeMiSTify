@@ -47,6 +47,8 @@ entity sockit_top is
 		-- UART
 		UART_RXD : in std_logic;
 		UART_TXD : out std_logic;
+		-- DETO1 		: in std_logic;		--CTS
+		-- DETO2 		: out std_logic;	--RTS
 		-- JOYSTICK
 		JOY1_B2_P9 : in std_logic;
 		JOY1_B1_P6 : in std_logic;
@@ -206,6 +208,8 @@ architecture RTL of sockit_top is
 
 	signal act_led : std_logic;
 
+	signal RESET_DELAY_n : std_logic;
+
 begin
 
 
@@ -247,9 +251,29 @@ begin
 	VGA_VS <= vga_vsync;
 
 	VGA_SYNC_n  <= '0';			-- RGB/Composite sync
-	VGA_BLANK_n <= '1'; 		-- not vga_blank;  	-- vga_hsync and vga_vsync; (blank signal usually gives darker blacks)
+	VGA_BLANK_n <= not (vga_hsync and vga_vsync);     -- '1'; 		-- vga_de;   -- not vga_blank; 	-- not (vga_hsync and vga_vsync); (blank signal usually gives darker blacks)
 	VGA_CLK     <= vga_clk_x;	-- use clk_sys from top mist core. Could be used pll2 like UA reloaded
 								-- UA reloaded has the same Video DAC ADV7123 
+
+
+	--RESET DELAY ---
+	COUNTER_PROC: process(reset_n, FPGA_CLK1_50)  
+		variable DELAY_CNT : integer := 0;
+	begin
+		if reset_n = '0'  then 
+			RESET_DELAY_n <= '0';
+			DELAY_CNT     := 0;
+	    else  
+			if rising_edge(FPGA_CLK1_50) then
+				if  DELAY_CNT < 1000000  then
+					DELAY_CNT := DELAY_CNT + 1; 
+				else 
+					RESET_DELAY_n <= '1';
+				end if;	   
+		 	end if;
+		end if;
+	end process;
+
 
 	-- AUDIO CODEC
 	AUD_MUTE <= '1'; --SW(0);
@@ -260,7 +284,7 @@ begin
 	-- )
 	port map (
 	  iCLK 		=> FPGA_CLK1_50,
-	  iRST_N 	=> reset_n,
+	  iRST_N 	=> RESET_DELAY_n,
 	  oI2C_SCLK => AUD_I2C_SCLK,
 	  oI2C_SDAT => AUD_I2C_SDAT
 	);
@@ -330,6 +354,8 @@ begin
 			--UART
 --			UART_TX => UART_TXD,
 --			UART_RX => UART_RXD,
+--			UART_CTS  => DETO1,		--UART_CTS
+--			UART_RTS  => DETO2,		--UART_RTS
 			UART_TX => open,
 			UART_RX => ear,
 			--SPI
@@ -347,13 +373,13 @@ begin
 			VGA_R   => vga_red(7 downto 2),
 			VGA_G   => vga_green(7 downto 2),
 			VGA_B   => vga_blue(7 downto 2),
-				vga_clk   => vga_clk_x,
-				vga_blank => vga_blank,
+			vga_clk   => vga_clk_x,
+--			vga_blank => vga_blank,
 			--AUDIO
 			DAC_L   => dac_l,
 			DAC_R   => dac_r
-				--DAC_MIDI_L=> DAC_MIDI_L,
-				--DAC_MIDI_R=> DAC_MIDI_R,
+			--DAC_MIDI_L=> DAC_MIDI_L,
+			--DAC_MIDI_R=> DAC_MIDI_R,
 			--AUDIO_L => sigma_l,
 			--AUDIO_R => sigma_r,
 		);
@@ -398,7 +424,7 @@ begin
 				ps2m_dat_out => ps2_mouse_dat_out,
 
 				-- Buttons
-				buttons => (0 => KEY(0), 1 => KEY(1), others => '1'),
+				buttons => (0 => KEY(0), 1 => KEY(1), others => '1'),    -- 0 = opens OSD
 
 				-- Joysticks
 				joy1 => joya,
