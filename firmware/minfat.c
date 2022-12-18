@@ -73,7 +73,7 @@ uint32_t current_directory_cluster;
 uint32_t current_directory_start;
 
 unsigned char sector_buffer[512];       // sector buffer
-#ifndef DISABLE_LONG_FILENAMES
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 char longfilename[261];
 #endif
 
@@ -268,7 +268,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 
 	while(p=NextDirEntry(p==NULL,0))
 	{
-#ifndef DISABLE_LONG_FILENAMES
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 		if(strcasecmp(longfilename,name)==0)
 			break;
 #endif
@@ -623,7 +623,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 		iDirectorySector=current_directory_start;
 		iDirectoryCluster=current_directory_cluster;
 	}
-#ifndef DISABLE_LONG_FILENAMES
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 	longfilename[13]=0;
 #endif
 
@@ -643,7 +643,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 
             if (pEntry->Name[0] != SLOT_EMPTY && pEntry->Name[0] != SLOT_DELETED) // valid entry??
 			{
-				#ifndef DISABLE_LONG_FILENAMES
+				#ifndef CONFIG_WITHOUT_FILESELECTOR
 				if (pEntry->Attributes == ATTR_LFN)	// Do we have a long filename entry?
 				{
 					unsigned char *p=&pEntry->Name[0];
@@ -676,7 +676,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 				else if ((!(pEntry->Attributes & ATTR_VOLUME)) &&
 					 ( (pEntry->Attributes & ATTR_DIRECTORY) || (!matchfunc) || matchfunc(&pEntry->Name[0])))
 				{
-#ifndef DISABLE_LONG_FILENAMES
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 					if(!prevlfn)
 						longfilename[0]=0;
 #endif
@@ -686,7 +686,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 				}
 				else
 				{
-#ifndef DISABLE_LONG_FILENAMES
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 					longfilename[13]=0;
 #endif
 					prevlfn=0;

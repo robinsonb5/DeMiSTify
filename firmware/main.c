@@ -164,7 +164,7 @@ int LoadROM(const char *fn)
 int menuindex;
 int moremenu;
 int romindex; /* First file to be displayed */
-static int listroms();
+int listroms();
 void selectrom(int row);
 // static void scrollroms(int row);
 static void scrollmenu(int row);
@@ -176,19 +176,19 @@ static char romfilenames[7][30];
 
 struct menu_entry menu[]=
 {
-	{MENU_ACTION(&selectrom),romfilenames[0],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[1],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[2],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[3],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[4],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[5],0,0,0},
-	{MENU_ACTION(&selectrom),romfilenames[6],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[0],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[1],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[2],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[3],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[4],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[5],0,0,0},
+	{MENU_ACTION(&submenu),romfilenames[6],0,0,0},
 	{MENU_ACTION(&submenu),0,0,0,0},
 	{MENU_ACTION(scrollmenu),0,0,0,0}
 };
 
 
-static DIRENTRY *nthfile(unsigned int n)
+DIRENTRY *nthfile(unsigned int n)
 {
 	unsigned int i,j=0;
 	DIRENTRY *p;
@@ -304,7 +304,7 @@ void selectrom(int row)
 }
 
 
-static void selectdir(int row)
+void selectdir(int row)
 {
 	DIRENTRY *p=nthfile(menuindex+row);
 	if(p)
@@ -314,7 +314,7 @@ static void selectdir(int row)
 }
 
 
-static int listroms()
+int listroms()
 {
 	DIRENTRY *p=(DIRENTRY *)sector_buffer; // Just so it's not NULL
 	unsigned int i,j;
@@ -483,7 +483,9 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 	if(menupage==MENUPAGE_FILE)
 	{
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 		line=listroms();
+#endif
 	}
 #ifdef CONFIG_SETTINGS
 	else if(menupage==MENUPAGE_SETTINGS)
@@ -512,6 +514,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 		if(c!=';')
 #endif
 		{
+#ifndef CONFIG_WITHOUT_FILESELECTOR			
 			if(!selpage) /* Add the load item only for the first menu page */
 			{
 				strcpy(menu[line].label,"Load *. ");
@@ -530,6 +533,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 					--skip;
 			}
 			else
+#endif
 				configstring_nextfield();
 			++fileindex; /* Need to bump the file index whichever page we're on. */
 		}
@@ -611,7 +615,8 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 						c=configstring_next();
 						nextline=1;
 						break;
-#endif					
+#endif
+#ifndef CONFIG_WITHOUT_FILESELECTOR					
 					case 'S': /* Disk image select */
 						diskunit='0';
 						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
@@ -638,6 +643,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 						++fileindex;
 						nextline=1;
 						break;
+#endif
 					case 'O':
 					case 'T':
 						/* Parse option */

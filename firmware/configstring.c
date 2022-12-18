@@ -40,6 +40,7 @@ __weak void configstring_begin()
 		return;
 	}
 #endif
+
 	SPI(0xff);
 	SPI_ENABLE(HW_SPI_CONF);
 	configstring_coretype=SPI(SPI_CONF_READ); /* Read conf string command */
@@ -105,8 +106,11 @@ __weak int configstring_setindex(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 	/* Figure out which extension configstring_matches, and thus which index we need to use */
+#ifdef CONFIG_WITHOUT_FILESELECTOR
+	int extindex=0;
+#else
 	int extindex=configstring_matchextension(fn);
-
+#endif
 	if(extindex)
 		--extindex;
 

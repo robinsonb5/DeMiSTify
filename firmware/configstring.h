@@ -13,8 +13,8 @@ int configstring_next();
 int configstring_nextfield();
 int configstring_copytocomma(char *buf, int limit,int copy);
 int configstring_getdigit();
-int configstring_matchextension(const char *ext);
 int configstring_setindex(const char *fn);
+int configstring_matchextension(const char *ext);
 
 #endif
 
