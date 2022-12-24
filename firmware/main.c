@@ -243,7 +243,7 @@ int setcuefile(const char *filename)
 
 static void fileselector(int row){}
 void selectrom(int row) {}
-static void listroms() {}
+int listroms() { return 0; }
 static void scrollroms(int row) {}
 
 #else
@@ -818,11 +818,11 @@ __weak void init()
 
 	Menu_Message("Booting...",0);
 	Menu_Message(autoboot(),0);
+#endif
 
 	EnableInterrupts();
 }
 
-#endif
 
 __weak void mainloop()
 {
