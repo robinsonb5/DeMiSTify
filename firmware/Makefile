@@ -1,6 +1,12 @@
 DEMISTIFYPATH=../
 832DIR=$(DEMISTIFYPATH)/EightThirtyTwo
+
 CC=$(832DIR)/vbcc/bin/vbcc832
+ifeq ($(DETECTED_OS),MSYS)
+ CC=$(832DIR)/vbcc/bin/vbcc832.exe
+ #CC=$(CC).exe
+endif
+
 AS=$(832DIR)/832a/832a
 LD=$(832DIR)/832a/832l
 DUMP=objdump
@@ -14,7 +20,7 @@ STACKSIZE=0x200
 OPT=-size
 
 CDEFS =
-CFLAGS = -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. $(CDEFS)
+CFLAGS = -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. -I$(DEMISTIFYPATH)/firmware $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
 
