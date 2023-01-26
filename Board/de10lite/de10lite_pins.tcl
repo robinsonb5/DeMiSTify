@@ -408,6 +408,10 @@ set_location_assignment PIN_AB21 -to ARDUINO_IO[14]
 set_location_assignment PIN_AA20 -to ARDUINO_IO[15]
 set_location_assignment PIN_F16 -to ARDUINO_RESET_N
 
+# Pullup on the SD MISO pin
+
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ARDUINO_IO[12]
+
 #============================================================
 # GPIO, GPIO connect to GPIO Default
 #============================================================
@@ -488,5 +492,11 @@ set_location_assignment PIN_AB2 -to GPIO[34]
 set_location_assignment PIN_AA2 -to GPIO[35]
 #set_location_assignment PIN_AA20 -to CLK_I2C_SCL   -> ARDUINO_IO[15]
 #set_location_assignment PIN_AB21 -to CLK_I2C_SDA	-> ARDUINO_IO[14]
+
+# Pullups on the PS/2 pins
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to GPIO[10]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to GPIO[12]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to GPIO[14]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to GPIO[16]
 
 
