@@ -69,7 +69,7 @@ entity substitute_mcu is
 		joy3 : in std_logic_vector(7 downto 0) := "11111111";
 		joy4 : in std_logic_vector(7 downto 0) := "11111111";
 		
-		buttons : in std_logic_vector(7 downto 0) :="11111111";
+		buttons : in std_logic_vector(31 downto 0) := (others => '1');
 		
 		c64_keys	: in std_logic_vector(63 downto 0) :=X"FFFFFFFFFFFFFFFF";
 
@@ -715,8 +715,7 @@ begin
 							mem_busy<='0';
 
 						when X"EC" => -- Misc inputs;
-							from_mem<=(others => '0');
-							from_mem(7 downto 0)<=not buttons;
+							from_mem(31 downto 0)<=not buttons;
 							mem_busy<='0';
 
 						when X"FC" => -- Platform capabilities;
