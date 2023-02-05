@@ -23,6 +23,8 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name GENERATE_SVF_FILE ON
 
 if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
 	set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
