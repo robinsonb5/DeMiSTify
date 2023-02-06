@@ -72,8 +72,9 @@
 #define KEY_8 0x3E
 #define KEY_9 0x46
 #define KEY_INS 0xf0
+#define KEY_END 0xe9
 #define KEY_0 0x45
-#define KEY_HOME 0xe6
+#define KEY_HOME 0xec
 
 #define KEY_R 0x2D
 #define KEY_T 0x2C
@@ -121,7 +122,10 @@
 #define KEY_TAB 0x0D
 
 #define KEY_PRTSCRN 0xfc // By rights should be 0xe0 0x12 0xe0 0x7c, so 0x92 0x7c, but the BBC core only checks for 0xe0 0x7c.
-	
+
+#define KEY_BREAK 0xf7 // By rights should be E11477E1F014E077 - with no release code.
+
+void SendKey(int key, int ext, int keyup); /* Overridable for custom key enqueuing */
 int UpdateKeys(int blockkeys);
 int HandlePS2RawCodes(int blockkeys);
 void ClearKeyboard();

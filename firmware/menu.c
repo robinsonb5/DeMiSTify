@@ -31,6 +31,10 @@
 #include "gamepadkeys.h"
 #include "user_io.h"
 
+#ifndef KEY_OSD
+#define KEY_OSD KEY_F12
+#endif
+
 /* Not currently using hotkeys */
 #undef MENU_HOTKEYS
 
@@ -225,7 +229,7 @@ void Menu_Run()
 	}
 #endif
 
-	if(Menu_PollInput(KEY_F12,0,JOY_BUTTON_MENU))
+	if(Menu_PollInput(KEY_OSD,0,JOY_BUTTON_MENU))
 	{
 		Menu_ShowHide(-1);
 		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks

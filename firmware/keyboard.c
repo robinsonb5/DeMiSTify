@@ -32,6 +32,22 @@
 // Shift each 2-bit tuple by (keycode & 15)*2.
 unsigned int keytable[16]={0};
 
+__weak void SendKey(int key, int ext, int keyup)
+{
+#ifdef CONFIG_SENDKEYS
+	EnableIO();
+	SPI(UIO_KEYBOARD);
+	if(extkey)
+		SPI(0xe0);
+	if(keyup)
+		SPI(0xf0);
+	SPI(key);
+	EnableIO(); /* Ensure select doesn't release too soon. */
+	DisableIO();
+#endif
+}
+
+
 int HandlePS2RawCodes(int blockkeys)
 {
 	int result=0;
@@ -49,24 +65,15 @@ int HandlePS2RawCodes(int blockkeys)
 		else
 		{
 			int keyidx=extkey ? 128+key : key;
+			/* Send keys before updating the keytable - allows the core to avoid sending repeats by checking the current key status. */
+			if(!blockkeys)
+				SendKey(key,extkey,keyup);
+
+			/* Update the keytable */
 			if(keyup)
 				keytable[keyidx>>4]&=~(1<<((keyidx&15)*2));  // Mask off the "currently pressed" bit.
 			else
 				keytable[keyidx>>4]|=3<<((keyidx&15)*2);	// Currently pressed and pressed since last test.
-#ifdef CONFIG_SENDKEYS
-			if(!blockkeys)
-			{
-				EnableIO();
-				SPI(UIO_KEYBOARD);
-				if(extkey)
-					SPI(0xe0);
-				if(keyup)
-					SPI(0xf0);
-				SPI(key);
-				EnableIO(); /* Ensure select doesn't release too soon. */
-				DisableIO();
-			}
-#endif
 			extkey=0;
 			keyup=0;
 		}
