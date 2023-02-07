@@ -17,6 +17,7 @@ set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS}
 set FALSE_OUT {ARDUINO_IO[*] GPIO[*] LEDR[*] }
 set FALSE_IN {ARDUINO_IO[*] GPIO[*] KEY[*]}
 
+# JTAG constraints for debug interface (if enabled)
 # create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tdi
 set_input_delay -clock altera_reserved_tck -clock_fall 3 altera_reserved_tms

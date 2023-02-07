@@ -3,6 +3,8 @@ set_time_format -unit ns -decimal_places 3
 create_clock -name clock27 -period 37.037 [get_ports {CLOCK_27}]
 create_clock -name {spiclk}  -period 41.666 -waveform { 20.8 41.666 } [get_ports {SPI_SCK}]
 
+set mist 1
+
 set hostclk { clock27 }
 set supportclk { clock27 }
 

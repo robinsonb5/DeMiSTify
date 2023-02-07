@@ -188,8 +188,8 @@ VGA_VS<=vga_vsync;
 guest: COMPONENT guest_top
 	PORT map
 	(
-		CLOCK_27 => MAX10_CLK2_50&MAX10_CLK2_50, -- Comment out one of these lines to match the guest core.
-		CLOCK_27 => MAX10_CLK2_50,
+		CLOCK_27 => MAX10_CLK1_50&MAX10_CLK1_50, -- Comment out one of these lines to match the guest core.
+		CLOCK_27 => MAX10_CLK1_50,
 --		RESET_N => reset_n,
 		-- clocks
 		SDRAM_DQ => DRAM_DQ,
