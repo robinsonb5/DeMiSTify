@@ -5,8 +5,10 @@
 #include "user_io.h"
 #include "spi.h"
 #include "timer.h"
+#include "config.h"
 //#include "utils.h"
 //#include "debug.h"
+#ifdef CONFIG_CD
 
 #pragma dontwarn 153
 
@@ -711,4 +713,6 @@ void pcecd_poll() {
 }
 
 #pragma popwarn
+
+#endif
 

@@ -25,6 +25,7 @@
 #include "keyboard.h"
 #include "spi.h"
 #include "timer.h"
+#include "settings.h"
 
 #include "config.h"
 

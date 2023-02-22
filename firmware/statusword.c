@@ -94,9 +94,9 @@ unsigned int statusword_get(unsigned int shift,unsigned int mask)
 }
 
 /* 32bit implementation of status_cycle() */
-__weak void statusword_cycle(int shift,int mask,int limit)
+__weak void statusword_cycle(unsigned int shift,unsigned int mask,unsigned int limit)
 {
-	int v;
+	unsigned int v;
 	v=(statusword>>shift);	// Extract value from existing statusword
 	v&=mask;					// and mask...
 	++v;

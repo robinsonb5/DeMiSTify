@@ -751,7 +751,7 @@ __weak char *autoboot()
 	if(!LoadROM(bootrom_name))
 		result="ROM loading failed";
 #else
-	LoadROM(bootrom_name)
+	LoadROM(bootrom_name);
 #endif
 	return(result);
 }
@@ -797,7 +797,6 @@ __weak void init()
 {
 	int havesd;
 	int i,c;
-	char *err;
 
 	PS2Init();
 
@@ -809,8 +808,8 @@ __weak void init()
 	if(!(havesd=sd_init() && FindDrive()))
 	{
 		Menu_Message("SD failed.",0);
-		while(1)
-			;
+		
+		while(1) {}
 	}
 #ifdef CONFIG_AUTOSCANDOUBLER
 	AutoScandoubler();
@@ -839,6 +838,10 @@ __weak void mainloop()
 		pcecd_poll();
 #endif
 		Menu_Run();
+
+#ifdef CONFIG_IDE
+		HandleHDD();
+#endif
 
 #ifdef CONFIG_CD
 		pcecd_poll();

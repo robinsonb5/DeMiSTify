@@ -371,11 +371,12 @@ int BestBookmark(fileTYPE *file, uint32_t pm)
 	int idx,best;
 	int32_t bestd,d;
 	best=-1;
-	bestd=0x7fffffff;
+	bestd=file->size;
 	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
 	{
-		d=pm-file->bookmarks[idx].sector;
-		if(d>=0 && d<bestd)
+		int t=file->bookmarks[idx].sector;
+		d=pm-t;
+		if(pm>=t && d<bestd)
 		{
 			best=idx;
 			bestd=d;
@@ -389,13 +390,15 @@ int BestBookmark(fileTYPE *file, uint32_t pm)
 int WorstBookmark(fileTYPE *file)
 {
 	int idx,idx2;
-	uint32_t worstd=0x7fffffff;
+	int32_t worstd=file->size;
 	int worst=-1;
 	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
 	{
 		for(idx2=0;idx2<CONFIG_FILEBOOKMARKS;++idx2)
 		{
-			int d=file->bookmarks[idx2].sector-file->bookmarks[idx].sector;
+			int32_t d=file->bookmarks[idx2].sector-file->bookmarks[idx].sector;
+			if(d<0)
+				d=-d;
 			if(idx!=idx2 && (d<worstd))
 			{
 				worst=idx2;
@@ -410,14 +413,14 @@ int WorstBookmark(fileTYPE *file)
 void FileSeek(fileTYPE *file, uint32_t pos)
 {
 	uint32_t p=pos>>9;
-	uint32_t pm=p&~cluster_mask;
-
+	uint32_t pm=p;
 	uint32_t currentsector;
 	uint32_t cluster;
 
 	if(!file || !file->size)
 		return;
 
+	pm&=~cluster_mask;
 	currentsector=file->sector&~cluster_mask;
 	cluster=file->cluster;
 

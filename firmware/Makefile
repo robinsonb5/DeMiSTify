@@ -20,7 +20,7 @@ STACKSIZE=0x200
 OPT=-size
 
 CDEFS =
-CFLAGS = -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. -I$(DEMISTIFYPATH)/firmware $(CDEFS)
+CFLAGS = -el -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. -I$(DEMISTIFYPATH)/firmware $(CDEFS)
 ASFLAGS = -el
 LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
 
@@ -28,7 +28,7 @@ START = $(LIBDIR)/tinycrt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
 PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o ps2.o keyboard.o mouse.o user_io.o \
-	statusword.o arcfile.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o settings.o overrides.o
+	statusword.o arcfile.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o ide.o settings.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
@@ -81,13 +81,13 @@ controller.bin : $(START) $(LIBS) $(PRJ_OBJ)
 	@$(LD) $(LDFLAGS) -o $@ -M controller.map $+
 
 %.o : $(DEMISTIFYPATH)/firmware/%.c config.h $(CC)
-	@echo "Compiling $*.c"
+	@echo -n "Compiling $*.c \t"
 	@$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) -o=$*.asm $(DEMISTIFYPATH)/firmware/$*.c \
 		&& echo "\033[32m  OK\033[0m"
 	@$(AS) >/dev/null $(ASFLAGS) -o $*.o $*.asm
 
 %.o : %.c config.h $(CC)
-	@echo "Compiling $*.c"
+	@echo -n "Compiling $*.c \t"
 	@$(CC) $(COPT) $(CFLAGS) -I$(INCDIR) -I$(DEMISTIFYPATH)/firmware -o=$*.asm $*.c \
 		&& echo "\033[32m  OK\033[0m"
 	@$(AS) >/dev/null $(ASFLAGS) -o $*.o $*.asm

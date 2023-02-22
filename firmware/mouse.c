@@ -27,6 +27,24 @@ static unsigned char initmouse[]=
 
 static unsigned char rxmouse[4];
 
+#ifdef PS2_MOUSE_USERIO
+__weak void HandleMousePacket(int protocol)
+{
+	// Send the packet to the core.
+	spi_uio_cmd8_cont(UIO_MOUSE, PS2MouseRead());
+	SPI(PS2MouseRead());
+	SPI(PS2MouseRead());
+	DisableIO();
+	if(protocol==4)
+		PS2MouseRead();
+}
+#else
+__weak void HandleMousePacket(int protocol)
+{
+}
+#endif
+
+
 void HandlePS2Mouse(int reset)
 {
 	int byte;
@@ -50,6 +68,7 @@ void HandlePS2Mouse(int reset)
 			; // Drain the buffer;
 		txcount=initmouse[idx++];
 		rxcount=0;
+		timeout=GetTimer(50);
 	}
 	else
 	{
@@ -87,38 +106,36 @@ void HandlePS2Mouse(int reset)
 		}
 		else if(txcount)
 		{
-//			printf("Sending %x bytes",txcount);
-			PS2MouseWrite(initmouse[idx++]);
-			--txcount;
-			rxcount=1;
-			timeout=GetTimer(3500);	//3.5 seconds
-		}
-#ifdef PS2_MOUSE_USERIO
-		else
-		{
-			int c;
-			while((c=PS2MouseRead())>-1)
-			{
-				if(rxidx && CheckTimer(timeout))	// Did we receive a part packet?  Probably in the wrong mode...
-				{
-//					printf("Timeout on %d, Protocol %d - toggling\n",rxidx,protocol);
-					protocol=7-protocol; // Toggle between 3 and 4 byte packets.
-					rxidx=0;
-				}
-				rxmouse[rxidx++]=c;
-				if(rxidx>=protocol)
-				{
-					// Send the packet to the core.
-					spi_uio_cmd8_cont(UIO_MOUSE, rxmouse[0]);
-					SPI(rxmouse[1]);
-					SPI(rxmouse[2]);
-					DisableIO();
-					rxidx=0;				
-				}
-				timeout=GetTimer(500);	//0.5 seconds
+			if(CheckTimer(timeout)) {
+//				printf("Sending %x bytes",txcount);
+				PS2MouseWrite(initmouse[idx++]);
+				--txcount;
+				rxcount=1;
+				timeout=GetTimer(txcount ? 50 : 1500);	// 1.5 seconds for the mouse to respond
 			}
 		}
-#endif
+		else
+		{
+			while(1)
+			{
+				int	c=PS2MouseBytesReady();
+				if(c && c<protocol)
+				{
+					if(CheckTimer(timeout))
+					{
+						protocol=7-protocol; // Toggle between 3 and 4 byte packets.
+						ps2_ringbuffer_init(&mousebuffer);
+//						printf("Switching to %d byte mode\n",protocol);
+					}
+					break;
+				}
+				timeout=GetTimer(1500);	//1.5 seconds
+				if(c>=protocol)
+					HandleMousePacket(protocol);
+				else
+					break;
+			}					
+		}
 	}
 }
 #endif
