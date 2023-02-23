@@ -47,23 +47,22 @@ set_instance_assignment -name IO_STANDARD "1.2 V" -to LED[7]
 #============================================================
 # VGA (SHARED WITH PMOD 1 & PMOD 2)
 #============================================================
-#Pins for 333 addon like Waveshare ps2 vga 
-#connect MSB from addon to MSB of location assign. (eg VGAR2 from waveshare to VGA_R[3])
 set_location_assignment PIN_AA7 -to VGA_R[3]
 set_location_assignment PIN_Y7  -to VGA_R[2]
 set_location_assignment PIN_U7  -to VGA_R[1]
+set_location_assignment PIN_V8  -to VGA_R[0]
 set_location_assignment PIN_V7  -to VGA_G[3]
 set_location_assignment PIN_R11 -to VGA_G[2]
 set_location_assignment PIN_AB7 -to VGA_G[1]
+set_location_assignment PIN_AB8 -to VGA_G[0]
 set_location_assignment PIN_AB6 -to VGA_B[3]
 set_location_assignment PIN_AA6 -to VGA_B[2]
 set_location_assignment PIN_V10 -to VGA_B[1]
+set_location_assignment PIN_W8  -to VGA_B[0]
 set_location_assignment PIN_W7  -to VGA_HS
 set_location_assignment PIN_W6  -to VGA_VS
-#Additional pins for a 444 addon like Digilent Pmod vga 
-set_location_assignment PIN_V8  -to VGA_R[0]
-set_location_assignment PIN_AB8 -to VGA_G[0]
-set_location_assignment PIN_W8  -to VGA_B[0]
+#For a 333 addon like Waveshare PS2 VGA connect MSB from addon to MSB of location assign. 
+#(e.g. VGAR2 from waveshare to VGA_R[3])
 
 #============================================================
 # PMOD 1 & 2  (SHARED WITH VGA AND PMOD DETO pins 1&2)
