@@ -62,10 +62,10 @@ module mist_top (
 //wire  [7:0] r_aux, g_aux, b_aux;	
 
 
-PCXT guest
+guest_mist guest
 (
    .CLOCK_27 	(CLOCK_27),
-// .RESET_N     (1'b1),        //very important to pass this reset signal
+// .RESET_N     (1'b1),        
    .LED      	(LED),
 
    .SDRAM_DQ	(SDRAM_DQ),	
