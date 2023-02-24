@@ -126,11 +126,24 @@ set_location_assignment PIN_Y19  -to SPI_CS0_CLKBD
 set_location_assignment PIN_AA17 -to SPI_CS1
 set_location_assignment PIN_W3   -to SPI_CS2
 
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to SPI_SCLK_DABD
+
+#UART_TXD now SPI_SS4
+set_location_assignment PIN_W18 -to SPI_SS4
+#UART_RXD now RESET_N
+set_location_assignment PIN_Y18 -to RESET_N
+
+
 #============================================================
 # PMOD3 UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
 #============================================================
-set_location_assignment PIN_Y18 -to UART_RXD
-set_location_assignment PIN_W18 -to UART_TXD
+#set_location_assignment PIN_Y18 -to UART_RXD
+#set_location_assignment PIN_W18 -to UART_TXD
+
+#DETO3 now UART_TXD
+set_location_assignment PIN_V17 -to UART_TXD
+#DETO4 now UART_RXD
+set_location_assignment PIN_Y11 -to UART_RXD
 
 
 #============================================================
@@ -176,8 +189,9 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 set_location_assignment PIN_W9  -to DETO1_PMOD2_6
 set_location_assignment PIN_W5  -to DETO2_PMOD2_7
 # DETO PIN 3 SHARED WITH JOYSTICK MUX pin 
-set_location_assignment PIN_V17 -to DETO3_JOY_MUX
-set_location_assignment PIN_Y11 -to DETO4
+#set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+#set_location_assignment PIN_Y11 -to DETO4
+#SEE UART
 
 # This Pmod is compatible with the PCM5102A I2S DAC pinout
 # BCLK  = DETO2
