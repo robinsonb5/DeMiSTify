@@ -32,7 +32,7 @@
 // Shift each 2-bit tuple by (keycode & 15)*2.
 unsigned int keytable[16]={0};
 
-__weak void SendKey(int key, int ext, int keyup)
+__weak void SendKey(int key, int extkey, int keyup)
 {
 #ifdef CONFIG_SENDKEYS
 	EnableIO();
