@@ -37,6 +37,7 @@
 #include "cue_parser.h"
 #include "pcecd.h"
 #include "spi_sd.h"
+#include "ide.h"
 #include "diskimg.h"
 #include "statusword.h"
 #include "settings.h"
@@ -255,6 +256,14 @@ __weak int loadimage(char *filename,int unit)
 		case 0:
 			return(LoadROM(filename));
 			break;
+#ifdef CONFIG_IDE
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+			OpenHardfile(filename,unit-'0');
+			break;
+#endif
 #ifdef CONFIG_DISKIMG
 		case '0':
 		case '1':
