@@ -509,7 +509,7 @@ static inline void ATA_WriteSectors(unsigned char* tfr, int unit, int multiple)
 static void GetHardfileGeometry(hdfTYPE *pHDF)
 {
 	int total=0;
-	int i, head, cyl, spt;
+	int i, head, cyl, spt, chd;
 	int sptt[] = { 63, 127, 255, 0 };
 	int cyllimit=65535;
 	
@@ -519,6 +519,7 @@ static void GetHardfileGeometry(hdfTYPE *pHDF)
 	if (!total)
 		return;
 
+#ifndef CONFIG_IDE_PC_HD
 //	printf("HDF %d sectors\n",total);
 	for (i = 0; sptt[i] != 0; i++) {
 		spt = sptt[i];
@@ -537,6 +538,31 @@ static void GetHardfileGeometry(hdfTYPE *pHDF)
 		}
 		if (head <= 16) break;
 	}
+#else	
+	// PC (PCEm) compatible geometry
+	if ((total % 17) == 0 && total <= 278528) {
+		spt = 17;
+
+		if (total <= 52224)
+			head = 4;
+		else if ((total % 6) == 0 && total <= 104448)
+			head = 6;
+		else {
+
+			for (chd=5;chd<16;chd++) {
+				if((total % chd) == 0 && total <= 1024*chd*17) break;
+				if (chd == 5) chd++;
+			}
+			head = chd;
+		}
+		cyl = total / head / 17;
+	} else {
+		spt = 63;
+		head = 16;
+		cyl = total / 16 / 63;
+	}
+#endif
+	
 	pHDF->cylinders = cyl;
 	pHDF->heads = head;
 	pHDF->sectors = spt;
