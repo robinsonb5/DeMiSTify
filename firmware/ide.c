@@ -84,18 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CONFIG_IDE_UNITS 2
 #endif
 
-typedef struct
-{
-	fileTYPE	file;
-	int  cylinders;
-	int  heads;
-	int  sectors;
-	int  sectors_per_block;
-	int  partition; // partition no.
-} hdfTYPE;
-
 hdfTYPE hdf[CONFIG_IDE_UNITS];
-
 
 static void WriteStatus(int status)
 {
@@ -398,16 +387,16 @@ static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
 		if(hdf[unit].file.size)
 		{
 			int blk=block_count;
+//			printf("Seeking to lba %x\n",lba);
+			FileSeek(&hdf[unit].file,lba<<9);
 			while(blk--) // Any blocks left?
 			{
-				FileSeek(&hdf[unit].file,lba<<9);
 				FileReadSector(&hdf[unit].file,0); // NULL enables direct transfer to the FPGA
 #if 0
 				FileReadSector(&hdf[unit].file,sector_buffer); // NULL enables direct transfer to the FPGA#
 				sendsector(sector_buffer);
 #endif
 				FileNextSector(&hdf[unit].file,1);
-				lba++;
 			}
 		}
 		else
@@ -503,10 +492,9 @@ static inline void ATA_WriteSectors(unsigned char* tfr, int unit, int multiple)
 }
 
 
-
 // GetHardfileGeometry()
 // this function comes from WinUAE, should return the same CHS as WinUAE
-static void GetHardfileGeometry(hdfTYPE *pHDF)
+__weak void GetHardfileGeometry(hdfTYPE *pHDF)
 {
 	int total=0;
 	int i, head, cyl, spt, chd;
@@ -562,7 +550,7 @@ static void GetHardfileGeometry(hdfTYPE *pHDF)
 		cyl = total / 16 / 63;
 	}
 #endif
-	
+//	printf("%d, %d, %d\n",cyl,head,spt);	
 	pHDF->cylinders = cyl;
 	pHDF->heads = head;
 	pHDF->sectors = spt;

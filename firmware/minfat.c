@@ -40,7 +40,7 @@ JB:
 
 #define NULL 0
 #include <sys/types.h>
-// #include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 //#include <ctype.h>
 
@@ -49,7 +49,6 @@ JB:
 
 #include "swap_le.h"
 #include "uart.h"
-#include "printf.h"
 #include "timer.h"
 
 #include "minfat.h"
@@ -307,6 +306,8 @@ void FileNextSector(fileTYPE *file,int count)
     uint16_t i;
 	if(!file || !file->size)
 		return;
+//	printf("Moving %d sectors forward\n",count);
+	file->cursor+=count<<9;
 	count+=file->sector;
 	while((file->sector ^ count)&~cluster_mask)
 	{
@@ -420,6 +421,11 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 
+	file->cursor=pos;
+
+	if(p==file->sector)
+		return;
+
 	pm&=~cluster_mask;
 	currentsector=file->sector&~cluster_mask;
 	cluster=file->cluster;
@@ -462,8 +468,8 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 
 		FileNextSector(file,p);
 	}
+	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
 	FileReadSector(file, sector_buffer);
-	file->cursor=pos;
 }
 #else
 void FileSeek(fileTYPE *file, uint32_t pos)
@@ -472,15 +478,20 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
-	if(p<(file->cursor&(~cluster_mask)))
+	// FIXME - this comparison should happen on sectors, not bytes.
+	if(p<(file->cursor&(~(cluster_mask<9))))
 	{
+//		printf("Rewinding\n");
 		file->sector=0;
 		file->cursor=0;
 		file->cluster=file->firstcluster;
 	}
 	else
 		p-=file->cursor&~511;
+	if(!p)
+		return;
 	FileNextSector(file,p>>9);
+	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
 	FileReadSector(file, sector_buffer);
 	file->cursor=pos;
 }
