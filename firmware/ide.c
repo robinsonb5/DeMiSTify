@@ -80,10 +80,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DISKLED_ON
 #define DISKLED_OFF
 
-#ifndef CONFIG_IDE_UNITS
-#define CONFIG_IDE_UNITS 2
-#endif
-
 hdfTYPE hdf[CONFIG_IDE_UNITS];
 
 static void WriteStatus(int status)

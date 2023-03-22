@@ -307,7 +307,7 @@ void FileNextSector(fileTYPE *file,int count)
 	if(!file || !file->size)
 		return;
 //	printf("Moving %d sectors forward\n",count);
-	file->cursor+=count<<9;
+//	file->cursor+=count<<9;
 	count+=file->sector;
 	while((file->sector ^ count)&~cluster_mask)
 	{
@@ -421,8 +421,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 
-	file->cursor=pos;
-
 	if(p==file->sector)
 		return;
 
@@ -468,8 +466,9 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 
 		FileNextSector(file,p);
 	}
-	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
-	FileReadSector(file, sector_buffer);
+	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
+		FileReadSector(file, sector_buffer);
+	file->cursor=pos;
 }
 #else
 void FileSeek(fileTYPE *file, uint32_t pos)
@@ -492,7 +491,8 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		return;
 	FileNextSector(file,p>>9);
 	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
-	FileReadSector(file, sector_buffer);
+	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
+		FileReadSector(file, sector_buffer);
 	file->cursor=pos;
 }
 #endif

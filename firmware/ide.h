@@ -12,6 +12,10 @@ typedef struct
 	int  sectors_per_block;
 } hdfTYPE;
 
+#ifndef CONFIG_IDE_UNITS
+#define CONFIG_IDE_UNITS 2
+#endif
+
 extern hdfTYPE hdf[CONFIG_IDE_UNITS];
 
 void GetHardfileGeometry(hdfTYPE *pHDF);
