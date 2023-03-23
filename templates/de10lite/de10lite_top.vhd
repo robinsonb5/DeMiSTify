@@ -72,6 +72,7 @@ architecture RTL of de10lite_top is
 	
 -- internal SPI signals
 	
+	signal spi_do : std_logic;
 	signal spi_toguest : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2 : std_logic;
@@ -204,8 +205,7 @@ guest: COMPONENT guest_top
 		SDRAM_CLK => DRAM_CLK,
 		SDRAM_CKE => DRAM_CKE,
 		
-		SPI_DO_IN => sd_miso,
-		SPI_DO => spi_fromguest,
+		SPI_DO => spi_do,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
@@ -229,6 +229,8 @@ guest: COMPONENT guest_top
 
 -- Pass internal signals to external SPI interface
 sd_clk <= spi_clk_int;
+spi_do <= sd_miso when spi_ss4='0' else 'Z';
+spi_fromguest <= spi_do;
 
 controller : entity work.substitute_mcu
 	generic map (

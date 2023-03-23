@@ -248,9 +248,15 @@ int listroms() { return 0; }
 static void scrollroms(int row) {}
 
 #else
+void IDE_and_DISKIMG_you_must_override_loadimg();
 
 __weak int loadimage(char *filename,int unit)
 {
+	#ifdef CONFIG_IDE
+	#ifdef CONFIG_DISKIMG
+	IDE_and_DISKIMG_you_must_override_loadimg();
+	#endif
+	#endif
 	switch(unit)
 	{
 		case 0:
@@ -289,6 +295,7 @@ __weak int loadimage(char *filename,int unit)
 #endif
 	}
 }
+
 
 char filename[12];
 void selectrom(int row)

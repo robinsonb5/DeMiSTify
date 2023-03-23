@@ -255,21 +255,6 @@ static void ATA_IdentifyDevice(unsigned char* tfr, int unit, char packet)
 	WriteTaskFile(0, tfr[2], tfr[3], tfr[4], tfr[5], tfr[6]);
 	WriteStatus(IDE_STATUS_RDY); // pio in (class 1) command type
 	sendsector(sector_buffer);
-#if 0
-	EnableFpga();
-	
-	SPI(CMD_IDE_DATA_WR); // write data command
-	SPI(0x00);
-	SPI(0x00);
-	SPI(0x00);
-	SPI(0x00);
-	SPI(0x00);
-	for (i = 0; i < 256; i++) {
-		SPI((unsigned char)id[i]);
-		SPI((unsigned char)(id[i] >> 8));
-	}
-	DisableFpga();
-#endif
 	WriteStatus(IDE_STATUS_END | IDE_STATUS_IRQ);
 }
 
@@ -291,6 +276,10 @@ static inline void ATA_SetMultipleMode(unsigned char* tfr, int unit)
 	// Set Multiple Mode (0xc6)
 //	hdd_debugf("Set Multiple Mode");
 //	hdd_debugf("IDE%d: %02X.%02X.%02X.%02X.%02X.%02X.%02X.%02X", unit, tfr[0], tfr[1], tfr[2], tfr[3], tfr[4], tfr[5], tfr[6], tfr[7]);
+	if (tfr[2] > 16) {
+		WriteStatus(IDE_STATUS_END | IDE_STATUS_ERR | IDE_STATUS_IRQ);
+		return;
+	}
 	hdf[unit].sectors_per_block = tfr[2];
 	WriteStatus(IDE_STATUS_END | IDE_STATUS_IRQ);
 }
@@ -329,6 +318,7 @@ static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
 	int	head = tfr[6] & 0x0F;
 	int	lbamode = tfr[6] & 0x40;
 	int	sector_count = tfr[2];
+	if(sector_count == 0) sector_count=0x100;
 
 //	printf("LBAMode: %d\n",lbamode);
 
@@ -393,6 +383,7 @@ static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
 				sendsector(sector_buffer);
 #endif
 				FileNextSector(&hdf[unit].file,1);
+				++lba;
 			}
 		}
 		else
@@ -594,11 +585,7 @@ __weak void HandleHDD()
 {
 	unsigned char  tfr[8];
 	int i;
-	int sector;
-	int cylinder;
-	int head;
 	int unit;
-	int sector_count;
 	int lbamode;
 	int cs1 = 0;
 
@@ -629,13 +616,6 @@ __weak void HandleHDD()
 			DISKLED_OFF;
 			return;
 		}
-
-//		sector = tfr[3];
-//		cylinder = tfr[4] | (tfr[5] << 8);
-//		head = tfr[6] & 0x0F;
-//		lbamode = tfr[6] & 0x40;
-//		sector_count = tfr[2];
-//		if (sector_count == 0) sector_count = 0x100;
 
 		if ((tfr[7] & 0xF0) == ACMD_RECALIBRATE) {
 			ATA_Recalibrate(tfr,  unit);
