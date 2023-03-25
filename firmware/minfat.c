@@ -315,6 +315,7 @@ void FileNextSector(fileTYPE *file,int count)
 		file->sector+=cluster_size;
 	}
 	file->sector=count;
+	file->cursor=count<<9;
 }
 
 
@@ -478,7 +479,7 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		return;
 //	printf("Fseek: %d, %d\n",file->cursor,pos);
 	// FIXME - this comparison should happen on sectors, not bytes.
-	if(p<(file->cursor&(~(cluster_mask<9))))
+	if(p<(file->cursor))
 	{
 //		printf("Rewinding\n");
 		file->sector=0;
@@ -491,7 +492,7 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		return;
 	FileNextSector(file,p>>9);
 	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
-	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
+//	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
 		FileReadSector(file, sector_buffer);
 	file->cursor=pos;
 }
