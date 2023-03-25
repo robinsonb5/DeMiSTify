@@ -307,7 +307,6 @@ void FileNextSector(fileTYPE *file,int count)
 	if(!file || !file->size)
 		return;
 //	printf("Moving %d sectors forward\n",count);
-//	file->cursor+=count<<9;
 	count+=file->sector;
 	while((file->sector ^ count)&~cluster_mask)
 	{
@@ -461,7 +460,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 			idx=WorstBookmark(file);
 			file->bookmarks[idx].sector=currentsector;
 			file->bookmarks[idx].cluster=cluster;
-//			file->bookmark_index=file->bookmark_index==CONFIG_FILEBOOKMARKS-1 ? 0 : file->bookmark_index+1;
 		}
 
 		FileNextSector(file,p);
@@ -473,24 +471,21 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 #else
 void FileSeek(fileTYPE *file, uint32_t pos)
 {
-	uint32_t p=pos;
+	uint32_t p=pos>>9;
 	if(!file || !file->size)
 		return;
-//	printf("Fseek: %d, %d\n",file->cursor,pos);
-	// FIXME - this comparison should happen on sectors, not bytes.
-	if(p<(file->cursor&(~(cluster_mask<9))))
+	if((p<(file->sector&(~(cluster_mask)))
 	{
-//		printf("Rewinding\n");
 		file->sector=0;
 		file->cursor=0;
 		file->cluster=file->firstcluster;
 	}
 	else
-		p-=file->cursor&~511;
+		p-=file->sector;
 	if(!p)
 		return;
-	FileNextSector(file,p>>9);
-	// FIXME - can we avoid reading here without breaking non-sector-aligned reads and without ballooning the code
+	FileNextSector(file,p);
+
 	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
 		FileReadSector(file, sector_buffer);
 	file->cursor=pos;

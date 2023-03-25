@@ -112,20 +112,6 @@ static int GetFPGAStatus()
 }
 
 
-static void SwapBytes(char *c, unsigned int len)
-{
-  char temp;
-
-  while(len) {
-    temp = *c;
-    *c=c[1];
-    c[1]=temp;
-    len-=2;
-    c+=2;
-  }
-}
-
-
 // IdentifiyDevice()
 // builds Identify Device struct
 static void IdentifyDevice(unsigned short *pBuffer, unsigned char unit)
@@ -144,11 +130,9 @@ static void IdentifyDevice(unsigned short *pBuffer, unsigned char unit)
 	memcpy((char*)&pBuffer[23], ".100    ", 8); // firmware version - byte swapped
 	p = (char*)&pBuffer[27];
 	// FIXME - likewise the model name can be fetched from the card.
-	memcpy(p, "YAQUBE                                  ", 40); // model name - byte swapped
+	memcpy(p, "eDiMTSfi y                              ", 40); // model name - byte swapped
+	p[11]='1'+unit;
 	p += 8;
-//	for (i = 0; (x = hardfile[unit]->name[i]) && i < 16; i++) // copy file name as model name
-//		p[i] = x;
-	SwapBytes((char*)&pBuffer[27], 40);
 
 	pBuffer[47] = 0x8010; // maximum sectors per block in Read/Write Multiple command
 	pBuffer[49] = 0x0200; // support LBA addressing
