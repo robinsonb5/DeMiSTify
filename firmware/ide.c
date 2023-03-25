@@ -71,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ACMD_INITIALIZE_DEVICE_PARAMETERS 0x91
 #define ACMD_READ_SECTORS                 0x20
 #define ACMD_WRITE_SECTORS                0x30
+#define ACMD_READ_VERIFY_SECTORS          0x40
 #define ACMD_READ_MULTIPLE                0xC4
 #define ACMD_WRITE_MULTIPLE               0xC5
 #define ACMD_SET_MULTIPLE_MODE            0xC6
@@ -307,7 +308,7 @@ static inline void ATA_DeviceReset(unsigned char *tfr, int unit)
 
 // ATA_ReadSectors()
 //static inline void ATA_ReadSectors(unsigned char* tfr, int sector, int cylinder, int head, int unit, int sector_count, int multiple, char lbamode)
-static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
+static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple, int verify)
 {
 	// Read Sectors (0x20)
 	long lba;
@@ -332,9 +333,11 @@ static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
 		if (multiple && block_count > hdf[unit].sectors_per_block)
 			block_count = hdf[unit].sectors_per_block;
 
-		WriteStatus(IDE_STATUS_RDY); // pio in (class 1) command type
-		while (!(GetFPGAStatus() & CMD_IDECMD))
-			; // wait for empty sector buffer
+		if(!verify) {
+			WriteStatus(IDE_STATUS_RDY); // pio in (class 1) command type
+			while (!(GetFPGAStatus() & CMD_IDECMD))
+				; // wait for empty sector buffer
+		}
 
 		/* Advance CHS address while DRQ is not asserted with the address of last (anticipated) read. */
 		int block_count_tmp = block_count;
@@ -367,30 +370,30 @@ static inline void ATA_ReadSectors(unsigned char* tfr, int unit, int multiple)
 		/* Update task file with CHS address */
 		WriteTaskFile(0, tfr[2], sector, cylinder, (cylinder >> 8), (tfr[6] & 0xF0) | head);
 
-		// Indicate the start of the transfer
-		WriteStatus(IDE_STATUS_IRQ);
+		if(!verify) {
+			// Indicate the start of the transfer
+			WriteStatus(IDE_STATUS_IRQ);
 
-		if(hdf[unit].file.size)
-		{
-			int blk=block_count;
-//			printf("Seeking to lba %x\n",lba);
-			FileSeek(&hdf[unit].file,lba<<9);
-			while(blk--) // Any blocks left?
+			if(hdf[unit].file.size)
 			{
-				FileReadSector(&hdf[unit].file,0); // NULL enables direct transfer to the FPGA
-#if 0
-				FileReadSector(&hdf[unit].file,sector_buffer); // NULL enables direct transfer to the FPGA#
-				sendsector(sector_buffer);
-#endif
-				FileNextSector(&hdf[unit].file,1);
-				++lba;
+				int blk=block_count;
+				FileSeek(&hdf[unit].file,lba<<9);
+				while(blk--) // Any blocks left?
+				{
+					FileReadSector(&hdf[unit].file,0); // NULL enables direct transfer to the FPGA
+					FileNextSector(&hdf[unit].file,1);
+					++lba;
+				}
 			}
-		}
-		else
-			WriteStatus(IDE_STATUS_RDY|IDE_STATUS_ERR);
+			else
+				WriteStatus(IDE_STATUS_RDY|IDE_STATUS_ERR);
 
+		}
 	}
-	WriteStatus(IDE_STATUS_END);
+	if(verify)
+		WriteStatus(IDE_STATUS_END|IDE_STATUS_IRQ);
+	else
+		WriteStatus(IDE_STATUS_END);
 }
 
 
@@ -628,24 +631,20 @@ __weak void HandleHDD()
 		} else if (tfr[7] == ACMD_SET_MULTIPLE_MODE) {
 			ATA_SetMultipleMode(tfr, unit);
 		} else if (tfr[7] == ACMD_READ_SECTORS) {
-			ATA_ReadSectors(tfr, unit, 0);
-//			ATA_ReadSectors(tfr, sector, cylinder, head, unit, sector_count, 0, lbamode);
+			ATA_ReadSectors(tfr, unit, 0, 0);
 		} else if (tfr[7] == ACMD_READ_MULTIPLE) {
-			ATA_ReadSectors(tfr, unit, 1);
-//			ATA_ReadSectors(tfr, sector, cylinder, head, unit, sector_count, 1, lbamode);
+			ATA_ReadSectors(tfr, unit, 1, 0);
 		} else if (tfr[7] == ACMD_WRITE_SECTORS) {
 			ATA_WriteSectors(tfr, unit, 0);
-//			ATA_WriteSectors(tfr, sector, cylinder, head, unit, sector_count ,0, lbamode);
 		} else if (tfr[7] == ACMD_WRITE_MULTIPLE) {
 			ATA_WriteSectors(tfr, unit, 1);
-//			ATA_WriteSectors(tfr, sector, cylinder, head, unit, sector_count, 1, lbamode);
 		} else if (tfr[7] == ACMD_DEVICE_RESET) {
 			ATA_DeviceReset(tfr, unit);
+		} else if (tfr[7] == ACMD_READ_VERIFY_SECTORS) {
+			ATA_ReadSectors(tfr, unit, 0, 1);
 		} else if (tfr[7] == ACMD_NOP) {
 			ATA_NOP(tfr, unit);
 		} else {
-//			hdd_debugf("Unknown ATA command");
-//			hdd_debugf("IDE%d: %02X.%02X.%02X.%02X.%02X.%02X.%02X.%02X", unit, tfr[0], tfr[1], tfr[2], tfr[3], tfr[4], tfr[5], tfr[6], tfr[7]);
 			WriteTaskFile(0x04, tfr[2], tfr[3], tfr[4], tfr[5], tfr[6]);
 			WriteStatus(IDE_STATUS_END | IDE_STATUS_IRQ | IDE_STATUS_ERR);
 		}
