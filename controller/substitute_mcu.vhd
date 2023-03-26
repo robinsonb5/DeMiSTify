@@ -411,23 +411,6 @@ spi_cs <= spi_cs_int;
 spi_mosi <= spi_mosi_int;
 spi_fromguest_sd <= spi_miso when (spi_cs_int='0' or spi_srtc_int='0') else spi_fromguest;
 spi_toguest <= spi_mosi_int;
-	
---mytimer : entity work.timer_controller
---  generic map(
---		prescale => sysclk_frequency, -- Prescale incoming clock
---		timers => 0
---  )
---  port map (
---		clk => clk,
---		reset => reset_n,
---
---		reg_addr_in => cpu_addr(7 downto 0),
---		reg_data_in => from_cpu,
---		reg_rw => '0', -- we never read from the timers
---		reg_req => timer_reg_req,
---
---		ticks(0) => timer_tick -- Tick signal is used to trigger an interrupt
---	);
 
 
 -- Interrupt controller
@@ -572,7 +555,6 @@ begin
 		conf_data0 <= '1';
 		spi_setcs <= '0';
 		spi_write <= '0';
---		spi_active_d<=(others=>'0');
 	elsif rising_edge(clk) then
 		mem_busy<='1';
 		ser_txgo<='0';
@@ -586,14 +568,6 @@ begin
 		
 		mem_rd_d<=mem_rd;
 		mem_wr_d<=mem_wr;
-
-		-- Delay action of the SPI CS signals.
---		if spi_busy='0' then
---			if spi_active_d(spi_active_d'high)='1' then
---				spi_active<='1';
---			end if;
---			spi_active_d<=spi_active_d(spi_active_d'high-1 downto 0)&'0';
---		end if;
 
 		-- Write from CPU?
 		if mem_wr='1' and mem_wr_d='0' and mem_busy='1' then
@@ -626,10 +600,10 @@ begin
 							spi_write<='1';
 							spi_active<='1';
 						
-						when X"D8" => -- SPI Pump
-							spi_trigger<='1';
-							host_to_spi<=from_cpu(7 downto 0);
-							spi_active<='1';
+--						when X"D8" => -- SPI Pump
+--							spi_trigger<='1';
+--							host_to_spi<=from_cpu(7 downto 0);
+--							spi_active<='1';
 
 						-- Write to PS/2 registers
 						when X"e0" =>
@@ -684,18 +658,18 @@ begin
 							from_mem<=std_logic_vector(millisecond_counter);
 							mem_busy<='0';
 
-						when X"D0" => -- SPI Status
-							from_mem<=(others=>'X');
-							from_mem(15)<=spi_busy;
-							mem_busy<='0';
+--						when X"D0" => -- SPI Status
+--							from_mem<=(others=>'X');
+--							from_mem(15)<=spi_busy;
+--							mem_busy<='0';
 
 						when X"D4" => -- SPI read (blocking)
 							spi_active<='1';
 
-						when X"D8" => -- SPI pump (blocking)
-							spi_trigger<='1';
-							host_to_spi<=X"FF";
-							spi_active<='1';
+--						when X"D8" => -- SPI pump (blocking)
+--							spi_trigger<='1';
+--							host_to_spi<=X"FF";
+--							spi_active<='1';
 
 						-- Read from PS/2 regs
 						when X"E0" =>
@@ -775,17 +749,11 @@ begin
 		-- Set this after the read operation has potentially cleared it.
 		if ser_rxint='1' then
 			ser_rxrecv<='1';
---			if ser_rxdata=X"04" then
---				soft_reset_n<='0';
---				ser_rxrecv<='0';
---				int_enabled<='0';
---			end if;
 		end if;
 
 		-- PS2 interrupt
 		ps2_int <= kbdrecv or kbdsenddone
 			or mouserecv or mousesenddone;
-			-- mouserecv or kbdsenddone or mousesenddone ; -- Momentary high pulses to indicate retrieved data.
 		if kbdrecv='1' then
 			kbdrecvreg <= '1'; -- remains high until cleared by a read
 		end if;
