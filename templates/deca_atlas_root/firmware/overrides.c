@@ -3,17 +3,18 @@
 // // Initial ROM [Not needed if already defined in config.h]
 // const char *bootrom_name="NEXT186 ROM";
 
-//Note the filename must be in 8/3 format with no dot and capital letters. 
-//If the name have less than 8 letters then leave spaces so total characters must be 11.
-
 // // Initial VHD
 // const char *bootvhd_name="NEXT186 VHD";
+//
+//Note the filename must be in 8/3 format with no dot and capital letters. 
+//If the name have less than 8 letters then leave spaces so total characters must be 11.
+//
 // char *autoboot()
 // {
 // 	char *result=0;
 // 	if(!LoadROM(bootrom_name))
 // 		result="ROM loading failed";
-// 	loadimage(bootvhd_name,0);
+// 	loadimage(bootvhd_name,'0');
 // 	return(result);
 // }
 
@@ -28,7 +29,7 @@ char *autoboot()
 {
 	char *result=0;
 	romtype=0;
-//	loadimage("NEXT186 VHD",0);
+//	loadimage("NEXT186 VHD",'0');
 	if(!LoadROM(bootrom_name))
 		result="Show/hide OSD = key F12";
 	return(result);

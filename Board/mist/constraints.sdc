@@ -9,7 +9,8 @@ set mist 1
 set hostclk { clock27 }
 set supportclk { clock27 }
 
-derive_pll_clocks 
+derive_pll_clocks
+derive_clock_uncertainty 
 
 # Set pin definitions for downstream constraints
 

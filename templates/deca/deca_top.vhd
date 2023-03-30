@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 library work;
 use work.demistify_config_pkg.all;
 
-
 -------------------------------------------------------------------------
 
 entity deca_top is
@@ -31,20 +30,20 @@ entity deca_top is
 		DRAM_CAS_N : out std_logic;
 		DRAM_RAS_N : out std_logic;
 		-- VGA
-		VGA_HS : out std_logic;
-		VGA_VS : out std_logic;
-		VGA_R  : out std_logic_vector(3 downto 0);
-		VGA_G  : out std_logic_vector(3 downto 0);
-		VGA_B  : out std_logic_vector(3 downto 0);
+		VGA_HS     : out std_logic;
+		VGA_VS     : out std_logic;
+		VGA_R      : out std_logic_vector(3 downto 0);
+		VGA_G      : out std_logic_vector(3 downto 0);
+		VGA_B      : out std_logic_vector(3 downto 0);
 		-- -- AUDIO
 		-- SIGMA_R : out std_logic;
 		-- SIGMA_L : out std_logic;
 		-- -- MIDI
 		-- SPI_MISO_WSBD         : in    std_logic;
 		-- SPI_SCLK_DABD         : in    std_logic;
-		-- SPI_CS0_CLKBD        : in    std_logic;
+		-- SPI_CS0_CLKBD         : in    std_logic;
 		-- EAR
-		EAR : in std_logic;
+		EAR 			 : in std_logic;
 		-- PS2
 		PS2_KEYBOARD_CLK : inout std_logic := '1';
 		PS2_KEYBOARD_DAT : inout std_logic := '1';
@@ -53,8 +52,8 @@ entity deca_top is
 		-- UART
 		UART_RXD : in std_logic;
 		UART_TXD : out std_logic;
-		--DETO1_PMOD2_6 : in std_logic;		--CTS
-		--DETO2_PMOD2_7 : out std_logic;	--RTS
+		--SPI_CS1 : in std_logic;		--CTS
+		--SPI_CS2 : out std_logic;		--RTS
 		-- JOYSTICK
 		JOY1_B2_P9 : in std_logic;
 		JOY1_B1_P6 : in std_logic;
@@ -112,7 +111,7 @@ entity deca_top is
 		USB_RESET_n : out std_logic;    	--Fixed to High
 		USB_CS 		: out std_logic        	--Fixed to High
 	);
-end entity;
+END entity;
 
 architecture RTL of deca_top is
 
@@ -127,6 +126,7 @@ architecture RTL of deca_top is
 	signal sd_miso : std_logic;
 
 	-- internal SPI signals
+	signal spi_do 	     : std_logic;
 	signal spi_toguest   : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2       : std_logic;
@@ -166,11 +166,9 @@ architecture RTL of deca_top is
 	signal joyc : std_logic_vector(7 downto 0);
 	signal joyd : std_logic_vector(7 downto 0);
 
-	-- DAC AUDIO     
+	-- DAC AUDIO
 	signal dac_l : signed(15 downto 0);
 	signal dac_r : signed(15 downto 0);
-    --signal dac_midi_l : signed(15 downto 0);
-	--signal dac_midi_r : signed(15 downto 0);
 	--signal dac_l: std_logic_vector(15 downto 0);
 	--signal dac_r: std_logic_vector(15 downto 0);
 	--signal dac_l_s: signed(15 downto 0);
@@ -197,13 +195,13 @@ architecture RTL of deca_top is
 
 	component audio_top is
 		port (
-			clk_50MHz : in std_logic;  -- system clock (50 MHz)
+			clk_50MHz : in std_logic;  -- system clock
 			dac_MCLK  : out std_logic; -- outputs to I2S DAC
 			dac_LRCK  : out std_logic;
 			dac_SCLK  : out std_logic;
 			dac_SDIN  : out std_logic;
-			L_data    : in std_logic_vector(15 downto 0); -- LEFT data (16-bit signed)
-			R_data    : in std_logic_vector(15 downto 0)  -- RIGHT data (16-bit signed) 
+			L_data    : in std_logic_vector(15 downto 0); -- LEFT data (15-bit signed)
+			R_data    : in std_logic_vector(15 downto 0)  -- RIGHT data (15-bit signed) 
 		);
 	end component;
 
@@ -227,13 +225,14 @@ architecture RTL of deca_top is
 		);
 	end component;
 
+	-- VIDEO signals
+	signal vga_clk   : std_logic;
+	signal vga_blank : std_logic;
 	signal vga_x_r   : std_logic_vector(5 downto 0);
 	signal vga_x_g   : std_logic_vector(5 downto 0);
 	signal vga_x_b   : std_logic_vector(5 downto 0);
 	signal vga_x_hs  : std_logic;
 	signal vga_x_vs  : std_logic;
-	signal vga_clk   : std_logic;
-	signal vga_blank : std_logic;
 
 	-- USB ULPI KEYBOARD
 	signal USB_CLK_PHASE  : std_logic;
@@ -252,23 +251,29 @@ architecture RTL of deca_top is
 	-- https://github.com/TheSonders/USBKeyboard/blob/main/ULPI_PS2_PUBLIC.v
 	component ULPI_PS2
 		port (
-		clk 		: in std_logic;
-		LedNum 		: in std_logic;
-		LedCaps 	: in std_logic;
-		LedScroll 	: in std_logic;
-		PS2data 	: out std_logic;
-		PS2clock 	: out std_logic;
-		FAULT_n 	: in std_logic;
-		DATA 		: inout std_logic_vector  (7 downto 0);
-		NXT 		: in std_logic;
-		DIR 		: in std_logic;
-		STP 		: out std_logic;
-		RESET_n 	: out std_logic;
-		CS 			: out std_logic
-	);
+			clk 		: in std_logic;
+			LedNum 		: in std_logic;
+			LedCaps 	: in std_logic;
+			LedScroll 	: in std_logic;
+			PS2data 	: out std_logic;
+			PS2clock 	: out std_logic;
+			FAULT_n 	: in std_logic;
+			DATA 		: inout std_logic_vector  (7 downto 0);
+			NXT 		: in std_logic;
+			DIR 		: in std_logic;
+			STP 		: out std_logic;
+			RESET_n 	: out std_logic;
+			CS 			: out std_logic
+		);
 	end component;
 
 	signal act_led : std_logic;
+
+	-- DECA target guest_top template signals
+	alias clock_input 	: std_logic is MAX10_CLK1_50;
+	alias audio_input	: std_logic is EAR;	
+	signal sigma_l 		: std_logic;
+	signal sigma_r 		: std_logic;
 
 begin
 
@@ -356,37 +361,36 @@ begin
 
 	-- DECA AUDIO CODEC SPI CONFIG
 	AUDIO_SPI_CTL_RD_inst : AUDIO_SPI_CTL_RD
-	port map(
-		iRESET_n => RESET_DELAY_n,
-		iCLK_50  => MAX10_CLK1_50,
-		oCS_n    => AUDIO_SCL_SS_n,
-		oSCLK    => AUDIO_SCLK_MFP3,
-		oDIN     => AUDIO_SDA_MOSI,
-		iDOUT    => AUDIO_MISO_MFP4
-	);
+		port map (
+			iRESET_n => RESET_DELAY_n,
+			iCLK_50  => MAX10_CLK1_50,
+			oCS_n    => AUDIO_SCL_SS_n,
+			oSCLK    => AUDIO_SCLK_MFP3,
+			oDIN     => AUDIO_SDA_MOSI,
+			iDOUT    => AUDIO_MISO_MFP4
+		);
 
 	-- AUDIO CODEC
 	audio_i2s : entity work.audio_top
-		port map(
+		port map (
 			clk_50MHz => MAX10_CLK1_50,
 			dac_MCLK  => i2s_Mck_o,
-			dac_LRCK  => i2s_Lr_o,
 			dac_SCLK  => i2s_Sck_o,
 			dac_SDIN  => i2s_D_o,
+			dac_LRCK  => i2s_Lr_o,
 			L_data    => std_logic_vector(dac_l),
 			R_data    => std_logic_vector(dac_r)
 		--	L_data    => std_logic_vector(dac_l_s),
 		--	R_data    => std_logic_vector(dac_r_s)
 		);
 
-	--dac_l_s <= ('0' & dac_l & "00000");
-	--dac_r_s <= ('0' & dac_r & "00000");
+	--dac_l_s <= ('0' & dac_l(14 downto 0));
+	--dac_r_s <= ('0' & dac_r(14 downto 0));
 
 	I2S_MCK <= i2s_Mck_o;
 	I2S_SCK <= i2s_Sck_o;
 	I2S_LR  <= i2s_Lr_o;
 	I2S_D   <= i2s_D_o;
-
 
 
 	-- DECA HDMI
@@ -426,13 +430,14 @@ begin
 	-- HDMI_I2S(0) <= i2s_D_o;
 
 
-	guest : component guest_mist
+	guest : component guest_top
 		port map
 		(
-			CLOCK_27 => MAX10_CLK1_50,
---         	CLOCK_27 => MAX10_CLK1_50&MAX10_CLK1_50,
---	        RESET_N => reset_n,
-			LED => act_led,
+--			CLOCK_27   => clock_input&clock_input, -- Comment out one of these lines to match the guest core.
+			CLOCK_27   => clock_input,
+--			RESET_N    => reset_n,
+--			LED 	   => act_led,
+
 			--SDRAM
 			SDRAM_DQ   => DRAM_DQ,
 			SDRAM_A    => DRAM_ADDR,
@@ -445,97 +450,105 @@ begin
 			SDRAM_BA   => DRAM_BA,
 			SDRAM_CLK  => DRAM_CLK,
 			SDRAM_CKE  => DRAM_CKE,
+
 			--UART
-			UART_TX => UART_TXD,
-			UART_RX => UART_RXD,
---			UART_CTS  => DETO1_PMOD2_6,
---			UART_RTS  => DETO2_PMOD2_7,
---			UART_TX  => open,
---			UART_RX  => EAR,
+			-- UART_TX    => UART_TXD,
+			-- UART_RX    => UART_RXD,
+			--EAR 
+			-- UART_TX    => open,
+			-- UART_RX    => audio_input,
+
 			--SPI
---			SPI_SD_DI  => sd_miso,
-			SPI_DO     => spi_fromguest,
+			SPI_DO     => spi_do,
 			SPI_DI     => spi_toguest,
 			SPI_SCK    => spi_clk_int,
 			SPI_SS2    => spi_ss2,
 			SPI_SS3    => spi_ss3,
---			SPI_SS4    => spi_ss4,
+			SPI_SS4    => spi_ss4,
 			CONF_DATA0 => conf_data0,
+
 			--VGA
-			VGA_HS    => vga_hsync,
-			VGA_VS    => vga_vsync,
-			VGA_R     => vga_red(7 downto 2),
-			VGA_G     => vga_green(7 downto 2),
-			VGA_B     => vga_blue(7 downto 2),
-				-- VGA_BLANK => vga_blank,
-				-- VGA_CLK   => vga_clk
-				-- vga_x_r   => vga_x_r,
-				-- vga_x_g   => vga_x_g,
-				-- vga_x_b   => vga_x_b,
-				-- vga_x_hs  => vga_x_hs,
-				-- vga_x_vs  => vga_x_vs,
+			VGA_HS     => vga_hsync,
+			VGA_VS     => vga_vsync,
+			VGA_R      => vga_red(7 downto 2),
+			VGA_G      => vga_green(7 downto 2),
+			VGA_B      => vga_blue(7 downto 2),
+			-- VGA_BLANK => vga_blank,
+			-- VGA_CLK   => vga_clk,
+			-- vga_x_r   => vga_x_r,
+			-- vga_x_g   => vga_x_g,
+			-- vga_x_b   => vga_x_b,
+			-- vga_x_hs  => vga_x_hs,
+			-- vga_x_vs  => vga_x_vs,
+
 			--AUDIO
-			DAC_L   => dac_l,
-			DAC_R   => dac_r
-			-- DAC_MIDI_L=> DAC_MIDI_L,
-			-- DAC_MIDI_R=> DAC_MIDI_R,
-			-- AUDIO_L => SIGMA_L,
-			-- AUDIO_R => SIGMA_R
+			-- DAC_L   => dac_l,
+			-- DAC_R   => dac_r,
+			AUDIO_L => sigma_l,
+			AUDIO_R => sigma_r
+
+			--PS2
+			-- PS2K_CLK => ps2_keyboard_clk_in or intercept, -- Block keyboard when OSD is active
+			-- PS2K_DAT => ps2_keyboard_dat_in,
+			-- PS2M_CLK => ps2_mouse_clk_in,
+			-- PS2M_DAT => ps2_mouse_dat_in
 		);
 
 
-		-- Pass internal signals to external SPI interface
-		sd_clk <= spi_clk_int;
+	-- Pass internal signals to external SPI interface
+	sd_clk <= spi_clk_int;
+	spi_do <= sd_miso when spi_ss4='0' else 'Z'; -- to guest
+	spi_fromguest <= spi_do;  -- to control CPU
 
-		controller : entity work.substitute_mcu
-			generic map(
-				sysclk_frequency => 500,
-		--		SPI_FASTBIT=>3,
-		--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
-				debug     => false,
-				jtag_uart => false
-			)
-			port map(
-				clk       => MAX10_CLK1_50,
-				reset_in  => KEY(1) and USB_PLL_LOCKED,		--reset_in  when 0
-				reset_out => reset_n,						--reset_out when 0
+	controller : entity work.substitute_mcu
+		generic map (
+			sysclk_frequency => 500,
+	--		SPI_FASTBIT=>3,
+	--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
+			debug     => false,
+			jtag_uart => false
+		)
+		port map (
+			clk       => MAX10_CLK1_50,
+			reset_in  => KEY(0) and USB_PLL_LOCKED,		--reset_in  when 0
+			reset_out => reset_n,						--reset_out when 0
 
-				-- SPI signals
-				spi_miso      => sd_miso,
-				spi_mosi      => sd_mosi,
-				spi_clk       => spi_clk_int,
-				spi_cs        => sd_cs,
-				spi_fromguest => spi_fromguest,
-				spi_toguest   => spi_toguest,
-				spi_ss2       => spi_ss2,
-				spi_ss3       => spi_ss3,
-				spi_ss4       => spi_ss4,
-				conf_data0    => conf_data0,
+			-- SPI signals
+			spi_miso      => sd_miso,
+			spi_mosi      => sd_mosi,
+			spi_clk       => spi_clk_int,
+			spi_cs        => sd_cs,
+			spi_fromguest => spi_fromguest,
+			spi_toguest   => spi_toguest,
+			spi_ss2       => spi_ss2,
+			spi_ss3       => spi_ss3,
+			spi_ss4       => spi_ss4,
+			conf_data0    => conf_data0,
 
-				-- PS/2 signals
-				ps2k_clk_in  => ps2_keyboard_clk_in,
-				ps2k_dat_in  => ps2_keyboard_dat_in,
-				ps2k_clk_out => ps2_keyboard_clk_out,
-				ps2k_dat_out => ps2_keyboard_dat_out,
-				ps2m_clk_in  => ps2_mouse_clk_in,
-				ps2m_dat_in  => ps2_mouse_dat_in,
-				ps2m_clk_out => ps2_mouse_clk_out,
-				ps2m_dat_out => ps2_mouse_dat_out,
+			-- PS/2 signals
+			ps2k_clk_in  => ps2_keyboard_clk_in,
+			ps2k_dat_in  => ps2_keyboard_dat_in,
+			ps2k_clk_out => ps2_keyboard_clk_out,
+			ps2k_dat_out => ps2_keyboard_dat_out,
+			ps2m_clk_in  => ps2_mouse_clk_in,
+			ps2m_dat_in  => ps2_mouse_dat_in,
+			ps2m_clk_out => ps2_mouse_clk_out,
+			ps2m_dat_out => ps2_mouse_dat_out,
 
-				-- Buttons
-				buttons => (0 => KEY(0), others => '1'),	-- 0 = opens OSD
+			-- Buttons
+			buttons => (0 => KEY(1), others => '1'),	-- 0 => OSD_button
 
-				-- Joysticks
-				joy1 => joya,
-				joy2 => joyb,
+			-- Joysticks
+			joy1 => joya,
+			joy2 => joyb,
 
-				-- UART
-				rxd       => rs232_rxd,
-				txd       => rs232_txd,
-				--
-				intercept => intercept
-			);
+			-- UART
+			rxd  => rs232_rxd,
+			txd  => rs232_txd,
+			--
+			intercept => intercept
+		);
 
-		LED <= (0 => not act_led, others => '1');
+	LED <= (0 => not act_led, others => '1');
 
-	end rtl;
+end rtl;

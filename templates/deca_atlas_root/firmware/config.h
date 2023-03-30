@@ -25,14 +25,17 @@ here, the number of units defaults to 4. */
 #undef CONFIG_DISKIMG
 #undef CONFIG_DISKIMG_UNITS 2
 
+/* IDE emulation */
+#define CONFIG_IDE
+#define CONFIG_IDE_UNITS 2
+
 /* Speed up file operations by "bookmarking" the file.
    (Undef to disable, or set to the number of desired bookmarks - a reasonable
    range would be between 4 and 16 */
 #undef CONFIG_FILEBOOKMARKS 6
 
 /* Keyboard-based Joystick emulation */
-#define CONFIG_JOYKEYS
-#undef CONFIG_JOYKEYS_TOGGLE
+#undef CONFIG_JOYKEYS
 
 /* Send key events via the mist_io block. If the core can support
    a PS/2 keyboard directly then that's probably a better option. */
@@ -49,12 +52,26 @@ here, the number of units defaults to 4. */
 /* ROM name will default to "BOOT    ROM" if not defined here... */ 
 #undef ROM_FILENAME "CORE    ROM"
 
-/* Do we support configuration files? */
+/* Do we support settings files */
+
+#undef CONFIG_SETTINGS_FILENAME "CORE    CFG"
 #undef CONFIG_SETTINGS
-#undef CONFIG_SETTINGS_FILENAME "VIC20   CFG"
+
+/* Do we support the Real Time Clock (if available)? */
+#undef CONFIG_RTC
 
 /* Support for 64-bit status word.  Adds around 200 bytes to the firmware size. */
 #undef CONFIG_STATUSWORD_64BIT
+
+/* Automatically close OSD on toggle menu items (generally reset) */
+#undef CONFIG_AUTOCLOSE_OSD
+
+/* Is this an arcade core with .ARC file support? */
+#define CONFIG_ARCFILE
+
+/* If this is defined, DeMiSTify will look for a file called "15KHZ.CFG", and if found,
+disable the scandoubler. */
+#define CONFIG_AUTOSCANDOUBLER
 
 #endif
 

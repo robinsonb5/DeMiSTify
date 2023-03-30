@@ -140,10 +140,15 @@ set_location_assignment PIN_Y18 -to RESET_N
 #set_location_assignment PIN_Y18 -to UART_RXD
 #set_location_assignment PIN_W18 -to UART_TXD
 
-#DETO3 now UART_TXD
-set_location_assignment PIN_V17 -to UART_TXD
-#DETO4 now UART_RXD
-set_location_assignment PIN_Y11 -to UART_RXD
+
+#DETO1 now UART_RXD
+#DETO2 now UART_TXD
+#DETO3 now UART_CTS
+#DETO4 now UART_RTS
+set_location_assignment PIN_W9  -to UART_RXD
+set_location_assignment PIN_W5  -to UART_TXD
+set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+set_location_assignment PIN_Y11 -to DETO4
 
 
 #============================================================
@@ -159,7 +164,7 @@ set_location_assignment PIN_F5 -to JOY1_RIGHT
 set_location_assignment PIN_K5 -to JOYX_SEL_O
 # joystick Mux pin (for DB9 Antonio Villena dual joystick adapters)
 # SHARED WITH PMOD DETO pin 3 (NOT SHARED WITH USB3 USER PORT)
-set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+#set_location_assignment PIN_V17 -to DETO3_JOY_MUX
 #
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B2_P9
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B1_P6
@@ -186,8 +191,8 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 # PMOD DETO (6 PIN MULTIPURPOSE PMOD) (I2C, SPI, I2S, Sigma/delta, ...)
 #============================================================
 # DETO PINS 1&2 SHARED WITH PMOD2[6] AND PMOD2[7]
-set_location_assignment PIN_W9  -to DETO1_PMOD2_6
-set_location_assignment PIN_W5  -to DETO2_PMOD2_7
+#set_location_assignment PIN_W9  -to DETO1_PMOD2_6
+#set_location_assignment PIN_W5  -to DETO2_PMOD2_7
 # DETO PIN 3 SHARED WITH JOYSTICK MUX pin 
 #set_location_assignment PIN_V17 -to DETO3_JOY_MUX
 #set_location_assignment PIN_Y11 -to DETO4
