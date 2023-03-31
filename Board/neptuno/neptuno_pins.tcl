@@ -46,7 +46,7 @@ set_location_assignment PIN_AA18 -to JOYP7_O
 set_location_assignment PIN_A20 -to JOY_CLK
 set_location_assignment PIN_B19 -to JOY_DATA
 set_location_assignment PIN_B20 -to JOY_LOAD
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOY_DATA
 
 #NEPTUNO AUDIO#
 set_location_assignment PIN_A3 -to SIGMA_L
