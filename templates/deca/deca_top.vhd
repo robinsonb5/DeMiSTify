@@ -35,9 +35,6 @@ entity deca_top is
 		VGA_R      : out std_logic_vector(3 downto 0);
 		VGA_G      : out std_logic_vector(3 downto 0);
 		VGA_B      : out std_logic_vector(3 downto 0);
-		-- -- AUDIO
-		-- SIGMA_R : out std_logic;
-		-- SIGMA_L : out std_logic;
 		-- -- MIDI
 		-- SPI_MISO_WSBD         : in    std_logic;
 		-- SPI_SCLK_DABD         : in    std_logic;
@@ -71,6 +68,11 @@ entity deca_top is
 		SD_CMD_DIR  : out std_logic := '1';
 		SD_D0_DIR   : out std_logic := '0';
 		SD_D123_DIR : out std_logic;
+		-- PMOD DETO
+		DETO1_PMOD2_6 	: inout std_logic;
+		DETO2_PMOD2_7 	: inout std_logic;
+		DETO3_JOY_MUX 	: inout std_logic;
+		DETO4			: inout std_logic;
 		-- HDMI-TX  DECA 
 		HDMI_I2C_SCL : inout std_logic;
 		HDMI_I2C_SDA : inout std_logic;
@@ -272,8 +274,8 @@ architecture RTL of deca_top is
 	-- DECA target guest_top template signals
 	alias clock_input 	: std_logic is MAX10_CLK1_50;
 	alias audio_input	: std_logic is EAR;	
-	signal sigma_l 		: std_logic;
-	signal sigma_r 		: std_logic;
+	alias sigma_l : std_logic is DETO1_PMOD2_6;
+	alias sigma_r : std_logic is DETO2_PMOD2_7;
 
 begin
 

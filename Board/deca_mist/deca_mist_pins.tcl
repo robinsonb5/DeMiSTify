@@ -204,11 +204,11 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to JOYX_SEL_O
 # LRCLK = DETO4
 
 #(Sigma/Delta Atlas board: T12_left 1, 2 gnd, 3 R11_right)
-#SIGMA_L = DETO3
-#set_location_assignment PIN_V17 -to SIGMA_L
+#SIGMA_L = DETO1
+#set_location_assignment PIN_W9 -to SIGMA_L
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
-#SIGMA_R = DETO4
-#set_location_assignment PIN_Y11 -to SIGMA_R
+#SIGMA_R = DETO2
+#set_location_assignment PIN_W5 -to SIGMA_R
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 

@@ -29,9 +29,6 @@ module deca_mist_top (
     input 	 SPI_SS4,       //SPI_SS4,    (SD DIRECT)
 --  input    RESET_N,       //RESET FROM SAM7S BUTTON
 
-    //output 	 AUDIO_L, // sigma-delta DAC output left
-    //output 	 AUDIO_R, // sigma-delta DAC output right
-
     // Audio DAC DECA
     output I2S_MCK,		//AUDIO_MCLK
     output I2S_SCK,		//AUDIO_BCLK
@@ -52,9 +49,12 @@ module deca_mist_top (
     output [3:0]  VGA_G,
     output [3:0]  VGA_B,
 
+    //output 	 SIGMA_L, 	// sigma-delta DAC output left
+    //output 	 SIGMA_R, 	// sigma-delta DAC output right
+    
     //UART
-    input     UART_RXD,
-    output    UART_TXD
+    input     UART_RXD,		//pin DETO1_PMOD2_6 [change to output if used as SIGMA_L]
+    output    UART_TXD		//pin DETO2_PMOD2_7
 
   );
 
@@ -91,9 +91,14 @@ module deca_mist_top (
     .SPI_SS4	  (SPI_SS4),
     .CONF_DATA0	  (SPI_CS1),
 
-    //.AUDIO_L  	(AUDIO_L),
-    //.AUDIO_R  	(AUDIO_R),
-
+    //.UART_RX		(UART_RXD),
+    //.UART_TX		(UART_TXD),
+    
+    //.AUDIO_L  	(SIGMA_L),
+    //.AUDIO_R  	(SIGMA_R),
+    //.AUDIO_L  	(UART_RXD),	//pin DETO1_PMOD2_6
+    //.AUDIO_R  	(UART_TXD),	//pin DETO2_PMOD2_7
+    
     .DAC_L       (dac_l),
     .DAC_R       (dac_r),
 
@@ -102,9 +107,6 @@ module deca_mist_top (
     .VGA_R		  (r_aux),
     .VGA_G		  (g_aux),
     .VGA_B		  (b_aux)
-
-    //.UART_RX		  (UART_RXD),
-    //.UART_TX		  (UART_TXD)
 
   );
 
