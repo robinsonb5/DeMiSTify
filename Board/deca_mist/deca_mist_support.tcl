@@ -7,5 +7,5 @@ set_global_assignment -name VERILOG_FILE ${boardpath}/deca_mist/hdmi/I2C_HDMI_Co
 
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_PARALLEL_AUDIO=1"
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_HDMI=1"
-set_global_assignment -name VERILOG_MACRO "DEMISTIFY_DECA=1"
+set_global_assignment -name VERILOG_MACRO "DEMISTIFY_DECA_MIST=1"
 

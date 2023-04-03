@@ -22,7 +22,7 @@ module sidi_top (
    input  	 CLOCK_27,
 
 	// LED outputs
-   output 	 LED, // LED Yellow
+   output 	 LED,
 	
    // SDRAM interface
    inout  [15:0] SDRAM_DQ, // SDRAM Data bus 16 Bits
@@ -38,11 +38,12 @@ module sidi_top (
    output 	 SDRAM_CKE, // SDRAM Clock Enable
   
    // SPI interface to arm io controller
-   output 	 SPI_DO,
+   inout 	 SPI_DO,
    input 	 SPI_DI,
    input 	 SPI_SCK,
    input 	 SPI_SS2,
    input 	 SPI_SS3,
+   input 	 SPI_SS4,
    input 	 CONF_DATA0, 
 
    output 	 AUDIO_L, // sigma-delta DAC output left
@@ -60,10 +61,10 @@ module sidi_top (
 
 //wire  [7:0] r_aux, g_aux, b_aux;	
 
-guest_core_name guest
+guest_top guest
 (
    .CLOCK_27 	(CLOCK_27),
- //.RESET_N     (1'b1),        //very important to pass this reset signal
+ //.RESET_N     (1'b1),
    .LED      	(LED),
 
    .SDRAM_DQ	(SDRAM_DQ),	
@@ -83,7 +84,7 @@ guest_core_name guest
    .SPI_SCK		(SPI_SCK),
    .SPI_SS2		(SPI_SS2),
    .SPI_SS3		(SPI_SS3),
-// .SPI_SS4		(SPI_SS4),
+   .SPI_SS4		(SPI_SS4),
    .CONF_DATA0	(CONF_DATA0),
 
    .AUDIO_L  	(AUDIO_L),

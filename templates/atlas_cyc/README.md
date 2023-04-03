@@ -1,42 +1,46 @@
-# xxxxx DeMiSTified - Atlas CYC1000 port
+# xxxxx  [DeMiSTified](https://github.com/robinsonb5/DeMiSTify) - Atlas CYC1000 port
 
-xx/xx/22 Atlas CYC1000 port DeMiSTified by Somhic from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx
-xx/xx/22  Atlas CYC1000 port by Somhic from previous Demistifyied MiST core https://github.com/xxxx by @xxx   
+xx/xx/23 Atlas CYC1000 port DeMiSTified by @yyy from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx by @xxx   
+xx/xx/23 Atlas CYC1000 port by @yyy from previously DeMiSTified core https://github.com/xxxx by @xxx   
 
-[Read this guide if you want to know how I DeMiSTified this core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
-
-**Features:**
-
-* ~~HDMI video output~~
-* VGA 222 video output is available through an HDMI to VGA adapter
-* HDMI audio output
-* Audio Sigma-Delta output
-* ~~Audio output (Midi, I2S)~~
-* Joystick (tested with a Megadrive gamepad)
-
-**Additional hardware required**:
-
-* PS/2 keyboard 
-* ~~USB keyboard~~ 
-
-##### Versions:
-
-v0.x Changes in Mist core to adapt DeMiSTify to both Deca and new board Atlas_cyc
+[Read this guide about DeMySTifying a core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
 
 ### STATUS
 
 * VGA version only at the moment.
 * ~~HDMI video outputs special resolution so will not work on all monitors.~~ 
 
+### FEATURES
 
+* ~~HDMI video output~~
+* VGA 222 video output is available through an HDMI to VGA adapter
+* HDMI audio output
+* Audio Sigma-Delta output
+* ~~Audio output (Midi, I2S)~~
+* Joystick support
+  * Tested with a Megadrive 6 button gamepad ~~(a permanent high level is applied on pin 7 of DB9, so only buttons B and C work)~~
+
+
+**Additional hardware required**:
+
+* PS/2 keyboard 
+* ~~USB keyboard~~ 
+
+### Compile the project in Quartus
+
+If the project has the DeMiSTify firmware already generated you only need to clone recursively the repository and then open the project with Quartus from the specific board folder:
+
+```sh
+git clone  --recursive https://github.com/[repo_name]/[core_name]
+#check comments on top of /atlas_cyc/deca_top.vhd in case additional actions are needed
+#Load project file in Quartus (/atlas_cyc/[core_name]_atlas_cyc.qpf)
+```
 
 ### Instructions to compile the project for a specific board:
 
-(Note that sof/rbf files are already included in /atlas_cyc/output_files/)
-
 ```sh
-git clone https://github.com/DECAfpga/xxxxxx
-cd xxxxx
+git clone https://github.com/[repo_name]/[core_name]
+cd [core_name]
 #Do a first make (will finish in error) but it will download missing submodules 
 make
 cd DeMiSTify
@@ -53,15 +57,14 @@ make BOARD=atlas_cyc
 After that you can:
 
 * Flash bitstream directly from [command line](https://github.com/DECAfpga/DECA_binaries#flash-bitstream-to-fgpa-with-quartus)
-* Load project in Quartus from /atlas_cyc/xxxxxxxxx_atlas_cyc.qpf
+* Load project in Quartus from /atlas_cyc/[core_name]_atlas_cyc.qpf
 
-**Others:**
+### Buttons
 
-* User Button is a reset button
+* The user button KEY0 resets the controller (so re-initialises the SD card if it's been changed, reloads any autoboot ROM.) The OSD Reset menu item resets the core itself.
 
 ### OSD Controls
 
 * F12 show/hide OSD 
 * Long F12 toggles VGA/RGB mode
-* The reset button KEY0 resets the controller (so re-initialises the SD card if it's been changed, reloads any autoboot ROM.) The OSD Reset menu item resets the core itself.
 

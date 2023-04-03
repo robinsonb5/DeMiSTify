@@ -29,6 +29,7 @@ set_location_assignment PIN_R1 -to SPI_DI
 set_location_assignment PIN_T3 -to SPI_SCK
 set_location_assignment PIN_T4 -to SPI_SS2
 set_location_assignment PIN_G15 -to SPI_SS3
+set_location_assignment PIN_G16 -to SPI_SS4
 set_location_assignment PIN_H2 -to CONF_DATA0
 set_location_assignment PIN_B14 -to SDRAM_A[0]
 set_location_assignment PIN_C14 -to SDRAM_A[1]
@@ -72,7 +73,8 @@ set_location_assignment PIN_R4 -to SDRAM_CLK
 set_location_assignment PIN_P1 -to TAPE_IN
 set_location_assignment PIN_B1 -to UART_RXD
 set_location_assignment PIN_D1 -to UART_TXD
-set_location_assignment PLL_1 -to "pll:pll|altpll:altpll_component"
+
+set_location_assignment PLL_1 -to guest|pll|altpll_component|auto_generated|pll1
 
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to SDRAM_DQ[*]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to SDRAM_A[*]

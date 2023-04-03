@@ -1,6 +1,6 @@
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 5.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:49:11  JANUARY 31, 2006"
-set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Lite Edition"
 
 
 # Pin & Location Assignments
@@ -62,7 +62,7 @@ set_global_assignment -name IGNORE_CARRY_BUFFERS OFF
 set_global_assignment -name IGNORE_CASCADE_BUFFERS OFF
 set_global_assignment -name AUTO_GLOBAL_CLOCK ON
 set_global_assignment -name AUTO_RAM_RECOGNITION ON
-set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION AUTO
+set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF
 set_global_assignment -name STATE_MACHINE_PROCESSING AUTO
 set_global_assignment -name FMAX_REQUIREMENT "34 MHz" -section_id clk32
 set_global_assignment -name BLOCK_RAM_AND_MLAB_EQUIVALENT_PAUSED_READ_CAPABILITIES "DONT CARE"
@@ -88,4 +88,10 @@ if {[info exists optimizeforspeed] && ($optimizeforspeed==1)} {
 	set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
 }
 
+set_global_assignment -name AUTO_RAM_TO_LCELL_CONVERSION ON
 
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

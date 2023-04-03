@@ -8,7 +8,7 @@ derive_pll_clocks -create_base_clocks
 derive_clock_uncertainty
 
 # Create a clock for i2s, audio-spi, i2c-hdmi
-create_clock -name i2sclk -period 20.000 {audio_top:audio_i2s|tcount[4]}
+create_clock -name i2sclk -period 640.000 {audio_top:audio_i2s|tcount[4]}
 create_clock -name audio-spi-clk-1m -period 2480.000  {AUDIO_SPI_CTL_RD:AUDIO_SPI_CTL_RD_inst|CLK_1M}
 create_clock -name audio-spi-rom-ck -period 2480.000  {AUDIO_SPI_CTL_RD:AUDIO_SPI_CTL_RD_inst|ROM_CK}
 #create_clock -name i2c-ctrl-clk -period 100000.000  {I2C_HDMI_Config:I2C_HDMI_Config_inst|mI2C_CTRL_CLK}

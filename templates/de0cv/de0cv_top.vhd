@@ -1,4 +1,3 @@
-
 library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.std_logic_unsigned.all;
@@ -27,7 +26,7 @@ entity de0cv_top is
 		CLOCK3_50		: in	std_logic;							-- FPGA Clock ... 50.00MHz
 		CLOCK4_50		: in	std_logic;							-- FPGA Clock ... 50.00MHz        
 
-		RESET_N			: in	std_logic;
+		KEY4_RESET_N	: in	std_logic;
 
 
 		-- SD-RAM ports
@@ -86,35 +85,29 @@ entity de0cv_top is
 
 		pVideoHS_n		: out	std_logic;							-- Csync(RGB15K), HSync(VGA31K)
 		pVideoVS_n		: out	std_logic							-- Audio(RGB15K), VSync(VGA31K)
-        
-
-        
-        
-        
+         
 	);
-end de0cv_top;
+END de0cv_top;
 
 architecture RTL of de0cv_top is
    constant reset_cycles : integer := 131071;
 	
 -- System clocks
-
 	signal locked : std_logic;
-	signal reset_n2 : std_logic;
+	signal reset_n : std_logic;
 
 --	signal slowclk : std_logic;
 --	signal fastclk : std_logic;
 --	signal pll_locked : std_logic;
 
 -- SPI signals
-
 	signal sd_clk : std_logic;
 	signal sd_cs : std_logic;
 	signal sd_mosi : std_logic;
 	signal sd_miso : std_logic;
-	
+
 -- internal SPI signals
-	
+	signal spi_do : std_logic;
 	signal spi_toguest : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2 : std_logic;
@@ -124,21 +117,19 @@ architecture RTL of de0cv_top is
 	signal spi_clk_int : std_logic;
 
 -- PS/2 Keyboard
-
 	signal ps2_keyboard_clk_in : std_logic;
 	signal ps2_keyboard_dat_in : std_logic;
 	signal ps2_keyboard_clk_out : std_logic;
 	signal ps2_keyboard_dat_out : std_logic;
 
 -- PS/2 Mouse
-
 	signal ps2_mouse_clk_in: std_logic;
 	signal ps2_mouse_dat_in: std_logic;
 	signal ps2_mouse_clk_out: std_logic;
 	signal ps2_mouse_dat_out: std_logic;
 
 	signal intercept : std_logic;
-	
+
 -- Video
 	signal vga_red: std_logic_vector(7 downto 0);
 	signal vga_green: std_logic_vector(7 downto 0);
@@ -151,7 +142,6 @@ architecture RTL of de0cv_top is
 	signal rs232_txd : std_logic;
 
 -- IO
-
 	signal joya : std_logic_vector(6 downto 0);
 	signal joyb : std_logic_vector(6 downto 0);
 	signal joyc : std_logic_vector(6 downto 0);
@@ -205,14 +195,13 @@ architecture RTL of de0cv_top is
         );
 	end component;    
 
-    
+    -- DE0CV target guest_top template signals
+	alias clock_input 			: std_logic is CLOCK_50;
 
-
-    
 begin
 
 
---PS2
+	--PS2
 	-- External devices tied to GPIOs
 	ps2_mouse_dat_in <= pPs2mDat;
 	pPs2mDat    <= '0' when ps2_mouse_dat_out = '0' else 'Z';
@@ -224,7 +213,7 @@ begin
 	ps2_keyboard_clk_in <= pPs2Clk;
 	pPs2Clk    <= '0' when ps2_keyboard_clk_out = '0' else 'Z';
 
---Video Assign Pins    
+	--Video Assign Pins    
     pDac_VR<=vga_red(7 downto 4);
     pDac_VG<=vga_green(7 downto 4);
     pDac_VB<=vga_blue(7 downto 4);
@@ -254,8 +243,8 @@ guest: COMPONENT guest_top
 	PORT map
 	(
 		-- Clocks
-		CLOCK_27 => CLOCK_50,
-		RESET_N => reset_n2,
+		CLOCK_27 => clock_input,
+		RESET_N => reset_n,
 --		LED => act_led,
 
         -- Sdram
@@ -272,21 +261,20 @@ guest: COMPONENT guest_top
 		SDRAM_CKE => pMemCke,
 
 		-- SPI
---		SPI_DO_IN => sd_miso,
-		SPI_DO => spi_fromguest,
+		SPI_DO => spi_do,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
-		SPI_SS2	=> spi_ss2,
+		SPI_SS2 => spi_ss2,
 		SPI_SS3 => spi_ss3,
---		SPI_SS4 => spi_ss4,
+		SPI_SS4 => spi_ss4,
 		CONF_DATA0 => conf_data0,
 		-- UART
---			UART_TX => UART_TXD,
---			UART_RX => UART_RXD,
---			UART_CTS  => DETO1_PMOD2_6,
---			UART_RTS  => DETO2_PMOD2_7,
---			UART_TX  => open,
---			UART_RX  => EAR,
+			--UART_TX => UART_TXD,
+			--UART_RX => UART_RXD,
+			--UART_CTS  => DETO1_PMOD2_6,
+			--UART_RTS  => DETO2_PMOD2_7,
+			--UART_TX  => open,
+			--UART_RX  => EAR,
 
 		--SD_IN			=> pDip(0), --Scandoubler 0:NO 1:Yes
 		
@@ -305,12 +293,10 @@ guest: COMPONENT guest_top
 		-- vga_x_vs  => vga_x_vs,        
     
 		--AUDIO
-        -- DAC_MIDI_L=> DAC_MIDI_L,
-        -- DAC_MIDI_R=> DAC_MIDI_R,        
---		AUDIO_L => sigma_l,
---		AUDIO_R => sigma_r,
-        DAC_L   => dac_l,
-        DAC_R   => dac_r
+		--AUDIO_L => sigma_l,
+		--AUDIO_R => sigma_r,
+        --DAC_L   => dac_l,
+        --DAC_R   => dac_r
       
 );
 
@@ -320,14 +306,16 @@ guest: COMPONENT guest_top
     pSd_Dt(1) <= 'Z';
     pSd_Dt(2) <= 'Z';
 
-    sd_clk  <= spi_clk_int;
+    sd_clk <= spi_clk_int;
+	spi_do <= sd_miso when spi_ss4='0' else 'Z';
+	spi_fromguest <= spi_do;
+
 	pSd_Dt(3)<= sd_cs;
 	pSd_Cm  <= sd_mosi;
 	sd_miso <= pSd_Dt(0);
 	pSd_Ck  <= sd_clk;
     
 
-        
 controller : entity work.substitute_mcu
 	generic map (
 		debug => debug,
@@ -341,8 +329,8 @@ controller : entity work.substitute_mcu
 	)
 	port map (
 		clk => CLOCK_50,
-		reset_in => RESET_N,-- and pSW(0),
-		reset_out => reset_n2,
+		reset_in => KEY4_RESET_N,-- and pSW(0),
+		reset_out => reset_n,
 
 		-- SPI signals
 		spi_miso => sd_miso,
@@ -366,13 +354,14 @@ controller : entity work.substitute_mcu
 		ps2m_clk_out => ps2_mouse_clk_out,
 		ps2m_dat_out => ps2_mouse_dat_out,
 
+		-- Buttons
 		buttons => (0=>pSW(0),others=>'1'), -- 0 = opens OSD
       --buttons => (others=>'1'),
-
         
 		-- UART
 		rxd => rs232_rxd,
 		txd => rs232_txd,
+		--
 		intercept => intercept
 );
 
@@ -392,7 +381,7 @@ if debug7Disp=true generate
 	port map (
 	  i_clk_ref     => Count(4),
 	  i_clk_test    => not vga_hsync,
-	  i_rstb        => reset_n2,
+	  i_rstb        => reset_n,
 	  o_clock_freq  => Freq_o
 	);
 

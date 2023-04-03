@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library work;
 use work.demistify_config_pkg.all;
 
--- -----------------------------------------------------------------------
+-------------------------------------------------------------------------
 
 entity sockit_top is
 	port (
@@ -73,7 +73,7 @@ entity sockit_top is
 		AUD_MUTE     : out std_logic;
 		AUD_XCK      : out std_logic
 	);
-end entity;
+END entity;
 
 architecture RTL of sockit_top is
 
@@ -88,6 +88,7 @@ architecture RTL of sockit_top is
 	signal sd_miso : std_logic;
 
 	-- internal SPI signals
+	signal spi_do 	     : std_logic;
 	signal spi_toguest   : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2       : std_logic;
@@ -130,7 +131,16 @@ architecture RTL of sockit_top is
 	signal joyc : std_logic_vector(7 downto 0);
 	signal joyd : std_logic_vector(7 downto 0);
 
-	-- DAC AUDIO     
+	-- DAC AUDIO
+	signal dac_l : signed(15 downto 0);
+	signal dac_r : signed(15 downto 0);
+	--signal dac_l: std_logic_vector(15 downto 0);
+	--signal dac_r: std_logic_vector(15 downto 0);
+	--signal dac_l_s: signed(15 downto 0);
+	--signal dac_r_s: signed(15 downto 0);
+
+	signal RESET_DELAY_n : std_logic;
+
 	component I2C_AV_Config
 		-- generic (
 		--   CLK_Freq : 24000000;
@@ -157,27 +167,16 @@ architecture RTL of sockit_top is
 	  end component;
 	  
 	component audio_top is
-		Port ( 	
-			clk_50MHz : in STD_LOGIC; -- system clock (50 MHz)
-			dac_MCLK : out STD_LOGIC; -- outputs to PMODI2L DAC
-			dac_LRCK : out STD_LOGIC;
-			dac_SCLK : out STD_LOGIC;
-			dac_SDIN : out STD_LOGIC;
-			L_data : 	in std_logic_vector(15 downto 0);  	-- LEFT data (16-bit signed)
-			R_data : 	in std_logic_vector(15 downto 0)  	-- RIGHT data (16-bit signed) 
+		port (
+			clk_50MHz : in std_logic;  -- system clock
+			dac_MCLK  : out std_logic; -- outputs to PMODI2S DAC
+			dac_LRCK  : out std_logic;
+			dac_SCLK  : out std_logic;
+			dac_SDIN  : out std_logic;
+			L_data    : in std_logic_vector(15 downto 0); -- LEFT data (15-bit signed)
+			R_data    : in std_logic_vector(15 downto 0)  -- RIGHT data (15-bit signed) 
 		);
-	end component;	
-
-	--signal dac_l: signed(15 downto 0);
-	--signal dac_r: signed(15 downto 0);
-    --signal dac_midi_l : signed(15 downto 0);
-	--signal dac_midi_r : signed(15 downto 0);
-	signal dac_l : std_logic_vector(15 downto 0);
-	signal dac_r : std_logic_vector(15 downto 0);
-	-- signal dac_l_s: std_logic_vector(15 downto 0);
-	-- signal dac_r_s: std_logic_vector(15 downto 0);
-
-
+	end component;
 
 	-- ADC AUDIO     
 	component i2s_decoder is
@@ -191,25 +190,26 @@ architecture RTL of sockit_top is
 		);
 	end component;
 
-	signal adc_l : SIGNED(15 downto 0);
-	signal adc_r : SIGNED(15 downto 0);
+	signal adc_l : signed(15 downto 0);
+	signal adc_r : signed(15 downto 0);
 
 	-- EAR
 	signal ear : std_logic;
 
 	-- PLL2
-	component pll2
-		port (
-			inclk0 : in std_logic;
-			c0     : out std_logic;
-			locked : out std_logic
-		);
-	end component;
+	-- component pll2
+	-- 	port (
+	-- 		inclk0 : in std_logic;
+	-- 		c0     : out std_logic;
+	-- 		locked : out std_logic
+	-- 	);
+	-- end component;
 
 	signal act_led : std_logic;
 
-	signal RESET_DELAY_n : std_logic;
-
+	-- SoCkit target guest_top template signals
+	alias clock_input 	: std_logic is FPGA_CLK1_50;
+	
 begin
 
 
@@ -332,13 +332,14 @@ begin
 	end process;
 
 
-	guest : component guest_mist
+	guest : component guest_top
 		port map
 		(
-			CLOCK_27 => FPGA_CLK1_50,
---         	CLOCK_27 => FPGA_CLK1_50 & FPGA_CLK1_50,
---	        RESET_N => reset_n,
-			LED      => act_led,
+--			CLOCK_27   => clock_input&clock_input, -- Comment out one of these lines to match the guest core.
+			CLOCK_27   => clock_input,
+--			RESET_N    => reset_n,
+--			LED 	   => act_led,
+
 			--SDRAM
 			SDRAM_DQ   => SDRAM_DQ,
 			SDRAM_A    => SDRAM_A,
@@ -351,22 +352,23 @@ begin
 			SDRAM_BA   => SDRAM_BA,
 			SDRAM_CLK  => SDRAM_CLK,
 			SDRAM_CKE  => SDRAM_CKE,
+
 			--UART
---			UART_TX => UART_TXD,
---			UART_RX => UART_RXD,
---			UART_CTS  => DETO1,		--UART_CTS
---			UART_RTS  => DETO2,		--UART_RTS
-			UART_TX => open,
-			UART_RX => ear,
+			-- UART_TX => UART_TXD,
+			-- UART_RX => UART_RXD,
+			--EAR 
+			-- UART_TX => open,
+			-- UART_RX => ear,
+
 			--SPI
---			SPI_SD_DI  => sd_miso,
-			SPI_DO  => spi_fromguest,
+			SPI_DO  => spi_do,
 			SPI_DI  => spi_toguest,
 			SPI_SCK => spi_clk_int,
 			SPI_SS2 => spi_ss2,
 			SPI_SS3 => spi_ss3,
---			SPI_SS4 => spi_ss4,
+			SPI_SS4 => spi_ss4,
 			CONF_DATA0 => conf_data0,
+
 			--VGA
 			VGA_HS  => vga_hsync,
 			VGA_VS  => vga_vsync,
@@ -374,69 +376,76 @@ begin
 			VGA_G   => vga_green(7 downto 2),
 			VGA_B   => vga_blue(7 downto 2),
 			vga_clk   => vga_clk_x,
---			vga_blank => vga_blank,
+			-- vga_blank => vga_blank,
+
 			--AUDIO
-			DAC_L   => dac_l,
-			DAC_R   => dac_r
-			--DAC_MIDI_L=> DAC_MIDI_L,
-			--DAC_MIDI_R=> DAC_MIDI_R,
-			--AUDIO_L => sigma_l,
-			--AUDIO_R => sigma_r,
+			-- DAC_L   => dac_l,
+			-- DAC_R   => dac_r,
+			-- AUDIO_L => SIGMA_L,
+			-- AUDIO_R => SIGMA_R
+
+			--PS2
+			-- PS2K_CLK => ps2_keyboard_clk_in or intercept, -- Block keyboard when OSD is active
+			-- PS2K_DAT => ps2_keyboard_dat_in,
+			-- PS2M_CLK => ps2_mouse_clk_in,
+			-- PS2M_DAT => ps2_mouse_dat_in
 		);
 
 
-		-- Pass internal signals to external SPI interface
-		sd_clk <= spi_clk_int;
+	-- Pass internal signals to external SPI interface
+	sd_clk <= spi_clk_int;
+	spi_do <= sd_miso when spi_ss4='0' else 'Z'; -- to guest
+	spi_fromguest <= spi_do;  -- to control CPU
 
-		controller : entity work.substitute_mcu
-			generic map(
-				sysclk_frequency => 500,
-		--		SPI_FASTBIT=>3,
-		--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
-				debug     => false,
-				jtag_uart => false
-			)
-			port map(
-				clk       => FPGA_CLK1_50,
-				reset_in  => KEY_RESET_n,		--reset_in  when 0
-				reset_out => reset_n,			--reset_out when 0
+	controller : entity work.substitute_mcu
+		generic map (
+			sysclk_frequency => 500,
+	--		SPI_FASTBIT=>3,
+	--		SPI_INTERNALBIT=>2,		--needed if OSD hungs
+			debug     => false,
+			jtag_uart => false
+		)
+		port map (
+			clk       => FPGA_CLK1_50,
+			reset_in  => KEY_RESET_n,		--reset_in  when 0
+			reset_out => reset_n,			--reset_out when 0
 
-				-- SPI signals
-				spi_miso      => sd_miso,
-				spi_mosi      => sd_mosi,
-				spi_clk       => spi_clk_int,
-				spi_cs        => sd_cs,
-				spi_fromguest => spi_fromguest,
-				spi_toguest   => spi_toguest,
-				spi_ss2       => spi_ss2,
-				spi_ss3       => spi_ss3,
-				spi_ss4       => spi_ss4,
-				conf_data0    => conf_data0,
+			-- SPI signals
+			spi_miso      => sd_miso,
+			spi_mosi      => sd_mosi,
+			spi_clk       => spi_clk_int,
+			spi_cs        => sd_cs,
+			spi_fromguest => spi_fromguest,
+			spi_toguest   => spi_toguest,
+			spi_ss2       => spi_ss2,
+			spi_ss3       => spi_ss3,
+			spi_ss4       => spi_ss4,
+			conf_data0    => conf_data0,
 
-				-- PS/2 signals
-				ps2k_clk_in  => ps2_keyboard_clk_in,
-				ps2k_dat_in  => ps2_keyboard_dat_in,
-				ps2k_clk_out => ps2_keyboard_clk_out,
-				ps2k_dat_out => ps2_keyboard_dat_out,
-				ps2m_clk_in  => ps2_mouse_clk_in,
-				ps2m_dat_in  => ps2_mouse_dat_in,
-				ps2m_clk_out => ps2_mouse_clk_out,
-				ps2m_dat_out => ps2_mouse_dat_out,
+			-- PS/2 signals
+			ps2k_clk_in  => ps2_keyboard_clk_in,
+			ps2k_dat_in  => ps2_keyboard_dat_in,
+			ps2k_clk_out => ps2_keyboard_clk_out,
+			ps2k_dat_out => ps2_keyboard_dat_out,
+			ps2m_clk_in  => ps2_mouse_clk_in,
+			ps2m_dat_in  => ps2_mouse_dat_in,
+			ps2m_clk_out => ps2_mouse_clk_out,
+			ps2m_dat_out => ps2_mouse_dat_out,
 
-				-- Buttons
-				buttons => (0 => KEY(0), 1 => KEY(1), others => '1'),    -- 0 = opens OSD
+			-- Buttons
+			buttons => (0 => KEY(1), others => '1'),	-- 0 => OSD_button
 
-				-- Joysticks
-				joy1 => joya,
-				joy2 => joyb,
+			-- Joysticks
+			joy1 => joya,
+			joy2 => joyb,
 
-				-- UART
-				rxd       => rs232_rxd,
-				txd       => rs232_txd,
-				--
-				intercept => intercept
-			);
+			-- UART
+			rxd  => rs232_rxd,
+			txd  => rs232_txd,
+			--
+			intercept => intercept
+		);
 
-		LED <= (0 => not act_led, others => '1');
+	LED <= (0 => not act_led, others => '1');
 
-	end rtl;
+end rtl;

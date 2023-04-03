@@ -49,10 +49,7 @@ constant demistify_serialdebug : std_logic := '0';
 			SDRAM_BA		:	 OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
 			SDRAM_CLK		:	 OUT STD_LOGIC;
 			SDRAM_CKE		:	 OUT STD_LOGIC;
-			SPI_DO		:	 OUT STD_LOGIC;
-	-- 		We can't do bi-directional signals here, so we need separate in and out signals.
-	--		If the guest core uses direct mode for ROM upload it will need to be adapted.
-	--		SPI_SD_DI	:	 IN STD_LOGIC;
+			SPI_DO		:	 INOUT STD_LOGIC;
 			SPI_DI		:	 IN STD_LOGIC;
 			SPI_SCK		:	 IN STD_LOGIC;
 			SPI_SS2		:	 IN STD_LOGIC;
@@ -65,7 +62,10 @@ constant demistify_serialdebug : std_logic := '0';
 			VGA_G		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
 			VGA_B		:	 OUT STD_LOGIC_VECTOR(5 DOWNTO 0);
 			AUDIO_L  : out std_logic;
-			AUDIO_R  : out std_logic
+			AUDIO_R  : out std_logic;
+			--D AUDIO 
+			DAC_L       : out signed(12 downto 0);
+			DAC_R       : out signed(12 downto 0)   
 		);
 	END COMPONENT;
 	

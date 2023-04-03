@@ -11,7 +11,6 @@
 #undef CONFIG_WITHOUT_FILESYSTEM
 
 /* PS/2 Mouse support */
-/* PS/2 Mouse support */
 #undef PS2_MOUSE
 #undef PS2_MOUSE_WHEEL /* Attempt to initialise the mouse in 4-byte (wheel) mode */
 #undef PS2_MOUSE_USERIO /* Do we need to send the mouse data to the core (not needed if the core can interpret PS/2 wires directly. */

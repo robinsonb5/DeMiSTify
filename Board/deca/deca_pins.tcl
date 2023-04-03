@@ -146,7 +146,7 @@ set_location_assignment PIN_F5 -to JOY1_RIGHT
 set_location_assignment PIN_K5 -to JOYX_SEL_O
 # joystick Mux pin (for DB9 Antonio Villena dual joystick adapters)
 # SHARED WITH PMOD DETO pin 3 (NOT SHARED WITH USB3 USER PORT)
-set_location_assignment PIN_V17 -to DETO3_JOY_MUX
+#set_location_assignment PIN_V17 -to DETO3_JOY_MUX
 #
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B2_P9
 set_instance_assignment -name IO_STANDARD "2.5 V" -to JOY1_B1_P6
@@ -185,11 +185,11 @@ set_location_assignment PIN_Y11 -to DETO4
 # LRCLK = DETO4
 
 #(Sigma/Delta Atlas board: T12_left 1, 2 gnd, 3 R11_right)
-#SIGMA_L = DETO3
-#set_location_assignment PIN_V17 -to SIGMA_L
+#SIGMA_L = DETO1
+#set_location_assignment PIN_W9 -to SIGMA_L
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_L
-#SIGMA_R = DETO4
-#set_location_assignment PIN_Y11 -to SIGMA_R
+#SIGMA_R = DETO2
+#set_location_assignment PIN_W5 -to SIGMA_R
 #set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to SIGMA_R
 
 

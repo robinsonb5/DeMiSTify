@@ -429,8 +429,8 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to pPs2mDat
 # RESET
 # --------------------------------
 
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to RESET_N
-set_location_assignment PIN_P22 -to RESET_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY4_RESET_N
+set_location_assignment PIN_P22 -to KEY4_RESET_N
 
 # --------------------------------
 # microSD

@@ -38,7 +38,7 @@ module mist_top (
    output 	 SDRAM_CKE, // SDRAM Clock Enable
   
    // SPI interface to arm io controller
-   output 	 SPI_DO,
+   inout 	 SPI_DO,
    input 	 SPI_DI,
    input 	 SPI_SCK,
    input 	 SPI_SS2,
@@ -62,7 +62,7 @@ module mist_top (
 //wire  [7:0] r_aux, g_aux, b_aux;	
 
 
-guest_mist guest
+guest_top guest
 (
    .CLOCK_27 	(CLOCK_27),
 // .RESET_N     (1'b1),        
