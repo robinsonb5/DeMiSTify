@@ -369,12 +369,12 @@ void DumpBookmarks(fileTYPE *file)
 int BestBookmark(fileTYPE *file, uint32_t pm)
 {
 	int idx,best;
-	int32_t bestd,d;
+	uint32_t bestd,d;
 	best=-1;
 	bestd=file->size;
 	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
 	{
-		int t=file->bookmarks[idx].sector;
+		uint32_t t=file->bookmarks[idx].sector;
 		d=pm-t;
 		if(pm>=t && d<bestd)
 		{
@@ -390,16 +390,19 @@ int BestBookmark(fileTYPE *file, uint32_t pm)
 int WorstBookmark(fileTYPE *file)
 {
 	int idx,idx2;
-	int32_t worstd=file->size;
+	uint32_t worstd=0x7fffffff;
 	int worst=-1;
 	for(idx=0;idx<CONFIG_FILEBOOKMARKS;++idx)
 	{
 		for(idx2=0;idx2<CONFIG_FILEBOOKMARKS;++idx2)
 		{
-			int32_t d=file->bookmarks[idx2].sector-file->bookmarks[idx].sector;
-			if(d<0)
-				d=-d;
-			if(idx!=idx2 && (d<worstd))
+			int32_t d;
+			d=file->bookmarks[idx2].sector-file->bookmarks[idx].sector;
+			
+			if(idx==idx2)
+				d=file->bookmarks[idx].sector;
+
+			if(d>=0 && d<worstd)
 			{
 				worst=idx2;
 				worstd=d;
@@ -454,8 +457,8 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		idx=BestBookmark(file,currentsector);
 
 		/* We don't bother bookmarking at the start of the file, or if we're within bookmark_threshold of an existing bookmark */
-		if((currentsector>file->bookmark_threshold) && (idx>=0)
-			&& ((currentsector-file->bookmarks[idx].sector) > file->bookmark_threshold))
+		if(((currentsector>file->bookmark_threshold) && (idx<0)) || 
+			((idx>=0) && (currentsector-file->bookmarks[idx].sector) > file->bookmark_threshold))
 		{
 			idx=WorstBookmark(file);
 			file->bookmarks[idx].sector=currentsector;
