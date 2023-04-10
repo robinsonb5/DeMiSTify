@@ -86,7 +86,7 @@ __weak int configstring_copytocomma(char *buf, int limit,int copy)
 
 __weak int configstring_getdigit()
 {
-	unsigned int c=configstring_next();
+	int c=configstring_next();
 //	printf("Getdigit %c\n",c);
 	if(c>='0' && c<='9')
 		c-='0';
@@ -138,14 +138,10 @@ __weak int configstring_matchextension(const char *ext)
 
 #endif
 
-#ifdef CONFIG_ARCFILE
-	if(configstring_index==0)
-	{
-		if(ext[8]=='A' && ext[9]=='R' && ext[10]=='C')
-			return(CONFIGSTRING_INDEX_ARC+1); /* Hack, adding one here, since setindex() reduces it by 1 */
-		return(0);
-	}
 
+#ifdef CONFIG_ARCFILE
+	if(ext[8]=='A' && ext[9]=='R' && ext[10]=='C')
+		return(CONFIGSTRING_INDEX_ARC+1); /* Hack, adding one here, since setindex() reduces it by 1 */
 #endif
 
 	configstring_begin();

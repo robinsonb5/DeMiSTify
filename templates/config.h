@@ -68,6 +68,9 @@ here, the number of units defaults to 4. */
 
 /* Is this an arcade core with .ARC file support? */
 #define CONFIG_ARCFILE
+/* If the core doesn't have its own ROM loading menu item, use this to add a selector for .ARC files. */
+#undef CONFIG_ARCFILE_SELECTOR
+
 
 /* If this is defined, DeMiSTify will look for a file called "15KHZ.CFG", and if found,
 disable the scandoubler. */

@@ -20,6 +20,7 @@ int arcfile_open(const char *filename)
 	char buffer[4];
 	memset(&arcstate,0,sizeof(arcstate));
 	result=FileOpen(&arcstate.file,filename);
+
 	if(result && FileRead(&arcstate.file,buffer,4))
 	{
 		if(strncmp(buffer,"[ARC",4))
@@ -65,8 +66,7 @@ char arcfile_next()
 		}
 		
 		c=FileGetCh(&arcstate.file);
-		if(c<0)
-			return(0);
+		
 		switch(arcstate.param)
 		{
 			int c2;
@@ -89,7 +89,7 @@ char arcfile_next()
 
 			/* Extract the ROM filename from the ARC file */
 			case ARC_NAME:
-				if((arcstate.nameidx>8) || c==10 || c==13)
+				if((arcstate.nameidx>8) || c==10 || c==13 || c<0)
 				{
 					int i;
 					for(i=arcstate.nameidx;i<8;++i)
@@ -132,7 +132,8 @@ char arcfile_next()
 					result=c;
 				break;
 		}
-
+		if(c<0)
+			return(0);
 	}
 	return(result);
 }

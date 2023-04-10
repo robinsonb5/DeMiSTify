@@ -486,6 +486,17 @@ void dipswitches(int row)
 }
 
 
+static char menufiletitle[]="Load *.";
+static void menufileline(unsigned int line, const char *title,int idx, int configidx, int unit)
+{
+	strcpy(menu[line].label,title);
+	menu[line].action=MENU_ACTION(&fileselector);
+	menu[line].u.file.index=idx;
+	menu[line].u.file.cfgidx=configidx;
+	menu[line].u.file.unit=unit;
+}
+
+
 void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned int limit)
 {
 	int c;
@@ -524,21 +535,17 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 		configstring_nextfield(); /* Skip over core name */
 		c=configstring_next();
-#ifdef CONFIG_ARCFILE
+#ifdef CONFIG_ARCFILE_SELECTOR
 		if(1)
 #else
 		if(c!=';')
 #endif
 		{
-#ifndef CONFIG_WITHOUT_FILESELECTOR			
+#ifndef CONFIG_WITHOUT_FILESELECTOR
 			if(!selpage) /* Add the load item only for the first menu page */
 			{
-				strcpy(menu[line].label,"Load *. ");
-				menu[line].action=MENU_ACTION(&fileselector);
+				menufileline(line,menufiletitle,fileindex,0,0);
 				menu[line].label[7]=c;
-				menu[line].u.file.index=fileindex;
-				menu[line].u.file.cfgidx=0;
-				menu[line].u.file.unit=0;
 #ifdef CONFIG_ARCFILE
 				if(c!=';')
 #endif
@@ -615,10 +622,10 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 			if(page==selpage)
 			{
-				unsigned int low,high=0;
+				int low,high;
 				unsigned int opt=0;
 				unsigned int val;
-				unsigned int nextline=0;
+				int nextline=0;
 
 				switch(c)
 				{
@@ -628,7 +635,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 					case 'D': /* DIP Switches */
 						strcpy(menu[line].label,"DIP Switches");
 						menu[line].action=MENU_ACTION(&dipswitches);
-						c=configstring_next();
+						c=configstring_nextfield();
 						nextline=1;
 						break;
 #endif
@@ -638,24 +645,29 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
 						if(c!=',')
 							diskunit=c;
+						// Fall through...
 						while(c!=',')
 							c=configstring_next();
-						// Fall through...
 					case 'F':
 						if(c!=',')
 							configstring_next();
-						configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
-						low=-configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
-						if(low>0 && low<(LINELENGTH-3))
+						menufileline(line,menufiletitle,fileindex,configidx,diskunit);
+//						menu[line].u.file.cfgidx=configidx;
+						low=configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
+						if(low>0)
 						{
-							menu[line].label[low]=' ';
-							menu[line].label[low+1]=FONT_ARROW_RIGHT;
-							menu[line].label[low+2]=0;
+							low=-configstring_copytocomma(menu[line].label,LINELENGTH-2,1);
+							if(low>0 && low<(LINELENGTH-3))
+							{
+								menu[line].label[low]=' ';
+								menu[line].label[low+1]=FONT_ARROW_RIGHT;
+								menu[line].label[low+2]=0;
+							}
+//							menu[line].action=MENU_ACTION(&fileselector);
+//							menu[line].u.file.index=fileindex;
+//							menu[line].u.file.unit=diskunit;
 						}
-						menu[line].action=MENU_ACTION(&fileselector);
-						menu[line].u.file.index=fileindex;
-						menu[line].u.file.cfgidx=configidx;
-						menu[line].u.file.unit=diskunit;
+
 						++fileindex;
 						nextline=1;
 						break;

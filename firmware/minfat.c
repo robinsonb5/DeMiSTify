@@ -423,6 +423,8 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 
+	file->cursor=pos;
+
 	if(p==file->sector)
 		return;
 
@@ -469,7 +471,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	}
 	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
 		FileReadSector(file, sector_buffer);
-	file->cursor=pos;
 }
 #else
 void FileSeek(fileTYPE *file, uint32_t pos)
@@ -477,6 +478,7 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	uint32_t p=pos>>9;
 	if(!file || !file->size)
 		return;
+	file->cursor=pos;
 	if((p<(file->sector&(~(cluster_mask)))
 	{
 		file->sector=0;
@@ -491,7 +493,6 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 
 	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
 		FileReadSector(file, sector_buffer);
-	file->cursor=pos;
 }
 #endif
 
@@ -550,6 +551,7 @@ int FileGetCh(fileTYPE *file)
 		// reload buffer
 		if(file->cursor)
 			FileNextSector(file,1);
+
 		FileReadSector(file, sector_buffer);
 	}
 	if (file->cursor >= file->size)
