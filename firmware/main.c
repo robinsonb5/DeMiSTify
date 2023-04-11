@@ -545,11 +545,15 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 			if(!selpage) /* Add the load item only for the first menu page */
 			{
 				menufileline(line,menufiletitle,fileindex,0,0);
-				menu[line].label[7]=c;
 #ifdef CONFIG_ARCFILE
 				if(c!=';')
+				{
 #endif
+					menu[line].label[7]=c;
 					configstring_copytocomma(&menu[line].label[8],LINELENGTH-8,1);
+#ifdef CONFIG_ARCFILE
+				}
+#endif
 				if(line>=skip)
 					++line;
 				else

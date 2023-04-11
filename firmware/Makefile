@@ -15,8 +15,8 @@ LIBDIR=$(832DIR)/lib832
 # Sizes of the two ROM parts - 8k + 4k = 12k by default
 ROMSIZE1=8192
 ROMSIZE2=4096
-# Default to a 512 byte stack - can be overriden in the project makefile.
-STACKSIZE=0x200
+# Default to a 384 byte stack - can be overriden in the project makefile.
+STACKSIZE=0x180
 OPT=-size
 
 CDEFS =
