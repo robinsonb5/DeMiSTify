@@ -16,13 +16,17 @@ LIBDIR=$(832DIR)/lib832
 ROMSIZE1=8192
 ROMSIZE2=4096
 # Default to a 384 byte stack - can be overriden in the project makefile.
-STACKSIZE=0x180
+STACKSIZE=384
+
+# Calculate upper bound for BSS from ROM sizes and Stack size.
+ROMSIZE=$(shell expr $(ROMSIZE1) + $(ROMSIZE2) - $(STACKSIZE))
+
 OPT=-size
 
 CDEFS =
 CFLAGS = -el -quiet -+ -c99 -O=1343 $(OPT) -unsigned-char -I. -I$(DEMISTIFYPATH)/firmware $(CDEFS)
 ASFLAGS = -el
-LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE)
+LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE) -c0,$(ROMSIZE)
 
 START = $(LIBDIR)/tinycrt0.a
 LIBS = $(LIBDIR)/libtiny832.a
@@ -34,8 +38,6 @@ ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
 
 all: controller_rom_byte.vhd controller_rom_word.vhd
-
-lib: libdemistify.a
 
 clean :
 	-rm *.asm
