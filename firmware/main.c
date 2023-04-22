@@ -128,7 +128,7 @@ int LoadROM(const char *fn)
 					imgsize=0;
 				}
 
-				if(configstring_coretype&DIRECTUPLOAD)
+				if(sendsize==512 && (configstring_coretype&DIRECTUPLOAD))
 					result=FileReadSector(&file,0);
 				else
 				{
