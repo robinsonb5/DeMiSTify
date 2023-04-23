@@ -56,8 +56,6 @@ unsigned char unit=0;
 
 fileTYPE file;
 
-__weak int rom_minsize=1;
-
 #ifdef CONFIG_SETTINGS
 char std_label_exit[]="             Exit            \x81";
 char std_label_back[]="\x80            Back";
@@ -74,9 +72,9 @@ int LoadROM(const char *fn)
 	int i;
 	if(FileOpen(&file,fn))
 	{
-		int minsize=rom_minsize;
 		int sendsize;
 		int idx;
+		int imgsize=file.size;
 
 		idx=configstring_setindex(fn);
 
@@ -110,50 +108,40 @@ int LoadROM(const char *fn)
 
 		SPIFPGA(SPI_FPGA_FILE_TX,1);
 
-		while(minsize>0)
+		while(imgsize)
 		{
-			int imgsize=file.size;
-			minsize-=imgsize;
-//			printf("Sending %d bytes\n",imgsize);
-			while(imgsize)
+			char *buf=sector_buffer;
+			int result;
+
+			sendsize=512;
+			imgsize-=512;
+			if(imgsize<0)
 			{
-				char *buf=sector_buffer;
-				int result;
-
-				sendsize=512;
-				imgsize-=512;
-				if(imgsize<0)
-				{
-					sendsize=imgsize+512;
-					imgsize=0;
-				}
-
-				if(sendsize==512 && (configstring_coretype&DIRECTUPLOAD))
-					result=FileReadSector(&file,0);
-				else
-				{
-					result=FileReadSector(&file,sector_buffer);
-					SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
-					*spiptr=SPI_FPGA_FILE_TX_DAT;
-					do
-					{
-						*spiptr=*buf++;
-					} while(--sendsize);
-					SPI_DISABLE(HW_SPI_FPGA);
-				}
-				if(!result)
-					return(0);
-
-				FileNextSector(&file,1);
+				sendsize=imgsize+512;
+				imgsize=0;
 			}
-			if(minsize>0)
-				FileFirstSector(&file); // Start from the beginning again.
+
+			if(sendsize==512 && (configstring_coretype&DIRECTUPLOAD))
+				result=FileReadSector(&file,0);
+			else
+			{
+				result=FileReadSector(&file,sector_buffer);
+				SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+				*spiptr=SPI_FPGA_FILE_TX_DAT;
+				do
+				{
+					*spiptr=*buf++;
+				} while(--sendsize);
+				SPI_DISABLE(HW_SPI_FPGA);
+			}
+			if(!result)
+				return(0);
+
+			FileNextSector(&file,1);
 		}
 
 		SPIFPGA(SPI_FPGA_FILE_TX,0);
-#ifdef CONFIG_AUTOCLOSE_OSD
-		
-#endif
+
 		return(1);
 	}
 	else

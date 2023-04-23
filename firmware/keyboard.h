@@ -1,6 +1,8 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
+/* Set 2 scancodes */
+
 #define KEY_EXT 0xe0
 #define KEY_KEYUP 0xf0
 
