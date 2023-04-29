@@ -58,16 +58,29 @@ int HandlePS2RawCodes(int blockkeys)
 
 	while((key=PS2KeyboardRead())>-1)
 	{
-		if(key==KEY_KEYUP)
-			keyup=1;
-		else if(key==KEY_EXT)
-			extkey=1;
-		else
+		printf("%d\n",key);
+		if(key==KEY_EXT)
 		{
-			int keyidx=extkey ? 128+key : key;
+			extkey=1;
+			break;
+		}
+#ifdef CONFIG_KEYBOARD_SET1
+		if(key&KEY_SET1_KEYUP)
+		{
+			keyup=1;
+			key&=~KEY_SET1_KEYUP;
+		} /* Set 1, keyup is the MSB of the keycode */
+#else
+		else if(key==KEY_KEYUP)
+			keyup=1;
+		else /* Set 2, keyup is a distinct code */
+#endif
+		{
+			int keyidx=extkey ? key | 0x80 : key;
 			/* Send keys before updating the keytable - allows the core to avoid sending repeats by checking the current key status. */
 			if(!blockkeys)
 				SendKey(key,extkey,keyup);
+			printf("%d,%d,%d\n",key,extkey,keyup);
 
 			/* Update the keytable */
 			if(keyup)

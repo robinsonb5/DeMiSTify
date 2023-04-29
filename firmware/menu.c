@@ -32,9 +32,39 @@
 #include "gamepadkeys.h"
 #include "user_io.h"
 
+
+#ifdef CONFIG_KEYBOARD_SET1
+
+#define KEY_OSD_UPARROW KEY_SET1_UPARROW
+#define KEY_OSD_DOWNARROW KEY_SET1_DOWNARROW
+#define KEY_OSD_LEFTARROW KEY_SET1_LEFTARROW
+#define KEY_OSD_RIGHTARROW KEY_SET1_RIGHTARROW
+#define KEY_OSD_PAGEUP KEY_SET1_PAGEUP
+#define KEY_OSD_PAGEDOWN KEY_SET1_PAGEDOWN
+#define KEY_OSD_ENTER KEY_SET1_ENTER
+#define KEY_OSD_NUMLOCK KEY_SET1_NUMLOCK
+
+#ifndef KEY_OSD
+#define KEY_OSD KEY_SET1_F12
+#endif
+
+#else
+
+#define KEY_OSD_UPARROW KEY_UPARROW
+#define KEY_OSD_DOWNARROW KEY_DOWNARROW
+#define KEY_OSD_LEFTARROW KEY_LEFTARROW
+#define KEY_OSD_RIGHTARROW KEY_RIGHTARROW
+#define KEY_OSD_PAGEUP KEY_PAGEUP
+#define KEY_OSD_PAGEDOWN KEY_PAGEDOWN
+#define KEY_OSD_ENTER KEY_ENTER
+#define KEY_OSD_NUMLOCK KEY_NUMLOCK
+
 #ifndef KEY_OSD
 #define KEY_OSD KEY_F12
 #endif
+
+#endif
+
 
 /* Not currently using hotkeys */
 #undef MENU_HOTKEYS
@@ -223,7 +253,7 @@ void Menu_Run()
 #endif
 
 #ifdef CONFIG_JOYKEYS_TOGGLE
-	if(Menu_PollInput(KEY_NUMLOCK,0,0))
+	if(Menu_PollInput(KEY_OSD_NUMLOCK,0,0))
 	{
 		joykeys_active=!joykeys_active;
 		Menu_Message(joykeys_active ? "Joykeys on" : "Joykeys off",700);
@@ -233,7 +263,7 @@ void Menu_Run()
 	if(Menu_PollInput(KEY_OSD,0,JOY_BUTTON_MENU))
 	{
 		Menu_ShowHide(-1);
-		TestKey(KEY_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
+		TestKey(KEY_OSD_ENTER); // Swallow any enter key events if the core's not using enter for joysticks
 		//		printf("Menu visible %d\n",menu_visible);
 		upd=1;
 	}
@@ -256,8 +286,8 @@ void Menu_Run()
 			}
 		}
 #endif
-		TestKey(KEY_PAGEUP);
-		TestKey(KEY_PAGEDOWN);
+		TestKey(KEY_OSD_PAGEUP);
+		TestKey(KEY_OSD_PAGEDOWN);
 		Menu_Joystick(0,joy&0xff);
 		Menu_Joystick(1,joy>>8);
 		return;
@@ -275,21 +305,21 @@ void Menu_Run()
 	else
 		joy_timestamp=0;
 
-	if((joy&0x02)||(TestKey(KEY_LEFTARROW)&2))
+	if((joy&0x02)||(TestKey(KEY_OSD_LEFTARROW)&2))
 	{
 		act=ROW_LEFT;
 //		if((m+menurows)->action)
 //			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_LEFT);
 	}
 
-	if((joy&0x01)||(TestKey(KEY_RIGHTARROW)&2))
+	if((joy&0x01)||(TestKey(KEY_OSD_RIGHTARROW)&2))
 	{
 		act=ROW_RIGHT;
 //		if((m+menurows)->action)
 //			MENU_ACTION_CALLBACK((m+menurows)->action)(ROW_RIGHT);
 	}
 
-	if((joy&0x08)||(TestKey(KEY_UPARROW)&2))
+	if((joy&0x08)||(TestKey(KEY_OSD_UPARROW)&2))
 	{
 		if(currentrow)
 			--currentrow;
@@ -298,7 +328,7 @@ void Menu_Run()
 		upd=1;
 	}
 
-	if((joy&0x04)||(TestKey(KEY_DOWNARROW)&2))
+	if((joy&0x04)||(TestKey(KEY_OSD_DOWNARROW)&2))
 	{
 		if(currentrow<(menurows-1))
 			++currentrow;
@@ -307,7 +337,7 @@ void Menu_Run()
 		upd=1;
 	}
 
-	if(TestKey(KEY_PAGEUP)&2)
+	if(TestKey(KEY_OSD_PAGEUP)&2)
 	{
 		if(currentrow)
 			currentrow=0;
@@ -316,7 +346,7 @@ void Menu_Run()
 		upd=1;
 	}
 
-	if(TestKey(KEY_PAGEDOWN)&2)
+	if(TestKey(KEY_OSD_PAGEDOWN)&2)
 	{
 		if(currentrow<(menurows-1))
 			currentrow=menurows-1;
@@ -328,7 +358,7 @@ void Menu_Run()
 		MENU_ACTION_CALLBACK((m+menurows)->action)(act);
 
 	// Find the currently highlighted menu item
-	if(Menu_PollInput(KEY_ENTER,0xf0,0) && (m+currentrow)->action)
+	if(Menu_PollInput(KEY_OSD_ENTER,0xf0,0) && (m+currentrow)->action)
 		MENU_ACTION_CALLBACK((m+currentrow)->action)(currentrow);
 
 #ifdef MENU_HOTKEYS

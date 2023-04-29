@@ -34,6 +34,10 @@ here, the number of units defaults to 4. */
    range would be between 4 and 16 */
 #undef CONFIG_FILEBOOKMARKS 6
 
+/* If the core has initialised the keyboard to use scan set 1 the OSD will
+   need to use set 1 as well. */
+#undef CONFIG_KEYBOARD_SET1
+
 /* Keyboard-based Joystick emulation */
 #undef CONFIG_JOYKEYS
 
