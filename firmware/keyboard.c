@@ -58,7 +58,7 @@ int HandlePS2RawCodes(int blockkeys)
 
 	while((key=PS2KeyboardRead())>-1)
 	{
-		printf("%d\n",key);
+//		printf("%d\n",key);
 		if(key==KEY_EXT)
 		{
 			extkey=1;
@@ -80,7 +80,7 @@ int HandlePS2RawCodes(int blockkeys)
 			/* Send keys before updating the keytable - allows the core to avoid sending repeats by checking the current key status. */
 			if(!blockkeys)
 				SendKey(key,extkey,keyup);
-			printf("%d,%d,%d\n",key,extkey,keyup);
+//			printf("%d,%d,%d\n",key,extkey,keyup);
 
 			/* Update the keytable */
 			if(keyup)

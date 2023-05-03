@@ -251,9 +251,25 @@ uint32_t GetCluster(uint32_t cluster)
 }
 
 
+DIRENTRY *GetDirEntry(const char *name)
+{
+	DIRENTRY *p = NULL;        // pointer to current entry in sector buffer
+	while(p=NextDirEntry(p==NULL,0))
+	{
+#ifndef CONFIG_WITHOUT_FILESELECTOR
+		if(strcasecmp(longfilename,name)==0)
+			break;
+#endif
+		if(strncasecmp((const char*)p->Name, name,11)==0)
+			break;
+	}
+	return(p);
+}
+
+
 unsigned int FileOpen(fileTYPE *file, const char *name)
 {
-    DIRENTRY      *p = NULL;        // pointer to current entry in sector buffer
+    DIRENTRY *p;        // pointer to current entry in sector buffer
 	int bm;
 
 	if(!file)
@@ -265,17 +281,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 	if(!name || !name[0])
 		return(0);
 
-	while(p=NextDirEntry(p==NULL,0))
-	{
-#ifndef CONFIG_WITHOUT_FILESELECTOR
-		if(strcasecmp(longfilename,name)==0)
-			break;
-#endif
-		if(strncasecmp((const char*)p->Name, name,11)==0)
-			break;
-	}
-
-	if(p)
+	if(p=GetDirEntry(name))
 	{
 		file->size = ConvBBBB_LE(p->FileSize);
 		file->cluster = ConvBB_LE(p->StartCluster);

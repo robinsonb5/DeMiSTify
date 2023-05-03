@@ -62,8 +62,12 @@ __weak int configstring_nextfield()
 	return(c);
 }
 
-/* Copy a maximum of limit bytes to the output string, stopping when a comma is reached. */
-/* If the copy flag is zero, don't copy, just consume bytes from the input */
+/* Copy a maximum of limit bytes to the output string, stopping when a comma
+   or semicolon is reached.
+   If the copy flag is zero, don't copy, just consume bytes from the input.
+   Returns the number of bytes copied, negated if the span copied didn't 
+   end with a comma.
+*/
 
 __weak int configstring_copytocomma(char *buf, int limit,int copy)
 {
@@ -97,6 +101,22 @@ __weak int configstring_getdigit()
 		c-='a'-36;
 #endif
 	return(c);	
+}
+
+
+/* Fetch a number of characters from the configstring's corename field, padded with spaces
+   BEWARE - null terminated, so buffer must have space for one extra byte. */
+void configstring_getcorename(char *corename,int chars)
+{
+	int i;
+	configstring_begin();
+	i=configstring_copytocomma(corename,chars,1);
+	configstring_end();
+	if(i<0)
+		i=-i;
+	while(i<chars)
+		corename[i++]=' ';
+	corename[i++]=0;
 }
 
 

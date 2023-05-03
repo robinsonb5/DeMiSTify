@@ -85,12 +85,19 @@ void diskimg_poll()
 
 int diskimg_mount(const unsigned char *name, unsigned char idx) {
 	int imgsize=0;
-
+	int i;
 	if(idx>3)
 		return(0);
 	configstring_setindex(name);
 	FileOpen(&diskimg[idx].file,name);
 	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
+
+#ifdef CONFIG_FILEBOOKMARKS
+	/* Experiment: Pre-seed the bookmarks to make access time more consistent in actual use? */
+//	for(i=0;i<CONFIG_FILEBOOKMARKS;++i)
+//		FileSeek(&diskimg[idx].file,i*(imgsize/CONFIG_FILEBOOKMARKS));
+//	FileSeek(&diskimg[idx].file,0);
+#endif
 	// send mounted image size first then notify about mounting
 	EnableIO();
 	SPI(UIO_SET_SDINFO);

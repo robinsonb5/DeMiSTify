@@ -129,6 +129,7 @@ int LoadFile(const char *fn, unsigned char *buf);
 uint32_t CurrentDirectory();
 void ChangeDirectory(DIRENTRY *p);
 void ChangeDirectoryByCluster(uint32_t cluster);
+DIRENTRY *GetDirEntry(const char *name);
 DIRENTRY *NextDirEntry(int prev,int (*matchfunc)(const char *fn));
 int FindByCluster(uint32_t parent, uint32_t cluster);
 int ValidateDirectory(uint32_t directory);
