@@ -12,7 +12,7 @@ unsigned int statusword_high; /* Upper 32-bits of a 64-bit status word */
 __weak void sendstatus()
 {
 	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
+	EnableIO();
 	SPI(UIO_SET_STATUS2);
 	SPI(statusword);
 	SPI(statusword>>8);
@@ -24,7 +24,7 @@ __weak void sendstatus()
 	SPI(statusword_high>>16);
 	SPI(statusword_high>>24);
 #endif
-	SPI_DISABLE(HW_SPI_CONF);
+	DisableIO();
 }
 
 #ifdef CONFIG_STATUSWORD_64BIT

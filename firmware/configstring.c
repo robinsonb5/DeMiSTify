@@ -42,14 +42,14 @@ __weak void configstring_begin()
 #endif
 
 	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
+	EnableIO();
 	configstring_coretype=SPI(SPI_CONF_READ); /* Read conf string command */
 }
 
 
 __weak void configstring_end()
 {
-	SPI_DISABLE(HW_SPI_CONF);
+	DisableIO();
 }
 
 
@@ -121,7 +121,7 @@ void configstring_getcorename(char *corename,int chars)
 
 
 extern unsigned char romtype;
-#define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
+#define SPIFPGA(a,b) EnableFpga(); *spiptr=(a); *spiptr=(b); DisableFpga();
 __weak int configstring_setindex(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);

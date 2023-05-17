@@ -65,7 +65,7 @@ char std_label_back[]="\x80 Back";
 #endif
 
 #ifndef CONFIG_WITHOUT_FILESYSTEM
-#define SPIFPGA(a,b) SPI_ENABLE(HW_SPI_FPGA); *spiptr=(a); *spiptr=(b); SPI_DISABLE(HW_SPI_FPGA);
+#define SPIFPGA(a,b) EnableFpga(); *spiptr=(a); *spiptr=(b); DisableFpga();
 int LoadROM(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
@@ -96,13 +96,13 @@ int LoadROM(const char *fn)
 //		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
 //		{
 //			unsigned int i;
-			SPI_ENABLE(HW_SPI_FPGA);
+			EnableFpga();
 			*spiptr=SPI_FPGA_FILE_INFO;
 			for(i=0;i<11;++i)
 				*spiptr=fn[i];
 			for(i=12;i<32;++i)
 				*spiptr=0xff;
-			SPI_DISABLE(HW_SPI_FPGA);
+			DisableFpga();
 //		}
 		*spiptr=0xFF;
 
@@ -126,13 +126,13 @@ int LoadROM(const char *fn)
 			else
 			{
 				result=FileReadSector(&file,sector_buffer);
-				SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+				EnableFpga();
 				*spiptr=SPI_FPGA_FILE_TX_DAT;
 				do
 				{
 					*spiptr=*buf++;
 				} while(--sendsize);
-				SPI_DISABLE(HW_SPI_FPGA);
+				DisableFpga();
 			}
 			if(!result)
 				return(0);

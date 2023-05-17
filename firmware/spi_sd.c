@@ -264,20 +264,18 @@ int sd_init()
 	int i;
 	int r;
 	sd_is_sdhc=1;
-//	puts("SPI");
 	i=8;
 	while(--i)
 	{
-		SPI_DISABLE(HW_SPI_SD);	// Disable CS
+		DisableSD();
 		spi_spin();
 		DBG("Activating CS\n");
-		SPI_ENABLE(HW_SPI_SD);
+		SPI_ENABLE(HW_SPI_SD); /* Done with SPI_ENABLE macro because we must init card with slow clock rate */
 		if(cmd_reset()==1) // Enable SPI mode
 			i=1;
 		DBG("Sent reset command\n");
 		if(i==2)
 		{
-//			puts("IERR");
 			DBG("SD card initialization error!\n");
 			return(0);
 		}
@@ -297,7 +295,7 @@ int sd_init()
 	PDBG("SD card size is %d\n",sd_size);
 
 
-	SPI_DISABLE(HW_SPI_SD);
+	DisableSD();
 	SPI(0xFF);
 	DBG("Init done\n");
 
@@ -310,7 +308,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
     int i,t,timeout;
 
 	SPI(0xff);
-	SPI_ENABLE_FAST_SD(HW_SPI_SD);
+	EnableSD();
 	SPI(0xff);
 
 	t=cmd_writesector(lba);
@@ -347,7 +345,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 		i=SPI_READ();
 	} while((i==0) && --timeout);
 	SPI(0xff);
-	SPI_DISABLE(HW_SPI_SD);
+	DisableSD();
 	return(0);
 }
 
@@ -406,7 +404,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	int r;
 //	printf("sd_read_sector %d, %d\n",lba,buf);
 	SPI(0xff);
-	SPI_ENABLE_FAST_SD(HW_SPI_SD);
+	EnableSD();
 	SPI(0xff);
 
 	r=cmd_read(lba);
@@ -418,7 +416,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	}
 	result=sd_read(buf,512);
 
-	SPI_DISABLE(HW_SPI_SD);
+	DisableSD();
 	return(result);
 }
 

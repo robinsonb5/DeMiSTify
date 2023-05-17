@@ -16,10 +16,10 @@ void ToggleScandoubler()
 {
 	scandouble^=1;
 	SPI(0xff);
-	SPI_ENABLE(HW_SPI_CONF);
+	EnableIO();
 	SPI(UIO_BUT_SW); // Set "DIP switch" for scandoubler
 	SPI(scandouble<<4);
-	SPI_DISABLE(HW_SPI_CONF);
+	DisableIO();
 }
 
 void AutoScandoubler()

@@ -1,6 +1,7 @@
 #ifndef SPI_H
 #define SPI_H
 
+/* FIXME - these don't belong here */
 #define INTERCEPTBASE 0xFFFFFFFC
 #define HW_INTERCEPT(x) *(volatile unsigned int *)(INTERCEPTBASE+x)
 #define HW_PLATFORM(x) *(volatile unsigned int *)(INTERCEPTBASE+x)
@@ -9,6 +10,7 @@
 #define HW_PLATFORM_CAPABILITIES_RTC 1
 #define HAVE_RTC (HW_PLATFORM_CAPABILITIES_RTC & HW_PLATFORM(HW_PLATFORM_CAPABILITIES))
 
+/* SPI Hardware registers */
 #define SPIBASE 0xFFFFFFD0
 #define HW_SPI(x) *(volatile unsigned int *)(SPIBASE+x)
 
@@ -20,7 +22,6 @@
 #define HW_SPI_DATA 0x04 /* Blocks on both reads and writes, making BUSY signal redundant. */
 /* #define HW_SPI_PUMP 0x08 */ /* Push 16-bits through SPI in one instruction */
 
-#define HW_SPI_CS_SD 0
 #define HW_SPI_FAST_SD 8
 #define HW_SPI_FAST_INT 9
 #define HW_SPI_BUSY 15
@@ -32,26 +33,19 @@
 #define HW_SPI_CONF 5
 #define HW_SPI_RTC 6
 
-#define SPI_CONF_READ 0x14
 
-#define SPI_FPGA_FILE_TX 0x53
-#define SPI_FPGA_FILE_TX_DAT 0x54
-#define SPI_FPGA_FILE_INDEX 0x55
-#define SPI_FPGA_FILE_INFO 0x56
-#define SPI_FPGA_FILE_RX 0x57
-#define SPI_FPGA_FILE_RX_DAT 0x58
-
-//#define SPI_ENABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|1);}
-//#define SPI_ENABLE_FAST(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST)|(1<<x)|1);}
-//#define SPI_DISABLE(x) {while((HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY))); HW_SPI(HW_SPI_CS)=((1<<x)|0);}
-#define SPI_WAIT {while(HW_SPI(HW_SPI_CS)&(1<<HW_SPI_BUSY));}
+/* Unless you have a good reason (like needing to initialise an SD card at a slower clock rate,
+   you should consider these macros private, and use the Enable*() macros below instead
+   since they take care of selecting the correct speed. */
 #define SPI_ENABLE(x) {HW_SPI(HW_SPI_CS)=((1<<x)|1);}
 #define SPI_ENABLE_FAST_SD(x) {HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST_SD)|(1<<x)|1);}
 #define SPI_ENABLE_FAST_INT(x) {HW_SPI(HW_SPI_CS)=((1<<HW_SPI_FAST_INT)|(1<<x)|1);}
 #define SPI_DISABLE(x) {HW_SPI(HW_SPI_CS)=((1<<x)|0);}
 
-#define EnableSD() SPI_ENABLE_FAST_SD(HW_SPI_CS_SD)
-#define DisableSD() SPI_DISABLE(HW_SPI_CD_SD)
+/* Public Enable/Disable macros */
+
+#define EnableSD() SPI_ENABLE_FAST_SD(HW_SPI_SD)
+#define DisableSD() SPI_DISABLE(HW_SPI_SD)
 #define EnableDirectSD() SPI_ENABLE_FAST_SD(HW_SPI_SNIFF)
 #define DisableDirectSD() SPI_DISABLE(HW_SPI_SNIFF)
 #define EnableIO() SPI_ENABLE_FAST_INT(HW_SPI_CONF)
@@ -69,6 +63,19 @@ extern "C" {
 
 void spi_read(char *data,int len);
 void spi_write(const char *data,int len);
+
+/* SPI command definitions */
+
+#define SPI_CONF_READ 0x14
+
+/* Data IO commands */
+
+#define SPI_FPGA_FILE_TX 0x53
+#define SPI_FPGA_FILE_TX_DAT 0x54
+#define SPI_FPGA_FILE_INDEX 0x55
+#define SPI_FPGA_FILE_INFO 0x56
+#define SPI_FPGA_FILE_RX 0x57
+#define SPI_FPGA_FILE_RX_DAT 0x58
 
 #ifdef __cplusplus
 }
