@@ -1,5 +1,5 @@
 #demistify
-#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "overrides.c" \) -delete
+#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "*.c" \) -delete
 rm -f xxxxxxx_sockit*
 #quartus
 find output_files/ -type f \( ! -iname "*.rbf" ! -iname "*.sof" ! -iname "*.flow.rpt" \) -delete

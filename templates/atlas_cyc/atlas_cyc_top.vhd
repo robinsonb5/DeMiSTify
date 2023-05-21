@@ -154,8 +154,8 @@ architecture RTL of atlas_top is
 	-- HDMI TDMS signals
 	signal clock_vga_s    : std_logic;
 	signal clock_dvi_s    : std_logic;
-	signal sound_hdmi_l_s : std_logic_vector(15 downto 0);
-	signal sound_hdmi_r_s : std_logic_vector(15 downto 0);
+	signal sound_hdmi_l_s : signed(15 downto 0);
+	signal sound_hdmi_r_s : signed(15 downto 0);
 	signal tdms_r_s       : std_logic_vector(9 downto 0);
 	signal tdms_g_s       : std_logic_vector(9 downto 0);
 	signal tdms_b_s       : std_logic_vector(9 downto 0);
@@ -229,7 +229,7 @@ architecture RTL of atlas_top is
 	
 begin
 
-	clock_input <= CLK50M;		// from pll2
+	clock_input <= CLK50M;		-- from pll2
 
 	-- SPI
 	SD_CS_N_O <= sd_cs;

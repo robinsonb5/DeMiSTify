@@ -1,4 +1,13 @@
-# [DeMiSTified](https://github.com/robinsonb5/DeMiSTify) SoCkit port
+# xxxxxxxxxxx [DeMiSTified](https://github.com/robinsonb5/DeMiSTify) - SoCkit port
+
+xx/xx/23 SoCkit port DeMiSTified by @yyy from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx by @xxx   
+xx/xx/23 SoCkit port by @yyy from previously DeMiSTified core https://github.com/xxxx by @xxx   
+
+[Read this guide about DeMySTifying a core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
+
+### STATUS
+
+* Working fine
 
 ### **FEATURES**
 
@@ -10,17 +19,27 @@
 * Terasic HSMC to GPIO [Daughter Board](https://www.digikey.es/es/products/detail/P0033/P0033-ND/2003485) for:
 
   *  SDRAM Mister module 
-  *  PS/2 Keyboard
-  *  DB9 Joystick 
+    * Tested with 32 MB SDRAM board for MiSTer (extra slim) XS_2.2
+    * Tested with a dual memory module v1.3 with 3 pins
+
+  * PS/2 Keyboard
+
+  * DB9 Joystick 
+
+  * ~~MIDI output and MIDI I2S mixing available though an external mt32-pi synthesizer ([MIDI2SBC](https://github.com/somhi/MIDI_I2S_SBC_Pmod_Edge_Interface))~~
 
 
+
+### ~~Binaries~~
+
+~~Fins .sof and .svf binary bitstreams for this core at the corresponding category at https://github.com/xxx/sockit_binaries~~  
 
 ### Compile the project in Quartus
 
 If the project has the DeMiSTify firmware already generated you only need to clone recursively the repository and then open the project with Quartus from the specific board folder:
 
 ```sh
-git clone --recursive https://github.com/[repo_name]/[core_name]
+git clone  --recursive https://github.com/[repo_name]/[core_name]
 #check comments on top of /sockit/sockit_top.vhd in case additional actions are needed
 #Load project file in Quartus (/sockit/[core_name]_sockit.qpf)
 ```

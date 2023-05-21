@@ -290,6 +290,6 @@ LEDR <= (0=>(not act_led), others=>'0');
 --CLK_I2C_SDA	<='Z';
 GSENSOR_SCLK <= '0';
 GSENSOR_CS_N <= '0';
-uart_txd<='1';
+--uart_txd<='1';
 
 end rtl;

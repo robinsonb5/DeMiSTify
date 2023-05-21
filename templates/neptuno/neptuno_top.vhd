@@ -52,8 +52,8 @@ entity neptuno_top is
 		PS2_MOUSE_CLK    : inout std_logic;
 		PS2_MOUSE_DAT    : inout std_logic;
 		-- UART
---		PMOD4_D4 : in std_logic;		--UART_RXD
---		PMOD4_D5 : out std_logic;		--UART_TXD
+		PMOD4_D4 : in std_logic;		--UART_RXD
+		PMOD4_D5 : out std_logic;		--UART_TXD
 --		PMOD4_D6 : in std_logic;		--UART_CTS
 --		PMOD4_D7 : out std_logic;		--UART_RTS
 		-- JOYSTICK 
@@ -140,7 +140,7 @@ architecture RTL of neptuno_top is
 	component audio_top is
 		port (
 			clk_50MHz : in std_logic;  -- system clock
-			dac_MCLK  : out std_logic; -- outputs to PMODI2S DAC
+			dac_MCLK  : out std_logic; -- outputs to I2S DAC
 			dac_LRCK  : out std_logic;
 			dac_SCLK  : out std_logic;
 			dac_SDIN  : out std_logic;

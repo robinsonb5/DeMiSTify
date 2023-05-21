@@ -105,7 +105,7 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_CLK
 #(10k resistor phisical pull-up) set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_MOUSE_DAT
 
 #============================================================
-# EAR
+# EAR (audio input)
 #============================================================
 # EAR (in some MiST cores ear function is using UART_RXD)
 set_location_assignment PIN_H4 -to EAR
@@ -113,29 +113,37 @@ set_location_assignment PIN_H4 -to EAR
 #============================================================
 # PMOD3 SPI / MIDI_DB  
 #============================================================
-# MOSI = P9:30 = PIN_W4
-# MISO = MIDI_WSBD  = P9:29 = PIN_R9
-# SCLK = MIDI_DABD  = P9:31 = PIN_P9
-# CS0 = SPI_CS0 (OSD)  = MIDI_CLKBD = P8:5 = PIN_Y19
-# CS1 = SPI_CS1 (IO)   = P8:6 = PIN_AA17
-# CS2 = SPI_CS2 (FPGA) = P9:42 = PIN_W3
+# D0, USB3 pin 6, CS0  = SPI_CS0 (OSD)  = MIDI_CLKBD = P8:5 = PIN_Y19
+# D1, USB3 pin 3, MOSI = P9:30 = PIN_W4
+# D2, USB3 pin 8, MISO = MIDI_WSBD  = P9:29 = PIN_R9
+# D3, USB3 pin 5, SCLK = MIDI_DABD  = P9:31 = PIN_P9
+set_location_assignment PIN_Y19  -to SPI_CS0_CLKBD
 set_location_assignment PIN_W4   -to SPI_MOSI
 set_location_assignment PIN_R9   -to SPI_MISO_WSBD
 set_location_assignment PIN_P9   -to SPI_SCLK_DABD
-set_location_assignment PIN_Y19  -to SPI_CS0_CLKBD
-set_location_assignment PIN_AA17 -to SPI_CS1
-set_location_assignment PIN_W3   -to SPI_CS2
 
 #============================================================
 # PMOD3 UART   (P8:3 Tx, 4 Rx GPIO0_D00/01) 
 #============================================================
+# D4, USB3 no pin, RXD = UART RX = P8:4 = PIN_Y18
+# D5, USB3 pin 2, TXD = UART TX = P8:3 = PIN_W18
+# D6, USB3 pin 7, CS1 = SPI_CS1 (IO)   = UART CTS = P8:6 = PIN_AA17
+# D7, USB3 pin 9, CS2 = SPI_CS2 (FPGA) = UART RTS = P9:42 = PIN_W3
 set_location_assignment PIN_Y18 -to UART_RXD
 set_location_assignment PIN_W18 -to UART_TXD
-
+set_location_assignment PIN_AA17 -to SPI_CS1
+set_location_assignment PIN_W3   -to SPI_CS2
 
 #============================================================
 # JOYSTICK DB9 / USB3 USER PORT
 #============================================================
+# USB3 pin 9 = TX+     = JOY1_B2_P9 = PIN_J4 = [3V3]
+# USB3 pin 7 = DRAIN   = JOY1_RIGHT = PIN_F5 = TXD
+# USB3 pin 5 = RX-     = JOY1_LEFT  = PIN_F4 = PS2M_CLK
+# USB3 pin 6 = RX+     = JOYX_SEL_O = PIN_K5 = PS2M_DAT
+# USB3 pin 3 = D+      = JOY1_DOWN  = PIN_J9 = PS2K_DAT
+# USB3 pin 8 = TX-     = JOY1_B1_P6 = PIN_H3 = RXD
+# USB3 pin 2 = D-      = JOY1_UP    = PIN_J8 = PS2K_CLK
 set_location_assignment PIN_J4 -to JOY1_B2_P9
 set_location_assignment PIN_H3 -to JOY1_B1_P6
 set_location_assignment PIN_J8 -to JOY1_UP

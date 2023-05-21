@@ -13,3 +13,4 @@ set_global_assignment -name VERILOG_MACRO "SDRAM_tWR=2"
 set_global_assignment -name VERILOG_MACRO "SDRAM_tRP=18000"
 set_global_assignment -name VERILOG_MACRO "SDRAM_RISKCONTENTION=0"
 
+set_global_assignment -name VERILOG_MACRO "DEMISTIFY_de0cv=1"

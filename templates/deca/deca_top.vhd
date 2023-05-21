@@ -219,13 +219,13 @@ architecture RTL of deca_top is
 		);
 	end component;
 
-	component pll2
-		port (
-			inclk0 : in std_logic;
-			c0     : out std_logic;
-			locked : out std_logic
-		);
-	end component;
+	-- component pll2
+	-- 	port (
+	-- 		inclk0 : in std_logic;
+	-- 		c0     : out std_logic;
+	-- 		locked : out std_logic
+	-- 	);
+	-- end component;
 
 	-- VIDEO signals
 	signal vga_clk   : std_logic;
