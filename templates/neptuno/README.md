@@ -1,13 +1,4 @@
-# xxxxx [DeMiSTified](https://github.com/robinsonb5/DeMiSTify)  - NeptUNO port
-
-xx/xx/23 NeptUNO port DeMiSTified by @yyy from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx by @xxx   
-xx/xx/23 NeptUNO port by @yyy from previously DeMiSTified core https://github.com/xxxx by @xxx   
-
-[Read this guide about DeMySTifying a core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
-
-### STATUS
-
-* Working fine
+# [DeMiSTified](https://github.com/robinsonb5/DeMiSTify)  NeptUNO port
 
 ### Compile the project in Quartus:
 
@@ -22,14 +13,12 @@ git clone  --recursive https://github.com/[repo_name]/[core_name]
 ### Instructions to Full compile the project for a specific board:
 
 ```sh
-git clone https://github.com/[repo_name]/[core_name]
+git clone --recursive https://github.com/[repo_name]/[core_name]
 cd [core_name]
-#Do a first make (will finish in error) but it will download missing submodules 
-make
 cd DeMiSTify
 #Create file site.mk in DeMiSTify folder 
 cp site.template site.mk
-#Edit site.mk and add your own PATHs to Quartus (Q18)
+#Edit site.mk and add your own PATHs to Quartus (17 or greater) in Q18 line
 gedit site.mk
 #Go back to root folder and do a make with board target (deca, neptuno, uareloaded, atlas_cyc). If not specified it will compile for all targets.
 cd ..

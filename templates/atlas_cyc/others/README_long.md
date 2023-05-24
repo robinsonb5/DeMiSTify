@@ -1,4 +1,30 @@
-# [DeMiSTified](https://github.com/robinsonb5/DeMiSTify) Atlas CYC1000 port
+# xxxxx  [DeMiSTified](https://github.com/robinsonb5/DeMiSTify) - Atlas CYC1000 port
+
+xx/xx/23 Atlas CYC1000 port DeMiSTified by @yyy from original MiST xxxxxxx https://github.com/mist-devel/xxxxxxxxxxx by @xxx   
+xx/xx/23 Atlas CYC1000 port by @yyy from previously DeMiSTified core https://github.com/xxxx by @xxx   
+
+[Read this guide about DeMySTifying a core](https://github.com/DECAfpga/DECA_board/tree/main/Tutorials/DeMiSTify).
+
+### STATUS
+
+* VGA version only at the moment.
+* ~~HDMI video outputs special resolution so will not work on all monitors.~~ 
+
+### FEATURES
+
+* ~~HDMI video output~~
+* VGA 222 video output is available through an HDMI to VGA adapter
+* HDMI audio output
+* Audio Sigma-Delta output
+* ~~Audio output (Midi, I2S)~~
+* Joystick support
+  * Tested with a Megadrive 6 button gamepad ~~(a permanent high level is applied on pin 7 of DB9, so only buttons B and C work)~~
+
+
+**Additional hardware required**:
+
+* PS/2 keyboard 
+* ~~USB keyboard~~ 
 
 ### Compile the project in Quartus
 

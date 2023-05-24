@@ -81,7 +81,7 @@ Genera las señales PS/2 a 15000 baudios que simulan las teclas pulsadas/soltada
 `define USB_INT_EN_FALL_CLR 	8'h12
 `define USB_INT_STS   			8'h13
 `define USB_INT_LATCH   		8'h14
-`define DEBUG   				8'h15
+//`define DEBUG   				8'h15
 `define SCRATCH_REG   			8'h16
 `define SCRATCH_REG_SET   		8'h17
 `define SCRATCH_REG_CLR   		8'h18
