@@ -563,7 +563,11 @@ static void SendHDFCfg()
 __weak void OpenHardfile(const char *filename,int unit)
 {
 	if(FileOpen(&hdf[unit].file,filename))
+	{
+		SeedBookmarks(&hdf[unit].file);
 		GetHardfileGeometry(&hdf[unit]);
+	}
+	
 	SendHDFCfg();
 }
 

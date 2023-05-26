@@ -134,6 +134,8 @@ DIRENTRY *NextDirEntry(int prev,int (*matchfunc)(const char *fn));
 int FindByCluster(uint32_t parent, uint32_t cluster);
 int ValidateDirectory(uint32_t directory);
 
+void SeedBookmarks(fileTYPE *file);
+
 extern unsigned int dir_entries;             // number of entries in directory table
 extern char longfilename[261];
 

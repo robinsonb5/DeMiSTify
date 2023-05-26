@@ -418,12 +418,23 @@ int WorstBookmark(fileTYPE *file)
 	return(worst);
 }
 
+void SeedBookmarks(fileTYPE *file)
+{
+	int i;
+	for(i=0;i<CONFIG_FILEBOOKMARKS;++i)
+	{
+		int p=i*(file->size/CONFIG_FILEBOOKMARKS);
+		FileSeek(file,p);
+	}
+	FileSeek(file,0);
+}
+
 
 void FileSeek(fileTYPE *file, uint32_t pos)
 {
 	uint32_t p=pos>>9;
 	uint32_t pm=p;
-	uint32_t currentsector;
+	uint32_t currentsector_masked;
 	uint32_t cluster;
 
 	if(!file || !file->size)
@@ -435,10 +446,10 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		return;
 
 	pm&=~cluster_mask;
-	currentsector=file->sector&~cluster_mask;
+	currentsector_masked=file->sector&~cluster_mask;
 	cluster=file->cluster;
 
-	if(pm==currentsector)	// Is the new position within the same cluster?
+	if(pm==currentsector_masked)	// Is the new position within the same cluster?
 	{
 		file->sector=p;
 	}
@@ -460,19 +471,20 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 		}
 
 		/* record bookmark */
-		p-=file->sector;
 
-		idx=BestBookmark(file,currentsector);
+		idx=BestBookmark(file,currentsector_masked);
 
 		/* We don't bother bookmarking at the start of the file, or if we're within bookmark_threshold of an existing bookmark */
-		if(((currentsector>file->bookmark_threshold) && (idx<0)) || 
-			((idx>=0) && (currentsector-file->bookmarks[idx].sector) > file->bookmark_threshold))
+		if(((currentsector_masked>file->bookmark_threshold) && (idx<0)) || 
+			((idx>=0) && (currentsector_masked-file->bookmarks[idx].sector) > file->bookmark_threshold))
 		{
 			idx=WorstBookmark(file);
-			file->bookmarks[idx].sector=currentsector;
+			file->bookmarks[idx].sector=currentsector_masked;
 			file->bookmarks[idx].cluster=cluster;
 		}
 
+		/* Step forward from the bookmark's start to the requested position */
+		p-=file->sector;
 		FileNextSector(file,p);
 	}
 	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
