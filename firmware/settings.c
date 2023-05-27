@@ -12,7 +12,7 @@
 extern fileTYPE file; /* Import from main.c */
 
 int scandouble=0;
-void ToggleScandoubler()
+__weak void ToggleScandoubler()
 {
 	scandouble^=1;
 	SPI(0xff);
@@ -49,7 +49,7 @@ __weak void coretoconfig(char *buf)
 
 __weak int loadsettings(const char *filename)
 {
-	if(filename && FileOpen(&file,filename))
+	if(FileOpen(&file,filename)) /* FileOpen will reject null filenames, so no need to test for that separately */
 	{
 		if(FileReadSector(&file,sector_buffer))
 		{
@@ -61,13 +61,32 @@ __weak int loadsettings(const char *filename)
 
 __weak int savesettings(const char *filename)
 {
-	if(filename && FileOpen(&file,filename))
+	if(FileOpen(&file,filename))
 	{
-		coretoconfig(sector_buffer);	
+		coretoconfig(sector_buffer);
 		if(FileWriteSector(&file,sector_buffer))
 			return(1);
 	}
 	return(0);
+}
+
+__weak int settings_loadblob(struct settings_blob *part,int unit)
+{
+	int result=0;
+	uint32_t currentdir=CurrentDirectory();
+	if(ValidateDirectory(part->dir))
+		ChangeDirectoryByCluster(part->dir);
+
+	result=loadimage(part->filename,unit);
+	ChangeDirectoryByCluster(currentdir);
+	return(result);	
+}
+
+__weak void settings_storeblob(struct settings_blob *blob,const char *filename)
+{
+	strncpy(blob->filename,filename,11);
+	blob->filename[11]=0;
+	blob->dir=CurrentDirectory();
 }
 
 #endif

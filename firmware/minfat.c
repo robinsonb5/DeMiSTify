@@ -334,10 +334,7 @@ unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer)
     sb += cluster_size * (file->cluster-2);  // cluster offset
     sb += file->sector & cluster_mask;      // sector offset in cluster
 	cachedsector=sb;
-    if (!sd_read_sector(sb, pBuffer)) // read sector from drive
-        return(0);
-    else
-        return(1);
+    return(sd_read_sector(sb, pBuffer)) // read sector from drive
 }
 
 
@@ -352,10 +349,7 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
     sb += cluster_size * (file->cluster-2);  // cluster offset
     sb += file->sector & cluster_mask;      // sector offset in cluster
 	cachedsector=sb;
-    if (!sd_write_sector(sb, pBuffer)) // write sector to drive
-        return(0);
-    else
-        return(1);
+    return(sd_write_sector(sb, pBuffer)) // write sector to drive
 }
 
 #ifdef CONFIG_FILEBOOKMARKS

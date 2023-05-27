@@ -470,10 +470,10 @@ static inline void ATA_WriteSectors(unsigned char* tfr, int unit, int multiple)
 // this function comes from WinUAE, should return the same CHS as WinUAE
 __weak void GetHardfileGeometry(hdfTYPE *pHDF)
 {
-	int total=0;
-	int i, head, cyl, spt, chd;
-	int sptt[] = { 63, 127, 255, 0 };
-	int cyllimit=65535;
+	unsigned int total=0;
+	unsigned int i, head, cyl, spt, chd;
+	unsigned int sptt[] = { 63, 127, 255, 0 };
+	unsigned int cyllimit=65535;
 	
 //	printf("HDF size %d\n",pHDF->file.size);
 

@@ -303,7 +303,7 @@ int sd_init()
 }
 
 
-int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
+int sd_write_sector(unsigned long lba,unsigned char *buf)
 {
     int i,t,timeout;
 
@@ -316,7 +316,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 	{
 //		puts("Write failed\n");
 //		printf("Read command failed at %d (%d)\n",lba,r);
-		return(1);
+		return(0);
 	}
 
     SPI(0xFF); // one byte gap
@@ -324,17 +324,6 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 
     // send sector bytes
 	spi_write(buf,512);
-#if 0
-    for (i = 0; i < 128; i++)
-	{
-		int t=*(int *)buf;
-		SPI((t>>24)&255);
-		SPI((t>>16)&255);
-		SPI((t>>8)&255);
-		SPI(t&255);
-		buf+=4;
-	}
-#endif
     SPI(0xFF); // send CRC lo byte
     SPI(0xFF); // send CRC hi byte
     SPI(0xFF); // Pump the response byte
@@ -346,7 +335,7 @@ int sd_write_sector(unsigned long lba,unsigned char *buf) // FIXME - Stub
 	} while((i==0) && --timeout);
 	SPI(0xff);
 	DisableSD();
-	return(0);
+	return(1);
 }
 
 
@@ -365,17 +354,7 @@ static int sd_read(unsigned char *buf,int bytes)
 		{
 			register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 			if(buf)
-			{
 				spi_read(buf,bytes);
-#if 0
-				do
-				{
-					int t,v;
-					*spiptr=0xff;
-					*buf++=*spiptr;
-				} while(--bytes);
-#endif
-			}
 			else
 			{
 				EnableDirectSD();
