@@ -39,22 +39,17 @@
 #include "spi_sd.h"
 #include "ide.h"
 #include "diskimg.h"
+#include "romimg.h"
 #include "statusword.h"
 #include "settings.h"
 #include "arcfile.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
-#define DIRECTUPLOAD 0x10
-
 #define LINELENGTH 32
 
-
+static char unit;
 int menupage;
-unsigned char romtype=0;
-unsigned char unit=0;
-
-fileTYPE file;
 
 #ifdef CONFIG_SETTINGS
 char std_label_exit[]="             Exit            \x81";
@@ -63,92 +58,6 @@ char std_label_back[]="\x80            Back";
 char std_label_exit[]="\x80 Exit";
 char std_label_back[]="\x80 Back";
 #endif
-
-#ifndef CONFIG_WITHOUT_FILESYSTEM
-#define SPIFPGA(a,b) EnableFpga(); *spiptr=(a); *spiptr=(b); DisableFpga();
-int LoadROM(const char *fn)
-{
-	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
-	int i;
-	if(FileOpen(&file,fn))
-	{
-		int sendsize;
-		int idx;
-		int imgsize=file.size;
-
-		idx=configstring_setindex(fn);
-
-#ifdef CONFIG_ARCFILE
-		/* Load Arc file, then load the associated ROM */
-		if(idx==CONFIGSTRING_INDEX_ARC)
-		{
-			int default_dip;
-			if((default_dip=arcfile_open(fn)))
-			{
-				spi_uio_cmd8(UIO_SET_MOD, arcstate.mod);
-				romtype=0; /* ROMs loaded alongside .arc files must have index 0 */
-				LoadROM(arcstate.name);
-			}
-			return(1);
-		}
-#endif
-
-//		if(configstring_coretype&DIRECTUPLOAD)	/* Send a dummy file info */
-//		{
-//			unsigned int i;
-			EnableFpga();
-			*spiptr=SPI_FPGA_FILE_INFO;
-			for(i=0;i<11;++i)
-				*spiptr=fn[i];
-			for(i=12;i<32;++i)
-				*spiptr=0xff;
-			DisableFpga();
-//		}
-		*spiptr=0xFF;
-
-		SPIFPGA(SPI_FPGA_FILE_TX,1);
-
-		while(imgsize)
-		{
-			char *buf=sector_buffer;
-			int result;
-
-			sendsize=512;
-			imgsize-=512;
-			if(imgsize<0)
-			{
-				sendsize=imgsize+512;
-				imgsize=0;
-			}
-
-			if(sendsize==512 && (configstring_coretype&DIRECTUPLOAD))
-				result=FileReadSector(&file,0);
-			else
-			{
-				result=FileReadSector(&file,sector_buffer);
-				EnableFpga();
-				*spiptr=SPI_FPGA_FILE_TX_DAT;
-				do
-				{
-					*spiptr=*buf++;
-				} while(--sendsize);
-				DisableFpga();
-			}
-			if(!result)
-				return(0);
-
-			FileNextSector(&file,1);
-		}
-
-		SPIFPGA(SPI_FPGA_FILE_TX,0);
-
-		return(1);
-	}
-	else
-		return(0);
-}
-#endif
-
 
 int menuindex;
 int moremenu;
@@ -228,62 +137,16 @@ int setcuefile(const char *filename)
 }
 #endif
 
+
 #ifdef CONFIG_WITHOUT_FILESYSTEM
 
+/* Stub functions to allow building without filesystem (for cores with embedded ROM.) */
 static void fileselector(int row){}
 void selectrom(int row) {}
 int listroms() { return 0; }
 static void scrollroms(int row) {}
 
 #else
-void IDE_and_DISKIMG_you_must_override_loadimg();
-
-__weak int loadimage(char *filename,int unit)
-{
-	#ifdef CONFIG_IDE
-	#ifdef CONFIG_DISKIMG
-	IDE_and_DISKIMG_you_must_override_loadimg();
-	#endif
-	#endif
-	switch(unit)
-	{
-		case 0:
-			return(LoadROM(filename));
-			break;
-#ifdef CONFIG_IDE
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-			OpenHardfile(filename,unit-'0');
-			break;
-#endif
-#ifdef CONFIG_DISKIMG
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-			diskimg_mount(0,unit-'0');				
-			return(diskimg_mount(filename,unit-'0'));				
-			break;
-#endif
-#ifdef CONFIG_CD
-		case 'C':
-//				printf("Opening %s\n",filename ? filename : "(null)");
-			return(setcuefile(filename));
-			break;
-#endif
-#ifdef CONFIG_SETTINGS
-		case 'S':
-			return(loadsettings(filename));
-			break;
-		case 'T':
-			return(savesettings(filename));
-			break;
-#endif
-	}
-}
-
 
 char filename[12];
 void selectrom(int row)

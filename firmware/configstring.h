@@ -6,6 +6,8 @@
 
 extern unsigned char configstring_index;
 extern unsigned char configstring_coretype;
+#define DIRECTUPLOAD 0x10
+#define configstring_direct_upload(x) (configstring_coretype&DIRECTUPLOAD)
 
 void configstring_begin();
 void configstring_end();
@@ -24,6 +26,7 @@ int configstring_matchextension(const char *ext);
 /* Fetch a number of characters from the configstring's corename field, padded with spaces
    BEWARE - null terminated, so buffer must have room for one extra byte. */
 void configstring_getcorename(char *corename,int chars);
+
 
 #endif
 

@@ -4,7 +4,10 @@
 #include "statusword.h"
 #include "menu.h"
 #include "user_io.h"
+#include "romimg.h"
 #include "spi.h"
+
+#include <string.h>
 
 /* If settings files are supported, we provide a default implementation of loading and saving configs,
    which can be replaced in overrides.c */
