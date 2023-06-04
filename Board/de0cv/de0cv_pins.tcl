@@ -230,9 +230,9 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[28]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[29]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[30]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[32]
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[32]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[33]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[34]
+#set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[34]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[35]
 
 set_location_assignment PIN_H16 -to GPIO_1[0]
@@ -267,10 +267,22 @@ set_location_assignment PIN_F13 -to GPIO_1[28]
 set_location_assignment PIN_F12 -to GPIO_1[29]
 set_location_assignment PIN_G16 -to GPIO_1[30]
 set_location_assignment PIN_G15 -to GPIO_1[31]
-set_location_assignment PIN_G13 -to GPIO_1[32]
+#set_location_assignment PIN_G13 -to GPIO_1[32]
 set_location_assignment PIN_G12 -to GPIO_1[33]
-set_location_assignment PIN_J17 -to GPIO_1[34]
+#set_location_assignment PIN_J17 -to GPIO_1[34]
 set_location_assignment PIN_K16 -to GPIO_1[35]
+
+
+set_location_assignment PIN_G13 -to AUDIO_L
+set_location_assignment PIN_J17 -to AUDIO_R
+
+#set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to AUDIO_L
+#set_instance_assignment -name CURRENT_STRENGTH_NEW 4MA -to AUDIO_R
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to AUDIO_L
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to AUDIO_R
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUDIO_L
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUDIO_R
+
 
 
 # --------------------------------
