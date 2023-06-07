@@ -4,6 +4,8 @@
 #include "ide.h"
 #include "settings.h"
 #include "spi.h"
+#include "user_io.h"
+#include "arcfile.h"
 #include "configstring.h"
 
 unsigned char romtype=0;

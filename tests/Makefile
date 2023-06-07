@@ -31,6 +31,7 @@ firmware: $(SUBMODULES)
 	make -C firmware_basic -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=8192 ROMSIZE2=4096
 	make -C firmware_diskimg -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=8192 ROMSIZE2=8192
 	make -C firmware_ide -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=8192 ROMSIZE2=8192
+	make -C firmware_arcfile -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) ROMSIZE1=8192 ROMSIZE2=8192
 	make -C bookmarks
 
 .PHONY: clean
@@ -38,5 +39,6 @@ clean: $(SUBMODULES)
 	make -C firmware_basic -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) clean
 	make -C firmware_diskimg -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) clean
 	make -C firmware_ide -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) clean
+	make -C firmware_arcfile -f ../$(DEMISTIFYPATH)/firmware/Makefile DEMISTIFYPATH=../$(DEMISTIFYPATH) clean
 	make -C bookmarks clean
 
