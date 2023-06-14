@@ -115,7 +115,7 @@ extern unsigned int fat32;
 unsigned int FindDrive(void);
 unsigned int GetFATLink(unsigned int cluster);
 void FileNextSector(fileTYPE *file, int count);
-unsigned int FileOpen(fileTYPE *file, const char *name);
+DIRENTRY *FileOpen(fileTYPE *file, const char *name);
 unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer);
 unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer);
 //unsigned char FileReadEx(fileTYPE *file, unsigned char *pBuffer, uint32_t nSize);

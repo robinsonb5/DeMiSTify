@@ -15,8 +15,9 @@ fileTYPE file;
 int LoadROM(const char *fn)
 {
 	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	char *direntry;
 	int i;
-	if(FileOpen(&file,fn))
+	if((direntry = (char *)FileOpen(&file,fn)))
 	{
 		int sendsize;
 		int idx;
@@ -41,12 +42,9 @@ int LoadROM(const char *fn)
 
 		EnableFpga();
 		*spiptr=SPI_FPGA_FILE_INFO;
-		for(i=0;i<11;++i)
-			*spiptr=fn[i];
-		for(i=12;i<32;++i)
-			*spiptr=0xff;
+		for(i=0;i<32;++i)
+			*spiptr=*direntry++;
 		DisableFpga();
-		*spiptr=0xFF;
 
 		SPIFPGA(SPI_FPGA_FILE_TX,1);
 
@@ -63,7 +61,7 @@ int LoadROM(const char *fn)
 				imgsize=0;
 			}
 
-			if(sendsize==512 && configstring_direct_upload())
+			if(configstring_direct_upload())
 				result=FileReadSector(&file,0);
 			else
 			{

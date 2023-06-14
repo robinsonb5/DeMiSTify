@@ -267,7 +267,7 @@ DIRENTRY *GetDirEntry(const char *name)
 }
 
 
-unsigned int FileOpen(fileTYPE *file, const char *name)
+DIRENTRY *FileOpen(fileTYPE *file, const char *name)
 {
     DIRENTRY *p;        // pointer to current entry in sector buffer
 	int bm;
@@ -299,7 +299,7 @@ unsigned int FileOpen(fileTYPE *file, const char *name)
 		file->bookmark_threshold=(file->size>>9)/(8*CONFIG_FILEBOOKMARKS);
 #endif
 
-		return(1);
+		return(p);
 	}
 
     return(0);
@@ -491,7 +491,7 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 	if(!file || !file->size)
 		return;
 	file->cursor=pos;
-	if((p<(file->sector&(~(cluster_mask)))
+	if((p<(file->sector&(~(cluster_mask)))))
 	{
 		file->sector=0;
 		file->cursor=0;

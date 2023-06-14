@@ -16,7 +16,7 @@ void arcfile_init()
 
 int arcfile_open(const char *filename)
 {
-	int result=0;
+	DIRENTRY *result=0;
 	char buffer[4];
 	memset(&arcstate,0,sizeof(arcstate));
 	result=FileOpen(&arcstate.file,filename);
