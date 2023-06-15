@@ -189,9 +189,9 @@ void user_io_eth_receive_tx_frame(uint8_t *, uint16_t);
 void user_io_mouse(unsigned char idx, unsigned char b, char x, char y, char z);
 void user_io_kbd(unsigned char m, unsigned char *k, uint8_t priority, unsigned short vid, unsigned short pid);
 char user_io_create_config_name(char *s);
-void user_io_digital_joystick(unsigned char, unsigned char);
-void user_io_digital_joystick_ext(unsigned char, uint16_t);
-void user_io_analog_joystick(unsigned char, int *a);
+void user_io_digital_joystick(int, int);
+void user_io_digital_joystick_ext(int, int);
+void user_io_analog_joystick(int, int *a);
 char user_io_osd_is_visible();
 void user_io_send_buttons(char);
 

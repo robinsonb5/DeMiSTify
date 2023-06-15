@@ -341,6 +341,16 @@ int sd_write_sector(unsigned long lba,unsigned char *buf)
 
 extern void spi_readsector(long *buf);
 
+static void directsector(int bytes)
+{
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	EnableDirectSD();
+	do
+	{
+		*spiptr=0xff;
+	} while(--bytes);
+}
+
 static int sd_read(unsigned char *buf,int bytes)
 {
 	int result=0;
@@ -352,22 +362,13 @@ static int sd_read(unsigned char *buf,int bytes)
 		v=SPI_READ();
 		if(v==0xfe)
 		{
-			register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
 			if(buf)
 				spi_read(buf,bytes);
 			else
-			{
-				EnableDirectSD();
-				do
-				{
-					int t,v;
-					*spiptr=0xff;
-				} while(--bytes);
-			}
+				directsector(bytes);
 			SPI(0xff);
 			SPI(0xff);
-			if(!buf)
-				DisableDirectSD();
+			DisableDirectSD();
 
 			i=1; // break out of the loop
 			result=1;

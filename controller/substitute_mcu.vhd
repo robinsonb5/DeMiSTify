@@ -64,10 +64,10 @@ entity substitute_mcu is
 
 		-- Joysticks and other inputs
 		
-		joy1 : in std_logic_vector(7 downto 0) := "11111111";
-		joy2 : in std_logic_vector(7 downto 0) := "11111111";
-		joy3 : in std_logic_vector(7 downto 0) := "11111111";
-		joy4 : in std_logic_vector(7 downto 0) := "11111111";
+		joy1 : in std_logic_vector(demistify_joybits-1 downto 0) := (others => '1');
+		joy2 : in std_logic_vector(demistify_joybits-1 downto 0) := (others => '1');
+		joy3 : in std_logic_vector(demistify_joybits-1 downto 0) := (others => '1');
+		joy4 : in std_logic_vector(demistify_joybits-1 downto 0) := (others => '1');
 		
 		buttons : in std_logic_vector(31 downto 0) := (others => '1');
 		
@@ -205,10 +205,10 @@ signal debug_tocpu : std_logic_vector(31 downto 0);
 signal debug_wr : std_logic;
 
 -- Remapped joystick data
-signal joy1_r : std_logic_vector(7 downto 0);
-signal joy2_r : std_logic_vector(7 downto 0);
-signal joy3_r : std_logic_vector(7 downto 0);
-signal joy4_r : std_logic_vector(7 downto 0);
+signal joy1_r : std_logic_vector(demistify_joybits-1 downto 0);
+signal joy2_r : std_logic_vector(demistify_joybits-1 downto 0);
+signal joy3_r : std_logic_vector(demistify_joybits-1 downto 0);
+signal joy4_r : std_logic_vector(demistify_joybits-1 downto 0);
 
 signal peripheral_block : std_logic_vector(3 downto 0);
 
@@ -221,10 +221,10 @@ platform(7 downto 1) <= (others=>'0');
 platform(0) <= '1' when spirtc=true else '0';
 
 -- Remap joystick data;
-joy1_r(7 downto 4) <= not joy1(7 downto 4);
-joy2_r(7 downto 4) <= not joy2(7 downto 4);
-joy3_r(7 downto 4) <= not joy3(7 downto 4);
-joy4_r(7 downto 4) <= not joy4(7 downto 4);
+joy1_r(demistify_joybits-1 downto 4) <= not joy1(demistify_joybits-1 downto 4);
+joy2_r(demistify_joybits-1 downto 4) <= not joy2(demistify_joybits-1 downto 4);
+joy3_r(demistify_joybits-1 downto 4) <= not joy3(demistify_joybits-1 downto 4);
+joy4_r(demistify_joybits-1 downto 4) <= not joy4(demistify_joybits-1 downto 4);
 joy1_r(3 downto 0) <= not (joy1(0)&joy1(1)&joy1(2)&joy1(3));
 joy2_r(3 downto 0) <= not (joy2(0)&joy2(1)&joy2(2)&joy2(3));
 joy3_r(3 downto 0) <= not (joy3(0)&joy3(1)&joy3(2)&joy3(3));
@@ -684,12 +684,21 @@ begin
 							mouserecvreg<='0';
 							mem_busy<='0';
 
-						when X"E8" => -- joysticks;
-							from_mem <= joy4_r & joy3_r & joy2_r & joy1_r;
+						when X"E8" => -- joysticks - ports 1 and 2;
+							-- Pack the joystick bits right-aligned, so that if joybits=8 the layout is the same as before for ports 1 and 2
+							from_mem <= (others => '0');
+							from_mem(demistify_joybits*2-1 downto demistify_joybits) <= joy2_r;
+							from_mem(demistify_joybits-1 downto 0) <= joy1_r;
 							mem_busy<='0';
 
 						when X"EC" => -- Misc inputs;
 							from_mem(31 downto 0)<=not buttons;
+							mem_busy<='0';
+
+						when X"F0" => -- joysticks - ports 3 and 4;
+							from_mem <= (others => '0');
+							from_mem(demistify_joybits*2-1 downto demistify_joybits) <= joy4_r;
+							from_mem(demistify_joybits-1 downto 0) <= joy3_r;
 							mem_busy<='0';
 
 						when X"FC" => -- Platform capabilities;

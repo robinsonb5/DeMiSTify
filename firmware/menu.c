@@ -18,18 +18,15 @@
 
 #include <stdio.h>
 
+#include "config.h"
+
 #include "font.h"
-#include "user_io.h"
 #include "osd.h"
 #include "menu.h"
 #include "keyboard.h"
 #include "spi.h"
 #include "timer.h"
 #include "settings.h"
-
-#include "config.h"
-
-#include "gamepadkeys.h"
 #include "user_io.h"
 
 
@@ -64,6 +61,13 @@
 #endif
 
 #endif
+
+
+#ifndef CONFIG_JOYBITS
+#define CONFIG_JOYBITS 8
+#endif
+
+#define JOYMASK ((1<<CONFIG_JOYBITS)-1)
 
 
 /* Not currently using hotkeys */
@@ -178,10 +182,12 @@ __weak void Menu_Joystick(int port,int joymap)
 
 
 /* Key -> gamepad mapping.  Weak linkage to allow overrides.
-   FIXME - needs to be wider to allow for extra buttons. */
+   If you increase CONFIG_JOYBITS and have CONFIG_JOYKEYS enabled
+   then this must be overridden and extra entried added. */
 #ifdef CONFIG_JOYKEYS
 __weak unsigned char joy_keymap[]=
 {
+	/* Port 2 */
 	KEY_CAPSLOCK,
 	KEY_LSHIFT,
 	KEY_ALT,
@@ -190,6 +196,7 @@ __weak unsigned char joy_keymap[]=
 	KEY_S,
 	KEY_A,
 	KEY_D,
+	/* Port 1 */
 	KEY_ENTER,
 	KEY_RSHIFT,
 	KEY_ALTGR,
@@ -217,7 +224,7 @@ void Menu_UpdateInput()
 	UpdateKeys(menu_visible);
 	menu_joy=HW_JOY(REG_JOY);
 	menu_buttons=HW_JOY(REG_JOY_EXTRA);
-	menu_joymerged=(menu_joy&0xff)|(menu_joy>>8); // Merge ports;
+	menu_joymerged=(menu_joy&JOYMASK)|(menu_joy>>CONFIG_JOYBITS); // Merge ports;
 }
 
 int Menu_PollInput(int key, int joymask, int buttonmask)
@@ -276,7 +283,7 @@ void Menu_Run()
 #ifdef CONFIG_JOYKEYS
 		if(joykeys_active)
 		{
-			int joybit=0x8000;
+			int joybit=(1<<(2*CONFIG_JOYBITS-1));
 			unsigned char *key=joy_keymap;
 			while(joybit)
 			{
@@ -288,8 +295,8 @@ void Menu_Run()
 #endif
 		TestKey(KEY_OSD_PAGEUP);
 		TestKey(KEY_OSD_PAGEDOWN);
-		Menu_Joystick(0,joy&0xff);
-		Menu_Joystick(1,joy>>8);
+		Menu_Joystick(0,joy&JOYMASK);
+		Menu_Joystick(1,joy>>CONFIG_JOYBITS);
 		return;
 	}
 

@@ -122,7 +122,8 @@ architecture rtl of chameleon64_top is
 	signal spi_req : std_logic;
 
 -- internal SPI signals
-	
+
+	signal spi_do : std_logic;
 	signal spi_toguest : std_logic;
 	signal spi_fromguest : std_logic;
 	signal spi_ss2 : std_logic;
@@ -154,10 +155,10 @@ architecture rtl of chameleon64_top is
 	signal c64_joy2 : unsigned(6 downto 0);
 	signal c64_joy3 : unsigned(6 downto 0);
 	signal c64_joy4 : unsigned(6 downto 0);
-	signal joy1 : unsigned(7 downto 0);
-	signal joy2 : unsigned(7 downto 0);
-	signal joy3 : unsigned(7 downto 0);
-	signal joy4 : unsigned(7 downto 0);
+	signal joy1 : unsigned(demistify_joybits-1 downto 0);
+	signal joy2 : unsigned(demistify_joybits-1 downto 0);
+	signal joy3 : unsigned(demistify_joybits-1 downto 0);
+	signal joy4 : unsigned(demistify_joybits-1 downto 0);
 	signal usart_rx : std_logic:='1'; -- Safe default
 	signal ir_data : std_logic;
 
@@ -350,10 +351,13 @@ rtc_cs<='0';
 	
 	mergeinputs : entity work.chameleon_mergeinputs
 	generic map (
+		joybits => demistify_joybits,
 		button1=>demistify_button1,
 		button2=>demistify_button2,
 		button3=>demistify_button3,
-		button4=>demistify_button4
+		button4=>demistify_button4,
+		button5=>demistify_button5,
+		button6=>demistify_button6
 	)
 	port map (
 		clk => clk_100,
@@ -392,7 +396,10 @@ rtc_cs<='0';
 	
 	midi_txd<='1';
 
-	guest: COMPONENT guest_top
+	spi_do <= spi_miso when spi_ss4='0' else 'Z';
+	spi_fromguest <= spi_do;
+
+	guest: COMPONENT guest
 	PORT map
 	(
 		CLOCK_27 => clk8&clk8, -- Comment out one of these lines to match the guest core.
@@ -416,8 +423,7 @@ rtc_cs<='0';
 --		SDRAM_CKE => ram_cke, -- Hardwired on TC64
 
 		-- SPI interface to control module
-		SPI_DO_IN => spi_miso,
-		SPI_DO => spi_fromguest,
+		SPI_DO => spi_do,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
@@ -469,7 +475,7 @@ rtc_cs<='0';
 		sysclk_frequency => 500,
 		debug => false,
 		jtag_uart => false,
-		-- SPI_FASTBIT => 2, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
+		SPI_FASTBIT => 0, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
 		-- SPI_INTERNALBIT => 0, -- This will make SPI comms faster, for cores which are clocked fast enough.
 		SPI_EXTERNALCLK => true -- V1 hardware has external limitations on SD card speed.
 	)

@@ -152,15 +152,8 @@ architecture rtl of chameleon64v2_top is
 	signal ps2_mouse_dat_out: std_logic;
 	
 	signal intercept : std_logic;
-	
-	signal sdram_req : std_logic := '0';
-	signal sdram_ack : std_logic;
-	signal sdram_we : std_logic := '0';
-	signal sdram_a : unsigned(24 downto 0) := (others => '0');
-	signal sdram_d : unsigned(7 downto 0);
-	signal sdram_q : unsigned(7 downto 0);
 
-	-- Video
+-- Video
 	signal vga_red: std_logic_vector(7 downto 0);
 	signal vga_green: std_logic_vector(7 downto 0);
 	signal vga_blue: std_logic_vector(7 downto 0);
@@ -194,10 +187,10 @@ architecture rtl of chameleon64v2_top is
 	signal c64_joy2 : unsigned(6 downto 0);
 	signal c64_joy3 : unsigned(6 downto 0);
 	signal c64_joy4 : unsigned(6 downto 0);
-	signal joy1 : unsigned(7 downto 0);
-	signal joy2 : unsigned(7 downto 0);
-	signal joy3 : unsigned(7 downto 0);
-	signal joy4 : unsigned(7 downto 0);
+	signal joy1 : unsigned(demistify_joybits-1 downto 0);
+	signal joy2 : unsigned(demistify_joybits-1 downto 0);
+	signal joy3 : unsigned(demistify_joybits-1 downto 0);
+	signal joy4 : unsigned(demistify_joybits-1 downto 0);
 
 -- Debounced buttons
 	signal menu_button_n : std_logic;
@@ -212,6 +205,7 @@ architecture rtl of chameleon64v2_top is
 	
 	signal spi_toguest : std_logic;
 	signal spi_fromguest : std_logic;
+	signal spi_do : std_logic;
 	signal spi_ss2 : std_logic;
 	signal spi_ss3 : std_logic;
 	signal spi_ss4 : std_logic;
@@ -381,10 +375,13 @@ begin
 
 	mergeinputs : entity work.chameleon_mergeinputs
 	generic map (
+		joybits => demistify_joybits,
 		button1=>demistify_button1,
 		button2=>demistify_button2,
 		button3=>demistify_button3,
-		button4=>demistify_button4
+		button4=>demistify_button4,
+		button5=>demistify_button5,
+		button6=>demistify_button6
 	)
 	port map (
 		clk => clk_100,
@@ -427,8 +424,10 @@ begin
 	grn <= unsigned(vga_green(7 downto 3));
 	blu <= unsigned(vga_blue(7 downto 3));
 
+	spi_do <= spi_miso when spi_ss4='0' else 'Z';
+	spi_fromguest <= spi_do;
 
-	guest: COMPONENT guest_top
+	guest: COMPONENT guest
 	PORT map
 	(
 		CLOCK_27 => clk50m&clk50m, -- Comment out one of these lines to match the guest core.
@@ -448,8 +447,7 @@ begin
 		SDRAM_CLK => ram_clk,
 --		SDRAM_CKE => ram_cke,
 		
-		SPI_DO_IN => spi_miso,
-		SPI_DO => spi_fromguest,
+		SPI_DO => spi_do,
 		SPI_DI => spi_toguest,
 		SPI_SCK => spi_clk_int,
 		SPI_SS2	=> spi_ss2,
@@ -494,8 +492,8 @@ begin
 	generic map (
 		sysclk_frequency => 500,
 		debug => false,
-		-- SPI_FASTBIT => 2, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
-		-- SPI_INTERNALBIT => 0, -- This will make SPI comms faster, for cores which are clocked fast enough.
+		SPI_FASTBIT => 0, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.
+		SPI_INTERNALBIT => 0, -- This will make SPI comms faster, for cores which are clocked fast enough.
 		jtag_uart => false
 	)
 	port map (
