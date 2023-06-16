@@ -490,6 +490,7 @@ begin
 
 	controller : entity work.substitute_mcu
 	generic map (
+		-- joybits => demistify_joybits,  -- Define this to 9 or more in demistify_config_pkg if the core needs more than 4 joystick buttons.
 		sysclk_frequency => 500,
 		debug => false,
 		SPI_FASTBIT => 0, -- Reducing this will make SPI comms faster, for cores which are clocked fast enough.

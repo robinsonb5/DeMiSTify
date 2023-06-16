@@ -32,9 +32,47 @@
 // Shift each 2-bit tuple by (keycode & 15)*2.
 unsigned int keytable[16]={0};
 
+
+static char arcade_coinstart_keys[]={0x16,0x1e,0x26,0x25,0x2e,0x36,0x3d,0x3e}; /* PS/2 codes for keys 1 through 8 */
+
+extern int menu_buttons;
+
+__weak void SendArcadeKeys()
+{
+	static unsigned int prev=0x000;
+	unsigned int d=menu_buttons ^ prev;
+	unsigned int s=prev;
+	unsigned int i;
+	DisableInterrupts();
+	for(i=0;i<8;++i)
+	{
+		if(d&0x10) /* Coin / start buttons are in bits 11 downto 4 of menu_buttons. */
+			SendKey(arcade_coinstart_keys[i],0,s&0x10);
+		d>>=1;
+		s>>=1;
+	}
+	EnableInterrupts();
+	prev=menu_buttons;
+}
+
+
+static int isarcadekey(int key)
+{
+	int i;
+	for(i=0;i<8;++i) {
+		if(arcade_coinstart_keys[i]==key)
+			return(1);
+	}
+	return(0);
+}
+
+
 __weak void SendKey(int key, int extkey, int keyup)
 {
-#ifdef CONFIG_SENDKEYS
+#ifdef CONFIG_SENDKEYS_ARCADE
+	if(!isarcadekey(key))
+		return;
+#endif
 	EnableIO();
 	SPI(UIO_KEYBOARD);
 	if(extkey)
@@ -44,7 +82,6 @@ __weak void SendKey(int key, int extkey, int keyup)
 	SPI(key);
 	EnableIO(); /* Ensure select doesn't release too soon. */
 	DisableIO();
-#endif
 }
 
 
@@ -78,8 +115,10 @@ int HandlePS2RawCodes(int blockkeys)
 		{
 			int keyidx=extkey ? key | 0x80 : key;
 			/* Send keys before updating the keytable - allows the core to avoid sending repeats by checking the current key status. */
+#ifdef CONFIG_SENDKEYS
 			if(!blockkeys)
 				SendKey(key,extkey,keyup);
+#endif
 //			printf("%d,%d,%d\n",key,extkey,keyup);
 
 			/* Update the keytable */
@@ -97,6 +136,9 @@ int HandlePS2RawCodes(int blockkeys)
 
 __weak int UpdateKeys(int blockkeys)
 {
+#ifdef CONFIG_SENDKEYS_ARCADE
+	SendArcadeKeys();
+#endif
 	return(HandlePS2RawCodes(blockkeys));
 }
 

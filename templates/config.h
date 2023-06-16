@@ -86,6 +86,13 @@ here, the number of units defaults to 4. */
    a PS/2 keyboard directly then that's probably a better option. */
 #define CONFIG_SENDKEYS
 
+/* Limit key transmission to those required to trigger coin / start buttons.
+   Also causes bits 11 downto 4 of the extra buttons field to be treated as menu / start buttons.
+   Only needed when the core uses the arcade_inputs module but you want to provide your
+   own keyboard -> joystick mapping via CONFIG_JOYKEYS. 
+   (Should be defined in addition to CONFIG_SENDKEYS) */
+#undef CONFIG_SENDKEYS_ARCADE
+
 /* If the core has initialised the keyboard to use scan set 1 the OSD will
    need to use set 1 as well. */
 #undef CONFIG_KEYBOARD_SET1

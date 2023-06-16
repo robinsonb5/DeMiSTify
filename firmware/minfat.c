@@ -722,6 +722,7 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 
 		if (current_directory_start || fat32) // subdirectory is a linked cluster chain
 		{
+			cachedsector=-1;
 			iDirectoryCluster = GetCluster(iDirectoryCluster); // get next cluster in chain
 			 // check if end of cluster chain
 			if (fat32 ? (iDirectoryCluster & 0x0FFFFFF8) == 0x0FFFFFF8 : (iDirectoryCluster & 0xFFF8) == 0xFFF8)
