@@ -310,6 +310,7 @@ void FileNextSector(fileTYPE *file,int count)
 {
     uint32_t sb;
     uint16_t i;
+	cachedsector=-1;
 	if(!file || !file->size)
 		return;
 //	printf("Moving %d sectors forward\n",count);
@@ -333,7 +334,6 @@ unsigned int FileReadSector(fileTYPE *file, unsigned char *pBuffer)
     sb = data_start;                         // start of data in partition
     sb += cluster_size * (file->cluster-2);  // cluster offset
     sb += file->sector & cluster_mask;      // sector offset in cluster
-	cachedsector=sb;
     return(sd_read_sector(sb, pBuffer)); // read sector from drive
 }
 
@@ -348,7 +348,6 @@ unsigned int FileWriteSector(fileTYPE *file, unsigned char *pBuffer)
     sb = data_start;                         // start of data in partition
     sb += cluster_size * (file->cluster-2);  // cluster offset
     sb += file->sector & cluster_mask;      // sector offset in cluster
-	cachedsector=sb;
     return(sd_write_sector(sb, pBuffer)); // write sector to drive
 }
 
@@ -479,6 +478,7 @@ void FileSeek(fileTYPE *file, uint32_t pos)
 
 		/* Step forward from the bookmark's start to the requested position */
 		p-=file->sector;
+//		printf("Stepping forward %d sectors\n",p);
 		FileNextSector(file,p);
 	}
 	if(pos & 511) /* Don't read the sector unless we're seeking part way through a sector */
@@ -659,7 +659,6 @@ DIRENTRY *NextDirEntry(int init,int (*matchfunc)(const char *fn))
 		{
 			if ((iEntry & 0x0F) == 0) // first entry in sector, load the sector
 			{
-				cachedsector=iDirectorySector;
 				sd_read_sector(iDirectorySector++, sector_buffer);
 				pEntry = (DIRENTRY*)sector_buffer;
 			}

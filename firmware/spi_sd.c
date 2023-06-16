@@ -357,24 +357,23 @@ static int sd_read(unsigned char *buf,int bytes)
 	int i=1500000;
 	while(--i)
 	{
-		int v;
 		SPI(0xff);
-		v=SPI_READ();
-		if(v==0xfe)
-		{
-			if(buf)
-				spi_read(buf,bytes);
-			else
-				directsector(bytes);
-			SPI(0xff);
-			SPI(0xff);
-			DisableDirectSD();
-
-			i=1; // break out of the loop
-			result=1;
-		}
+		if(SPI_READ()==0xfe)
+			break;
 	}
-	return(result);
+	if(!i)
+		return(0);
+
+	if(buf)
+		spi_read(buf,bytes);
+	else
+		directsector(bytes);
+	SPI(0xff);
+	SPI(0xff);
+	if(!buf)
+		DisableDirectSD();
+
+	return(1);
 }
 
 int sd_read_sector(unsigned long lba,unsigned char *buf)
@@ -392,6 +391,7 @@ int sd_read_sector(unsigned long lba,unsigned char *buf)
 	{
 		PDBG("Read failed at %d ",lba);
 		PDBG("(%d)",r);
+		DisableSD();
 		return(result);
 	}
 	result=sd_read(buf,512);

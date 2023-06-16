@@ -4,14 +4,17 @@
 
 void spi_write(const char *data,int len)
 {
-	while(len--)
+	do {
 		SPI(*data++);
+	} while(--len);	
 }
 
 
 void spi_read(char *data,int len)
 {
-	while(len--)
-		*data++=SPI(0xff);
+	int k=0xff;
+	do {
+		*data++=SPI(k);
+	} while(--len);
 }
 
