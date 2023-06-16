@@ -688,7 +688,7 @@ begin
 						when X"E8" => -- joysticks - ports 1 and 2;
 							-- Pack the joystick bits right-aligned, so that if joybits=8 the layout is the same as before for ports 1 and 2
 							from_mem <= (others => '0');
-							from_mem(demistify_joybits*2-1 downto demistify_joybits) <= joy2_r;
+							from_mem(joybits*2-1 downto joybits) <= joy2_r;
 							from_mem(joybits-1 downto 0) <= joy1_r;
 							mem_busy<='0';
 
@@ -698,7 +698,7 @@ begin
 
 						when X"F0" => -- joysticks - ports 3 and 4;
 							from_mem <= (others => '0');
-							from_mem(demistify_joybits*2-1 downto demistify_joybits) <= joy4_r;
+							from_mem(joybits*2-1 downto joybits) <= joy4_r;
 							from_mem(joybits-1 downto 0) <= joy3_r;
 							mem_busy<='0';
 
