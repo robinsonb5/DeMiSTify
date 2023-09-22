@@ -417,8 +417,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 		}
 		while(c && line<limit)
 		{
-			int diskunit=0;
-			unsigned int parent=0;
+			unsigned int parent;
 			unsigned int page=0;
 			c=configstring_next();
 
@@ -477,6 +476,8 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 
 			if(page==selpage)
 			{
+				int diskunit='0';
+				int idx=fileindex;
 				int low,high;
 				unsigned int opt=0;
 				unsigned int val;
@@ -494,20 +495,28 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 						nextline=1;
 						break;
 #endif
-#ifndef CONFIG_WITHOUT_FILESELECTOR					
-					case 'S': /* Disk image select */
-						diskunit='0';
+#ifndef CONFIG_WITHOUT_FILESELECTOR
+					/* Disk and ROM image selection.  Both 'F' and 'S' entries take a single digit paramter.
+					   for 'F' entries, the parameter is the upload index, and diskunit must be set to 0.
+					   For 'S' entries, the parameter is copied to diskunit, and remains in ASCII form. */
+					case 'F':
+						diskunit=0;
+						++fileindex;
+					case 'S':
+						/* diskunit will default to 0 rather than '0' for 'F' entries. */						
 						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
 						if(c!=',')
-							diskunit=c;
-						// Fall through...
+						{
+							if(diskunit)
+								diskunit=c; /* Disk unit number remains in ASCII form, with 0 used to indicate ROM images rather than disk images */
+							else
+								idx=c-'0'; /* Upload index is converted from ASCII to integer */
+						}
 						while(c!=',')
 							c=configstring_next();
-					case 'F':
-						if(c!=',')
-							configstring_next();
-						menufileline(line,menufiletitle,fileindex,configidx,diskunit);
-//						menu[line].u.file.cfgidx=configidx;
+
+						/* If an index slot was specified it will be in diskunit - otherwise diskunit will be '0' for 'S' entries, and 0 for 'F' entries */
+						menufileline(line,menufiletitle,idx,configidx,diskunit);
 						low=configstring_copytocomma(menu[line].label,10,0); /* Step over the filetypes */
 						if(low>0)
 						{
@@ -518,12 +527,7 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 								menu[line].label[low+1]=FONT_ARROW_RIGHT;
 								menu[line].label[low+2]=0;
 							}
-//							menu[line].action=MENU_ACTION(&fileselector);
-//							menu[line].u.file.index=fileindex;
-//							menu[line].u.file.unit=diskunit;
 						}
-
-						++fileindex;
 						nextline=1;
 						break;
 #endif
