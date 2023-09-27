@@ -54,6 +54,7 @@
 #define UIO_SIO_OUT     0x20  // serial out
 #define UIO_SET_MOD     0x21  // send core variant from metadata (ARC) file
 #define UIO_SET_RTC     0x22  // send real-time-clock data
+#define UIO_SD_ACK      0x23  // send ack for sector read/write
 
 // extended joystick control (32 bit value)
 #define UIO_JOYSTICK0_EXT   0x60
@@ -191,7 +192,7 @@ void user_io_kbd(unsigned char m, unsigned char *k, uint8_t priority, unsigned s
 char user_io_create_config_name(char *s);
 void user_io_digital_joystick(int, int);
 void user_io_digital_joystick_ext(int, int);
-void user_io_analog_joystick(int, int *a);
+void user_io_analogue_joystick(int, int *a);
 char user_io_osd_is_visible();
 void user_io_send_buttons(char);
 

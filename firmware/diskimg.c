@@ -60,6 +60,7 @@ void diskimg_poll()
 		// Write to file/SD Card
 		if((c & 0x03) == 0x02) {
 			FileSeek(&diskimg[idx].file,lba<<9);
+			spi_uio_cmd8(UIO_SD_ACK,idx);
 			spi_uio_cmd_cont(UIO_SECTOR_WR);
 			spi_read(sector_buffer,512);
 			DisableIO();
@@ -73,6 +74,7 @@ void diskimg_poll()
 
 			// FIXME - DirectIO?
 			FileReadSector(&diskimg[idx].file,sector_buffer);
+			spi_uio_cmd8(UIO_SD_ACK,idx);
 			spi_uio_cmd_cont(UIO_SECTOR_RD);
 			spi_write(sector_buffer,512);
 			DisableIO();
