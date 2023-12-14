@@ -1,6 +1,5 @@
 set_global_assignment -name SDC_FILE ${boardpath}/neptuno/constraints.sdc
 # Audio and Jostick support
-set_global_assignment -name VHDL_FILE ${boardpath}/neptuno/audio_i2s.vhd
 set_global_assignment -name VERILOG_FILE ${boardpath}/neptuno/joydecoder.v
 
 set_global_assignment -name VERILOG_MACRO "SDRAM_WINBOND=1"
@@ -14,3 +13,7 @@ set_global_assignment -name VERILOG_MACRO "SDRAM_tRP=15000"
 
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_PARALLEL_AUDIO=1"
 set_global_assignment -name VERILOG_MACRO "DEMISTIFY_NEPTUNO=1"
+set_global_assignment -name VERILOG_MACRO "NO_DIRECT_UPLOAD=1"
+set_global_assignment -name VERILOG_MACRO "I2S_AUDIO=1"
+set_global_assignment -name VERILOG_MACRO "USE_AUDIO_IN=1"
+set_global_assignment -name VERILOG_MACRO "USE_CLOCK_50=1"

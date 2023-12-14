@@ -7,18 +7,16 @@ set supportclk { clk_50 }
 derive_pll_clocks -create_base_clocks
 derive_clock_uncertainty
 
-# Create a clock for i2s
-create_clock -name i2sclk -period 20.000 {audio_top:audio_i2s|tcount[4]}
 
 # Set pin definitions for downstream constraints
-set RAM_CLK DRAM_CLK
-set RAM_OUT {DRAM_DQ* DRAM_ADDR* DRAM_BA* DRAM_RAS_N DRAM_CAS_N DRAM_WE_N DRAM_*DQM DRAM_CS_N DRAM_CKE}
-set RAM_IN {DRAM_D*}
+set RAM_CLK SDRAM_CLK
+set RAM_OUT {SDRAM_DQ* SDRAM_A* SDRAM_BA* SDRAM_nRAS SDRAM_nCAS SDRAM_nWE  SDRAM_nCS SDRAM_CKE}
+set RAM_IN {SDRAM_DQ*}
 
 set VGA_OUT {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS VGA_BLANK VGA_CLOCK}
 
 # non timing-critical pins would be in the "FALSE_IN/OUT" collection (IN inputs, OUT outputs)
-set FALSE_OUT {LED PS2_* SD_SCK SD_CS SD_MOSI JOY_SELECT SCLK SDIN MCLK LRCLK STM_RST}
+set FALSE_OUT {LED PS2_* SD_SCK SD_CS SD_MOSI JOY_SELECT SCLK I2S_DATA  I2S_LRCK STM_RST}
 set FALSE_IN  {AUDIO_IN SD_MISO JOYSTICK1[*] JOYSTICK2[*] }
 
 #create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}

@@ -35,49 +35,49 @@ set_location_assignment PIN_U22 -to VGA_CLOCK
 set_location_assignment PIN_B2 -to VGA_VS
 set_location_assignment PIN_B3 -to VGA_HS
 
-set_location_assignment PIN_V6 -to DRAM_ADDR[12]
-set_location_assignment PIN_Y4 -to DRAM_ADDR[11]
-set_location_assignment PIN_W1 -to DRAM_ADDR[10]
-set_location_assignment PIN_V5 -to DRAM_ADDR[9]
-set_location_assignment PIN_Y3 -to DRAM_ADDR[8]
-set_location_assignment PIN_AA1 -to DRAM_ADDR[7]
-set_location_assignment PIN_Y2 -to DRAM_ADDR[6]
-set_location_assignment PIN_V4 -to DRAM_ADDR[5]
-set_location_assignment PIN_V3 -to DRAM_ADDR[4]
-set_location_assignment PIN_U1 -to DRAM_ADDR[3]
-set_location_assignment PIN_U2 -to DRAM_ADDR[2]
-set_location_assignment PIN_V1 -to DRAM_ADDR[1]
-set_location_assignment PIN_V2 -to DRAM_ADDR[0]
+set_location_assignment PIN_V6 -to SDRAM_A[12]
+set_location_assignment PIN_Y4 -to SDRAM_A[11]
+set_location_assignment PIN_W1 -to SDRAM_A[10]
+set_location_assignment PIN_V5 -to SDRAM_A[9]
+set_location_assignment PIN_Y3 -to SDRAM_A[8]
+set_location_assignment PIN_AA1 -to SDRAM_A[7]
+set_location_assignment PIN_Y2 -to SDRAM_A[6]
+set_location_assignment PIN_V4 -to SDRAM_A[5]
+set_location_assignment PIN_V3 -to SDRAM_A[4]
+set_location_assignment PIN_U1 -to SDRAM_A[3]
+set_location_assignment PIN_U2 -to SDRAM_A[2]
+set_location_assignment PIN_V1 -to SDRAM_A[1]
+set_location_assignment PIN_V2 -to SDRAM_A[0]
 
-set_location_assignment PIN_V11 -to DRAM_DQ[15]
-set_location_assignment PIN_W10 -to DRAM_DQ[14]
-set_location_assignment PIN_Y10 -to DRAM_DQ[13]
-set_location_assignment PIN_V10 -to DRAM_DQ[12]
-set_location_assignment PIN_V9 -to DRAM_DQ[11]
-set_location_assignment PIN_Y8 -to DRAM_DQ[10]
-set_location_assignment PIN_W8 -to DRAM_DQ[9]
-set_location_assignment PIN_Y7 -to DRAM_DQ[8]
-set_location_assignment PIN_AB5 -to DRAM_DQ[7]
-set_location_assignment PIN_AA7 -to DRAM_DQ[6]
-set_location_assignment PIN_AB7 -to DRAM_DQ[5]
-set_location_assignment PIN_AA8 -to DRAM_DQ[4]
-set_location_assignment PIN_AB8 -to DRAM_DQ[3]
-set_location_assignment PIN_AA9 -to DRAM_DQ[2]
-set_location_assignment PIN_AB9 -to DRAM_DQ[1]
-set_location_assignment PIN_AA10 -to DRAM_DQ[0]
+set_location_assignment PIN_V11 -to SDRAM_DQ[15]
+set_location_assignment PIN_W10 -to SDRAM_DQ[14]
+set_location_assignment PIN_Y10 -to SDRAM_DQ[13]
+set_location_assignment PIN_V10 -to SDRAM_DQ[12]
+set_location_assignment PIN_V9 -to SDRAM_DQ[11]
+set_location_assignment PIN_Y8 -to SDRAM_DQ[10]
+set_location_assignment PIN_W8 -to SDRAM_DQ[9]
+set_location_assignment PIN_Y7 -to SDRAM_DQ[8]
+set_location_assignment PIN_AB5 -to SDRAM_DQ[7]
+set_location_assignment PIN_AA7 -to SDRAM_DQ[6]
+set_location_assignment PIN_AB7 -to SDRAM_DQ[5]
+set_location_assignment PIN_AA8 -to SDRAM_DQ[4]
+set_location_assignment PIN_AB8 -to SDRAM_DQ[3]
+set_location_assignment PIN_AA9 -to SDRAM_DQ[2]
+set_location_assignment PIN_AB9 -to SDRAM_DQ[1]
+set_location_assignment PIN_AA10 -to SDRAM_DQ[0]
 
-set_location_assignment PIN_W2 -to DRAM_BA[1]
-set_location_assignment PIN_Y1 -to DRAM_BA[0]
+set_location_assignment PIN_W2 -to SDRAM_BA[1]
+set_location_assignment PIN_Y1 -to SDRAM_BA[0]
 
-set_location_assignment PIN_AA5 -to DRAM_LDQM
-set_location_assignment PIN_W7 -to DRAM_UDQM
+set_location_assignment PIN_AA5 -to SDRAM_DQML
+set_location_assignment PIN_W7 -to SDRAM_DQMH
 
-set_location_assignment PIN_AB3 -to DRAM_RAS_N
-set_location_assignment PIN_AA4 -to DRAM_CAS_N
-set_location_assignment PIN_AB4 -to DRAM_WE_N
-set_location_assignment PIN_AA3 -to DRAM_CS_N
-set_location_assignment PIN_W6 -to DRAM_CKE
-set_location_assignment PIN_Y6 -to DRAM_CLK
+set_location_assignment PIN_AB3 -to SDRAM_nRAS
+set_location_assignment PIN_AA4 -to SDRAM_nCAS
+set_location_assignment PIN_AB4 -to SDRAM_nWE
+set_location_assignment PIN_AA3 -to SDRAM_nCS
+set_location_assignment PIN_W6 -to SDRAM_CKE
+set_location_assignment PIN_Y6 -to SDRAM_CLK
 
 set_location_assignment PIN_M19 -to PS2_KEYBOARD_CLK
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PS2_KEYBOARD_CLK
@@ -128,14 +128,14 @@ set_location_assignment PIN_AB18 -to SRAM_A[2]
 set_location_assignment PIN_AB17 -to SRAM_A[1]
 set_location_assignment PIN_AB16 -to SRAM_A[0]
 set_location_assignment PIN_AB15 -to SRAM_Q[7]
-set_location_assignment PIN_W22 -to SRAM_Q[6]
-set_location_assignment PIN_Y22 -to SRAM_Q[5]
-set_location_assignment PIN_AA20 -to SRAM_Q[4]
-set_location_assignment PIN_AA19 -to SRAM_Q[3]
-set_location_assignment PIN_AA18 -to SRAM_Q[2]
-set_location_assignment PIN_AA17 -to SRAM_Q[1]
-set_location_assignment PIN_AA16 -to SRAM_Q[0]
-set_location_assignment PIN_D21 -to  SRAM_WE
+set_location_assignment PIN_W22 -to SRAM_DQ[6]
+set_location_assignment PIN_Y22 -to SRAM_DQ[5]
+set_location_assignment PIN_AA20 -to SRAM_DQ[4]
+set_location_assignment PIN_AA19 -to SRAM_DQ[3]
+set_location_assignment PIN_AA18 -to SRAM_DQ[2]
+set_location_assignment PIN_AA17 -to SRAM_DQ[1]
+set_location_assignment PIN_AA16 -to SRAM_DQ[0]
+set_location_assignment PIN_D21 -to  SRAM_nWE
 
 # JOYSTICKS
 
@@ -164,17 +164,13 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[2]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[3]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[4]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to JOYSTICK2[5]
-
 set_location_assignment PIN_A15 -to JOY_SELECT
+
 ### I2S
-set_location_assignment PIN_E22 -to SCLK
-set_location_assignment PIN_J22 -to SDIN
-set_location_assignment PIN_H22 -to MCLK
-set_location_assignment PIN_F22 -to LRCLK
+set_location_assignment PIN_E22 -to I2S_BCK
+set_location_assignment PIN_J22 -to I2S_DATA
+set_location_assignment PIN_H22 -to I2S_MCLK
+set_location_assignment PIN_F22 -to I2S_LRCK
 
 #
 set_location_assignment PIN_A7 -to STM_RST
-
-#  UART   
-set_location_assignment PIN_C3 -to UART_RXD
-set_location_assignment PIN_A3 -to UART_TXD
