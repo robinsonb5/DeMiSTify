@@ -77,7 +77,7 @@ pll_vga pll_vga
 
 
 
-Oric Oric
+guest_top guest
 (
  .CLOCK_27 (CLOCK_50),
  .SPI_SCK (spi_clk_int),

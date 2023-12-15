@@ -1,6 +1,5 @@
 
-
-module mist_top (
+module poseidon_top (
 	input         CLOCK_27,
 `ifdef USE_CLOCK_50
 	input         CLOCK_50,
@@ -101,6 +100,7 @@ localparam SEP = "";
 
 guest_top guest
 (
+ .CLOCK_27    (CLOCK_50),
  .*
 );
 

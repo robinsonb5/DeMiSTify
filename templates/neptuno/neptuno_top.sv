@@ -35,13 +35,14 @@ module neptuno_top (
 	inout	       PS2_MOUSE_CLK,
 	inout	       PS2_MOUSE_DAT,
 	
-	input  [5:0] JOYSTICK1,
-	input  [5:0] JOYSTICK2,
-	output       JOY_SELECT,
-
-	output        I2S_BCK,
-	output        I2S_LRCK,
-	output        I2S_DATA,
+   output       JOY_CLK,
+	output       JOY_LOAD,
+	input        JOY_DATA,
+	output       joyP7_o
+	
+	output       I2S_BCK,
+	output       I2S_LRCK,
+	output       I2S_DATA,
 	
 	output        STM_RST = 1'b0,
 	
@@ -67,7 +68,7 @@ wire         SPI_SS4;
 wire SPI_SCK,SPI_DO,SPI_DI,SPI_SS2,SPI_SS3,CONF_DATA0;
 
 
-Oric Oric
+guest_top guest
 (
  .CLOCK_27 (CLOCK_50),
  .SPI_SCK (spi_clk_int),
@@ -124,3 +125,4 @@ substitute_mcu #(.sysclk_frequency(500)) controller
  .buttons(4'b1111)
 );
 endmodule
+s
