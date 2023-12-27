@@ -500,13 +500,14 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 					   for 'F' entries, the parameter is the upload index, and diskunit must be set to 0.
 					   For 'S' entries, the parameter is copied to diskunit, and remains in ASCII form. */
 					case 'F':
-						diskunit=0;
-						++fileindex;
-					case 'S':
 						/* diskunit will default to 0 rather than '0' for 'F' entries. */						
-						c=configstring_next(); /* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
+						diskunit=0;
+					case 'S':
+						++fileindex; /* FIXME - Should this increment for all items, not just F and S items? */
+						c=configstring_next();
 						if(c!=',')
 						{
+							/* Unit no will be ASCII '0', '1', etc - or 'C' for CD images */
 							if(diskunit)
 								diskunit=c; /* Disk unit number remains in ASCII form, with 0 used to indicate ROM images rather than disk images */
 							else
