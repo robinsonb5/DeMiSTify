@@ -27,7 +27,7 @@ module deca_mist_top (
     input 	 SPI_CS0_CLKBD, //SPI_SS3,    (OSD)
     input 	 SPI_CS1,       //CONF_DATA0, (USER_IO)
     input 	 SPI_SS4,       //SPI_SS4,    (SD DIRECT)
---  input    RESET_N,       //RESET FROM SAM7S BUTTON
+//  input    RESET_N,       //RESET FROM SAM7S BUTTON
 
     // Audio DAC DECA
     output I2S_MCK,		//AUDIO_MCLK
