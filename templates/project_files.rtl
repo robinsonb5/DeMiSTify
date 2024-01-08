@@ -13,5 +13,7 @@ firmware/controller_rom1_byte.vhd
 firmware/controller_rom2_byte.vhd
 
 # or:  standard firmware
-DeMiSTify/controller/firmware_std.qip
+# DeMiSTify/controller/firmware_std.qip
 
+# Pre-flow scripts
+# rtl/build_id.tcl

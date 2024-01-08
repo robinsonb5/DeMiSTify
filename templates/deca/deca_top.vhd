@@ -269,13 +269,13 @@ architecture RTL of deca_top is
 		);
 	end component;
 
-	signal act_led : std_logic;
+	signal act_led 		: std_logic;
 
 	-- DECA target guest_top template signals
 	alias clock_input 	: std_logic is MAX10_CLK1_50;
 	alias audio_input	: std_logic is EAR;	
-	alias sigma_l : std_logic is DETO1_PMOD2_6;
-	alias sigma_r : std_logic is DETO2_PMOD2_7;
+	alias sigma_l 		: std_logic is DETO1_PMOD2_6;
+	alias sigma_r 		: std_logic is DETO2_PMOD2_7;
 
 begin
 
