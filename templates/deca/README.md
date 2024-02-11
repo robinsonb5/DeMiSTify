@@ -10,7 +10,7 @@ If the project has the DeMiSTify firmware already generated you only need to clo
 
 ```sh
 git clone  --recursive https://github.com/[repo_name]/[core_name]
-#check comments on top of /deca/deca_top.vhd in case additional actions are needed
+#check comments on top of /deca/deca_top.sv[vhd] in case additional actions are needed
 #Load project file in Quartus (/deca/[core_name]_deca.qpf)
 ```
 

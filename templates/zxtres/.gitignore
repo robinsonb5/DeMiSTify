@@ -1,0 +1,13 @@
+*.cache
+*.gen
+*.hw
+*.ip_user_files
+*.runs
+*.sim
+.Xil
+vivado*
+build_id.vh
+*.tcl
+bitstreams
+*.qsf
+*.qpf

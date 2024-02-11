@@ -1,10 +1,15 @@
-#set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) defs.v]
-set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) deca_top.vhd]
+set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) defs.v]
+set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) ../defs_demistify.v]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) deca_top.sv]
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) deca_top.vhd]
+set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) ../common/pll_50_27.v]
+set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) ../../MIST/pll.v]
+#set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../common/pll.v]
 #
-#set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) ../pll/50/pll.qip]
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../common/audio_i2s.vhd]
+#set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ulpi/ULPI_PS2.v]
+#set_global_assignment -name QIP_FILE     [file join $::quartus(qip_path) ulpi/PLL_PHASE90.qip]
 #
 #set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) pll2/pll2.qip]
 #set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) mist_video2.v]
 #set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) sdram.sv]
-#
-
