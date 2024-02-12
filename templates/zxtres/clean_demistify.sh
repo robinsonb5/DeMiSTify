@@ -1,5 +1,21 @@
-#find ../firmware/ -type f \( ! -iname "*.h" ! -iname "*.c" ! -iname "*.vhd" \) -delete
-find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" ! -iname "*.sta.rpt" \) -delete
+#demistify
+#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "*.c" \) -delete
+rm -f Oric_*
+rm *_zxtres_files.tcl
+rm generate_vivado_project.tcl
+rm build.v
+rm build.vh
+rm -r output_files
+rm vivado*
+rm -r *.cache
+rm -r *.gen
+rm -r *.hw
+rm -r *.ip_user_files
+rm -r *.runs
+rm -r *.sim
+rm -r .Xil
+#quartus
+find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" \) -delete
 rm -f output_files/*_pof.svf
 #find output_files/  -type f -not -name '*.sof' -delete
 find software/spl_bsp/ -type f -not -name '*.bin' -delete
@@ -32,3 +48,4 @@ rm -f rtl/*.bak
 rm -f V/*.bak
 rm -rf greybox_tmp 
 rm -rf *.log
+

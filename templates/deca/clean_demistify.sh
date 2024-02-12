@@ -1,5 +1,5 @@
 #demistify
-#find ../firmware/ -type f \( ! -iname "config.h" ! -iname "*.c" \) -delete
+#find ../firmware/ -type f \( ! -iname "*.h" ! -iname "*.c" \) -delete
 rm -f PCXT_*
 #quartus
 find output_files/ -type f \( ! -iname "*.sof" ! -iname "*.svf" ! -iname "*.flow.rpt" \) -delete

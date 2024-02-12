@@ -12,6 +12,8 @@ demistify_config_pkg.vhd
 firmware/controller_rom1_byte.vhd
 firmware/controller_rom2_byte.vhd
 
+# remove below if not used or it will give error
+
 # or:  standard firmware
 # DeMiSTify/controller/firmware_std.qip
 
