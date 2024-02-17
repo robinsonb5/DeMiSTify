@@ -3,3 +3,4 @@ set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) neptuno_to
 #
 #set_global_assignment -name QIP_FILE [file join $::quartus(qip_path) pll.qip]
 #
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../common/audio_i2s.vhd]

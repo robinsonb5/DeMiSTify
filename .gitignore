@@ -3,4 +3,3 @@ db/
 *.bak
 *~
 site.mk
-upd.sh

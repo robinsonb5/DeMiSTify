@@ -1,0 +1,16 @@
+#set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) defs.v]
+set_global_assignment -name VERILOG_FILE  [file join $::quartus(qip_path) ../defs_demistify.v]
+set_global_assignment -name SDC_FILE [file join $::quartus(qip_path) constraints.sdc]
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) zxtres_top.vhd]
+set_global_assignment -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) zxtres_top.sv]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) pll.v]
+#
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../common/audio_i2s.vhd]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../common/joydecoder_neptuno.v]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../common/joystick_sega.vhd]
+#set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) ../common/joydecoder.v]
+#
+# VIVADO DESIGN SOURCES: BE SURE TO REMOVE DUPLICATED MODULES AND LEAVE ONLY THOSE FROM FOLLOWING LOCATIONS:
+#set_global_assignment -name SDC_FILE [file join $::quartus(qip_path) Guest_core.sdc]
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../DeMiSTify/EightThirtyTwo/RTL/xilinx/debug_bridge_jtag.vhd]
+#set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) ../DeMiSTify/EightThirtyTwo/RTL/xilinx/debug_virtualjtag_Artix7.vhd]
