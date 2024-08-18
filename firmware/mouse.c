@@ -31,7 +31,11 @@ static unsigned char rxmouse[4];
 __weak void HandleMousePacket(int protocol)
 {
 	// Send the packet to the core.
+#ifdef PS2_MOUSE_EXT
+	spi_uio_cmd8_cont(UIO_MOUSE0_EXT, PS2MouseRead());
+#else
 	spi_uio_cmd8_cont(UIO_MOUSE, PS2MouseRead());
+#endif
 	SPI(PS2MouseRead());
 	SPI(PS2MouseRead());
 	DisableIO();
