@@ -136,5 +136,48 @@ __weak int loadimage(char *filename,int unit)
 			break;
 #endif
 	}
+	return(0);
+}
+
+void GetNVRAM(int idx,char *ptr,int len)
+{
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	int i;
+	/* Fetch CMOS RAM from data_io */
+	SPIFPGA(SPI_FPGA_FILE_INDEX,idx);
+	*spiptr=0xff;
+	SPIFPGA(SPI_FPGA_FILE_RX,1);
+	SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+	*spiptr=SPI_FPGA_FILE_RX_DAT;
+
+	i=len;
+	*spiptr=0xff;
+	while(i--)
+	{
+		*spiptr=0xff;
+		*ptr++=*spiptr;
+	}
+	SPI_DISABLE(HW_SPI_FPGA);
+
+	SPIFPGA(SPI_FPGA_FILE_RX,0);
+}
+
+void SendNVRAM(int idx,char *ptr,int len)
+{
+	register volatile int *spiptr=&HW_SPI(HW_SPI_DATA);
+	int i;
+	/* Fetch CMOS RAM from data_io */
+	SPIFPGA(SPI_FPGA_FILE_INDEX,idx);
+	*spiptr=0xff;
+	SPIFPGA(SPI_FPGA_FILE_TX,1);
+	SPI_ENABLE_FAST_INT(HW_SPI_FPGA);
+	*spiptr=SPI_FPGA_FILE_TX_DAT;
+
+	i=len;
+	while(i--)
+		*spiptr=*ptr++;
+	SPI_DISABLE(HW_SPI_FPGA);
+
+	SPIFPGA(SPI_FPGA_FILE_TX,0);
 }
 
