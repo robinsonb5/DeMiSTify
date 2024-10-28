@@ -8,9 +8,17 @@
 #define CONFIG_DISKIMG_UNITS 4
 #endif
 
+#define DISKIMG_SDCARD_NAME "<SDCard>"
+#define DISKIMG_SDCARD_MARKER 0xffffff5D
+
 struct diskimage
 {
-	fileTYPE file;
+	union {
+		fileTYPE file;
+		struct {
+			int marker;
+		} direct;
+	} type;
 };
 
 extern struct diskimage diskimg[CONFIG_DISKIMG_UNITS];

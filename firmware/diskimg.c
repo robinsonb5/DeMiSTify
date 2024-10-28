@@ -5,6 +5,7 @@
 #include "configstring.h"
 #include "user_io.h"
 #include "spi.h"
+#include "spi_sd.h"
 #include "minfat.h"
 #include "uart.h"
 
@@ -57,23 +58,40 @@ void diskimg_poll()
 			user_io_sd_set_config();
 		}
 
+		c&=0x03;
+		if(c) {
+#ifdef CONFIG_DISKIMG_SDCARD
+			if(diskimg[idx].type.direct.marker!=DISKIMG_SDCARD_MARKER)
+#endif
+				FileSeek(&diskimg[idx].type.file,lba<<9);
+		}
+
 		// Write to file/SD Card
-		if((c & 0x03) == 0x02) {
-			FileSeek(&diskimg[idx].file,lba<<9);
+		if(c == 0x02) {
+//			FileSeek(&diskimg[idx].type.file,lba<<9);
 			spi_uio_cmd8(UIO_SD_ACK,idx);
 			spi_uio_cmd_cont(UIO_SECTOR_WR);
 			spi_read(sector_buffer,512);
 			DisableIO();
-			FileWriteSector(&diskimg[idx].file,sector_buffer);
+#ifdef CONFIG_DISKIMG_SDCARD
+			if(diskimg[idx].type.direct.marker==DISKIMG_SDCARD_MARKER)
+				sd_write_sector(lba,sector_buffer);
+			else
+#endif
+				FileWriteSector(&diskimg[idx].type.file,sector_buffer);
 		}
 
 		// Read from file/SD Card
-		if((c & 0x03) == 0x01)
+		if(c == 0x01)
 		{
-			FileSeek(&diskimg[idx].file,lba<<9);
-
-			// FIXME - DirectIO?
-			FileReadSector(&diskimg[idx].file,sector_buffer);
+//				FileSeek(&diskimg[idx].type.file,lba<<9);
+#ifdef CONFIG_DISKIMG_SDCARD
+			if(diskimg[idx].type.direct.marker==DISKIMG_SDCARD_MARKER)
+				sd_read_sector(lba,sector_buffer);
+			else
+#endif
+				// FIXME - DirectIO?
+				FileReadSector(&diskimg[idx].type.file,sector_buffer);
 			spi_uio_cmd8(UIO_SD_ACK,idx);
 			spi_uio_cmd_cont(UIO_SECTOR_RD);
 			spi_write(sector_buffer,512);
@@ -86,20 +104,32 @@ void diskimg_poll()
 #define spi32le(x) SPI(x&255); SPI((x>>8)&255); SPI((x>>16)&255); SPI(x>>24); 
 
 int diskimg_mount(const unsigned char *name, unsigned char idx) {
-	int imgsize=0;
+	unsigned int imgsize=0;
+	unsigned int imgsizeupper=0;
 	int i;
-	if(idx>3)
+	if(idx>CONFIG_DISKIMG_UNITS)
 		return(0);
-	configstring_setindex(name);
-	FileOpen(&diskimg[idx].file,name);
-	imgsize=diskimg[idx].file.size;	/* Will be zero if file opening failed */
-
+		
+#ifdef CONFIG_DISKIMG_SDCARD
+	if(strcmp(name,DISKIMG_SDCARD_NAME)==0)
+	{
+		diskimg[idx].type.direct.marker=DISKIMG_SDCARD_MARKER;
+		imgsizeupper=sd_size>>23;
+		imgsize=sd_size<<9;
+	}
+	else
+#endif		
+	{
+		configstring_setindex(name);
+		FileOpen(&diskimg[idx].type.file,name);
+		imgsize=diskimg[idx].type.file.size;	/* Will be zero if file opening failed */
+	}
 	// send mounted image size first then notify about mounting
 	EnableIO();
 	SPI(UIO_SET_SDINFO);
 	// use LE version, so following BYTE(s) may be used for size extension in the future.
 	spi32le(imgsize);
-	spi32le(0); // Upper 32 bits
+	spi32le(imgsizeupper); // Upper 32 bits
 	spi32le(0); // reserved for future expansion
 	spi32le(0); // reserved for future expansion
 	DisableIO();

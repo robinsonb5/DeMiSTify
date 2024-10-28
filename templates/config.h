@@ -43,6 +43,9 @@ here, the number of units defaults to 4. */
 #undef CONFIG_DISKIMG
 #undef CONFIG_DISKIMG_UNITS 2
 
+/* Do we allow direct access to the SD card?  (Implemented as an extra item in the file selector) */
+#define CONFIG_DISKIMG_SDCARD
+
 /* Speed up file operations by "bookmarking" the file.
    (Undef to disable, or set to the number of desired bookmarks - a reasonable
    range would be between 4 and 16 */
@@ -50,8 +53,8 @@ here, the number of units defaults to 4. */
 
 
 /* IDE emulation */
-#define CONFIG_IDE
-#define CONFIG_IDE_UNITS 2
+#undef CONFIG_IDE
+#undef CONFIG_IDE_UNITS 2
 
 
 /* CDROM support - used by the TurboGrafx core */
@@ -59,7 +62,7 @@ here, the number of units defaults to 4. */
 
 
 /* Is this an arcade core with .ARC file support? */
-#define CONFIG_ARCFILE
+#undef CONFIG_ARCFILE
 /* If the core doesn't have its own ROM loading menu item, use this to add a selector for .ARC files. */
 #undef CONFIG_ARCFILE_SELECTOR
 

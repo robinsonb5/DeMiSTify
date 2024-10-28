@@ -171,6 +171,15 @@ void selectrom(int row)
 }
 
 
+void selectsdcard(int row)
+{
+	loadimage(DISKIMG_SDCARD_NAME,unit);
+	Menu_ShowHide(0);
+	menupage=0;
+	buildmenu(1);
+}
+
+
 void selectdir(int row)
 {
 	DIRENTRY *p=nthfile(menuindex+row);
@@ -224,6 +233,13 @@ int listroms()
 				}
 			}
 		}
+#ifdef CONFIG_DISKIMG_SDCARD
+		else if (unit >= '0' && unit < ('0'+CONFIG_DISKIMG_UNITS))
+		{
+			menu[j].action=MENU_ACTION(&selectsdcard);
+			strcpy(romfilenames[j++],DISKIMG_SDCARD_NAME);		
+		}
+#endif
 	}
 	return(j);
 }
