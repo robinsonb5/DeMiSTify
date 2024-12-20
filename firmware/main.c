@@ -43,6 +43,7 @@
 #include "statusword.h"
 #include "settings.h"
 #include "arcfile.h"
+#include "supporters.h"
 
 #define Breadcrumb(x) HW_UART(REG_UART)=x;
 
@@ -51,7 +52,10 @@
 static char unit;
 int menupage;
 
-#ifdef CONFIG_SETTINGS
+#if defined CONFIG_SETTINGS
+char std_label_exit[]="             Exit            \x81";
+char std_label_back[]="\x80            Back";
+#elif defined CONFIG_SUPPORTERS
 char std_label_exit[]="             Exit            \x81";
 char std_label_back[]="\x80            Back";
 #else
@@ -317,6 +321,12 @@ static void scrollmenu(int row)
 			return;
 			break;
 #endif
+#ifdef CONFIG_SUPPORTERS	/* If settings are disabled, fall through to ROW_LEFT: */
+			menupage=MENUPAGE_SUPPORTERS;
+			buildmenu(1);
+			return;
+			break;
+#endif
 		case ROW_LEFT:
 			submenu(7);
 			return;
@@ -394,6 +404,15 @@ void parseconf(int selpage,struct menu_entry *menu,unsigned int first,unsigned i
 		menu[line].u.file.cfgidx=CONFIGSTRING_INDEX_CFG;
 		menu[line].u.file.unit='T';
 		++line;
+	}
+#endif
+#ifdef CONFIG_SUPPORTERS
+	else if(menupage==MENUPAGE_SUPPORTERS)
+	{
+		while(supporters[line+first] && (line<7)) {
+			strcpy(menu[line].label,supporters[line+first]);
+			++line;
+		}
 	}
 #endif
 	else
@@ -729,9 +748,8 @@ __weak void init()
 
 __weak void mainloop()
 {
-#ifdef CONFIG_RTC
 	int framecounter;
-#endif
+
 	while(1)
 	{
 #ifdef PS2_MOUSE
@@ -758,6 +776,22 @@ __weak void mainloop()
 #ifdef CONFIG_RTC
 		if((framecounter++&8191)==0)
 			user_io_send_rtc(get_rtc());
+#endif
+
+#ifdef CONFIG_ARCADEKEYS
+		SendArcadeKeys();
+#endif
+
+#ifdef CONFIG_SUPPORTERS
+		if((framecounter++&8191)==0) { 
+			if(menupage==MENUPAGE_SUPPORTERS) {
+				menuindex++;
+				buildmenu(0);
+				Menu_Set(menu);
+				if(!supporters[menuindex+6])
+					menuindex=0;
+			}
+		}
 #endif
 	}
 }
