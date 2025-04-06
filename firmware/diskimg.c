@@ -33,7 +33,33 @@ int user_io_sd_get_status(uint32_t *lba, uint32_t *drive_index) {
 
 void user_io_sd_set_config()
 {
-	/* FIXME - need to synthesize a fake card CSD structure here for the mounted image. */
+	unsigned char data[33];
+	int capacity;
+
+	if(diskimg[0].type.direct.marker==DISKIMG_SDCARD_MARKER) {
+		capacity=sd_size;
+	} else {
+		capacity=diskimg[0].type.file.size>>9;
+	}
+	// synthetic CSD for non-MMC storage
+	memset(data, sizeof(data), 0);
+	data[16+0] = 0x40;
+	data[16+1] = 0x0e;
+	data[16+3] = 0x32;
+	data[16+4] = 0x5b;
+	data[16+5] = 0x59;
+	data[16+6] = 0x90;
+	data[16+7] = (capacity >> 26) & 0xff;
+	data[16+8] = (capacity >> 18) & 0xff;
+	data[16+9] = (capacity >> 10) & 0xff;
+	data[16+10] = 0x5f;
+	data[16+11] = 0xc0;
+	data[32] = 1; // SDHC
+
+	// and forward it to the FPGA
+	spi_uio_cmd_cont(UIO_SET_SDCONF);
+	spi_write(data, sizeof(data));
+	DisableIO();
 }
 
 
@@ -52,11 +78,11 @@ void diskimg_poll()
 	// to avoid problems with cores that don't implement this command
 	if((c & 0xf0) == 0x50 || (c & 0xf0) == 0x60) {
 
+#ifdef CONFIG_DISKIMG_SDCARD_CSD
 		// check if core requests configuration
-		if(c & 0x08) {
-//			printf("core requests SD config\n");
+		if(c & 0x08)
 			user_io_sd_set_config();
-		}
+#endif
 
 		c&=0x03;
 		if(c) {
@@ -84,6 +110,7 @@ void diskimg_poll()
 		// Read from file/SD Card
 		if(c == 0x01)
 		{
+			putchar('r');
 //				FileSeek(&diskimg[idx].type.file,lba<<9);
 #ifdef CONFIG_DISKIMG_SDCARD
 			if(diskimg[idx].type.direct.marker==DISKIMG_SDCARD_MARKER)

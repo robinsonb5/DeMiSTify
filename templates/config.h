@@ -43,6 +43,10 @@ here, the number of units defaults to 4. */
 #undef CONFIG_DISKIMG
 #undef CONFIG_DISKIMG_UNITS 2
 
+/* If the guest core sees disk images as SD cards (for example, OneChipMSX),
+   it will need to access a CSD structure */
+#undef CONFIG_DISKIMG_SDCARD_CSD
+
 /* Do we allow direct access to the SD card?  (Implemented as an extra item in the file selector) */
 #define CONFIG_DISKIMG_SDCARD
 
