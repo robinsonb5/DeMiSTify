@@ -109,6 +109,7 @@ here, the number of units defaults to 4. */
 #undef PS2_MOUSE
 #undef PS2_MOUSE_WHEEL /* Attempt to initialise the mouse in 4-byte (wheel) mode */
 #undef PS2_MOUSE_USERIO /* Do we need to send the mouse data to the core (not needed if the core can interpret PS/2 wires directly. */
+#define PS2_MOUSE_EXT /* Use updated USERIO commands (use this for most cores - disable it for Atari ST) */
 #undef PS2_WRITE /* Needed to initialise the mouse and put it in wheel mode */
 
 

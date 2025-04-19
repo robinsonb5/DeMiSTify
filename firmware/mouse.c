@@ -33,14 +33,21 @@ __weak void HandleMousePacket(int protocol)
 	// Send the packet to the core.
 #ifdef PS2_MOUSE_EXT
 	spi_uio_cmd8_cont(UIO_MOUSE0_EXT, PS2MouseRead());
+	SPI(PS2MouseRead());
+	SPI(PS2MouseRead());
+	if(protocol==4)
+		SPI(PS2MouseRead());
+	else
+		SPI(0);
+	DisableIO();
 #else
 	spi_uio_cmd8_cont(UIO_MOUSE, PS2MouseRead());
-#endif
 	SPI(PS2MouseRead());
 	SPI(PS2MouseRead());
 	DisableIO();
 	if(protocol==4)
-		PS2MouseRead();
+		PS2MouseRead());
+#endif
 }
 #else
 __weak void HandleMousePacket(int protocol)
