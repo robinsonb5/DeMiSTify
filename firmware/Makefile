@@ -31,8 +31,10 @@ LDFLAGS  = -el -s_STACKSIZE=$(STACKSIZE) -c0,$(ROMSIZE)
 START = $(LIBDIR)/tinycrt0.a
 LIBS = $(LIBDIR)/libtiny832.a
 
-PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o ps2.o keyboard.o mouse.o user_io.o \
-	statusword.o arcfile.o osd.o font.o menu.o cue_parser.o pcecd.o timer.o diskimg.o ide.o romimg.o settings.o overrides.o
+PRJ_OBJ = spi.o spi_sd.o minfat.o swap.o configstring.o main.o interrupts.o \
+	ps2.o keyboard.o mouse.o user_io.o statusword.o arcfile.o osd.o font.o \
+	menu.o cue_parser.o pcecd.o timer.o diskimg.o ide.o romimg.o settings.o \
+	supporters.o overrides.o
 
 ROMGENDIR = $(DEMISTIFYPATH)/EightThirtyTwo/romgen
 ROMGEN = $(ROMGENDIR)/romgen
